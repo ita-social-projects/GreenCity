@@ -147,8 +147,8 @@ class ManagementUserControllerTest {
         when(userService.getDeactivationReasons(1L, currentUser)).thenReturn(test);
 
         this.mockMvc.perform(get(MANAGEMENT_USER_LINK + "/reasons" + "?id=1")
-                .principal(currentUser::getEmail)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(currentUser::getEmail)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
         verify(userService).getDeactivationReasons(1L, currentUser);
@@ -162,8 +162,8 @@ class ManagementUserControllerTest {
             .thenReturn(currentUser);
 
         mockMvc.perform(post(MANAGEMENT_USER_LINK + "/activate" + "?id=1")
-                .principal(currentUser::getEmail)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(currentUser::getEmail)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
         verify(userService).updateUserStatusById(currentUser, 1L, UserStatus.ACTIVATED);
@@ -200,11 +200,11 @@ class ManagementUserControllerTest {
         UserManagementCreateDto dto = ModelUtils.getUserManagementCreateDto();
 
         mockMvc.perform(post(MANAGEMENT_USER_LINK + "/register")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", dto.getId().toString())
-                .param("name", dto.getName())
-                .param("email", dto.getEmail())
-                .param("role", dto.getRole().toString()))
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("id", dto.getId().toString())
+            .param("name", dto.getName())
+            .param("email", dto.getEmail())
+            .param("role", dto.getRole().toString()))
             .andExpect(status().is3xxRedirection());
 
         verify(restClient).managementRegisterUser(dto);
@@ -238,15 +238,15 @@ class ManagementUserControllerTest {
             .thenReturn(currentUser);
 
         mockMvc.perform(post(MANAGEMENT_USER_LINK + "/deactivateAll")
-                .principal(currentUser::getEmail)
-                .content(context)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(currentUser::getEmail)
+            .content(context)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
         context = objectMapper.writeValueAsString(null);
         mockMvc.perform(post(MANAGEMENT_USER_LINK + "/deactivateAll")
-                .content(context)
-                .contentType(MediaType.APPLICATION_JSON))
+            .content(context)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
 
         verify(userService).deactivateAllUsers(list, currentUser);

@@ -501,8 +501,8 @@ public class UserController {
      * Change user status.
      *
      * @param currentUser - current user
-     * @param userId - target user id
-     * @param status - user status
+     * @param userId      - target user id
+     * @param status      - user status
      */
     @Operation(summary = "Change user status")
     @ApiResponses(value = {
@@ -524,7 +524,7 @@ public class UserController {
      * Method for getting a {@link List} of {@link String} - reasons for
      * deactivation of the current user.
      *
-     * @param id        {@link Long} - user's id.
+     * @param id          {@link Long} - user's id.
      * @param currentUser - current user
      * @return {@link List} of {@link String} - reasons for deactivation of the
      *         current user.
@@ -542,7 +542,8 @@ public class UserController {
     }
 
     /**
-     * Method to get status of user. Used by GreenCityRemoteClient in other services.
+     * Method to get status of user. Used by GreenCityRemoteClient in other
+     * services.
      *
      * @param email user's email
      * @return {@link UserStatus}
@@ -554,8 +555,8 @@ public class UserController {
     }
 
     /**
-     * Method for deleting current authenticated user. Deleted user is still existed in system but with DELETED
-     * status and can be restored.
+     * Method for deleting current authenticated user. Deleted user is still existed
+     * in system but with DELETED status and can be restored.
      *
      * @return {@link ResponseEntity}
      */

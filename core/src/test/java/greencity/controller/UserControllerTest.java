@@ -694,8 +694,8 @@ class UserControllerTest {
             .thenReturn(currentUser);
 
         mockMvc.perform(put(userLink + "/status/" + userId)
-                .param("status", status.name())
-                .principal(currentUser::getEmail))
+            .param("status", status.name())
+            .principal(currentUser::getEmail))
             .andExpect(status().isOk());
 
         verify(userService).updateUserStatusById(currentUser, userId, status);
@@ -713,8 +713,8 @@ class UserControllerTest {
             .thenReturn(reasons);
 
         mockMvc.perform(get(userLink + "/reasons")
-                .param("id", String.valueOf(userId))
-                .principal(currentUser::getEmail))
+            .param("id", String.valueOf(userId))
+            .principal(currentUser::getEmail))
             .andExpect(status().isOk());
 
         verify(userService).getDeactivationReasons(userId, currentUser);
@@ -729,7 +729,7 @@ class UserControllerTest {
             .thenReturn(status);
 
         mockMvc.perform(get(userLink + "/status")
-                .param("email", email))
+            .param("email", email))
             .andExpect(status().isOk());
 
         verify(userService).getUserStatusByEmail(email);
@@ -743,7 +743,7 @@ class UserControllerTest {
             .thenReturn(currentUser);
 
         mockMvc.perform(delete(userLink + "/delete")
-                .principal(currentUser::getEmail))
+            .principal(currentUser::getEmail))
             .andExpect(status().isOk());
 
         verify(userService).deleteUserByEmail(currentUser.getEmail());

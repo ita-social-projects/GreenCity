@@ -223,7 +223,7 @@ public class ManagementUserController {
     /**
      * Method for getting list of {@link String}.
      *
-     * @param id        {@link Long} - user's id.
+     * @param id          {@link Long} - user's id.
      * @param currentUser - current user
      * @return {@link List} of {@link String} - reasons for deactivation of the
      *         current user.

@@ -356,7 +356,7 @@ public interface UserService {
     /**
      * Method deactivates all the {@link UserVO} by list of IDs.
      *
-     * @param listId {@link List} of {@link UserVO}s` ids to be deactivated
+     * @param listId      {@link List} of {@link UserVO}s` ids to be deactivated
      * @param currentUser - current user
      * @return {@link List} of {@link UserVO}s` ids
      */
@@ -365,9 +365,9 @@ public interface UserService {
     /**
      * Method that change user status.
      *
-     * @param currentUser        {@link UserVO} current user
-     * @param targetUserId       {@link Long} user uuid that is deactivated.
-     * @param status             {@link UserStatus} user status.
+     * @param currentUser  {@link UserVO} current user
+     * @param targetUserId {@link Long} user uuid that is deactivated.
+     * @param status       {@link UserStatus} user status.
      */
     void updateUserStatusById(UserVO currentUser, Long targetUserId, UserStatus status);
 
@@ -377,13 +377,11 @@ public interface UserService {
      * Method for getting a {@link List} of {@link String} - reasons for
      * deactivation of the current user.
      *
-     * @param id        {@link Long} - user's id.
+     * @param id          {@link Long} - user's id.
      * @param currentUser - current user
      * @return {@link List} of {@link String}.
      */
     List<String> getDeactivationReasons(Long id, UserVO currentUser);
-
-
 
     /**
      * Counts all users by user {@link UserStatus} ACTIVATED.

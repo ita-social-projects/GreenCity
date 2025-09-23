@@ -1495,12 +1495,13 @@ class UserServiceImplTest {
     void fillGreenCityInfoInUsersTest() {
         List<UserManagementVO> users = List.of(
             UserManagementVO.builder().email("test1@email.com").build(),
-            UserManagementVO.builder().email("test2@email.com").build()
-        );
+            UserManagementVO.builder().email("test2@email.com").build());
         List<String> emails = List.of("test1@email.com", "test2@email.com");
 
-        GreenCityUserInfoDto userInfo1 = new GreenCityUserInfoDto(1L, "test1@email.com", "path1", "credo1", ACTIVATED, 5.0);
-        GreenCityUserInfoDto userInfo2 = new GreenCityUserInfoDto(2L, "test2@email.com", "path2", "credo2", ACTIVATED, 4.5);
+        GreenCityUserInfoDto userInfo1 =
+            new GreenCityUserInfoDto(1L, "test1@email.com", "path1", "credo1", ACTIVATED, 5.0);
+        GreenCityUserInfoDto userInfo2 =
+            new GreenCityUserInfoDto(2L, "test2@email.com", "path2", "credo2", ACTIVATED, 4.5);
         List<GreenCityUserInfoDto> userInfoList = List.of(userInfo1, userInfo2);
 
         when(userRepo.findGreenCityUserInfoDtosByEmails(emails)).thenReturn(userInfoList);

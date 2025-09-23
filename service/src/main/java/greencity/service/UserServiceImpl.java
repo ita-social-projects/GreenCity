@@ -665,7 +665,8 @@ public class UserServiceImpl implements UserService {
                     .build();
                 userRemoteClient.sendMessageOfActivation(notification);
             }
-            default -> { }
+            default -> {
+            }
         }
 
         targetUser.setStatus(status);
@@ -720,7 +721,7 @@ public class UserServiceImpl implements UserService {
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
         return user.getUserLocation() == null
             && (userProfileDtoRequest.getCoordinates().getLatitude() == null
-            || userProfileDtoRequest.getCoordinates().getLongitude() == null);
+                || userProfileDtoRequest.getCoordinates().getLongitude() == null);
     }
 
     private void initializeGeoCodingResults(Map<AddressComponentType, Consumer<String>> initializedMap,
@@ -859,5 +860,6 @@ public class UserServiceImpl implements UserService {
         return String.format("Deactivated by %s[%s] admin.", currentUserDto.getName(), currentUserDto.getEmail());
     }
 
-    private record RequestedAndTargetUsersPair(UserVO currentUserDto, User targetUser, UserVO targetUserDto) {}
+    private record RequestedAndTargetUsersPair(UserVO currentUserDto, User targetUser, UserVO targetUserDto) {
+    }
 }
