@@ -304,7 +304,8 @@ public class SecurityConfig {
                     "/ai/**",
                     EXPORT_SETTINGS_LINKS,
                     LOGS_LINKS,
-                    "/ai/forecast")
+                    "/ai/forecast",
+                    USERS + "/activatedUsersAmount")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
@@ -450,14 +451,17 @@ public class SecurityConfig {
                     USERS + "/user/all-friends",
                     USERS + "/user/friends",
                     USERS + "/user/top-friends",
-                    USERS + "/profiles" + EXTERNAL)
+                    USERS + "/profiles" + EXTERNAL,
+                    USERS + "/reasons",
+                    USERS + "/status")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/place/filter/predicate")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.PUT,
                     "/place/update/",
-                    USERS + "/user/picturePath")
+                    USERS + "/user/picturePath",
+                    USERS + "/status/{userId}")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.PATCH,
                     "/place/status",
@@ -468,7 +472,8 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.DELETE,
                     "/place/{id}",
-                    "/place")
+                    "/place",
+                    USERS + "/delete")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/user/filter",
