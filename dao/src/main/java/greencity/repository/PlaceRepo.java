@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
  * Provides an interface to manage {@link Place} entity.
  */
 @Repository
-public interface PlaceRepo extends PlaceSearchRepo, JpaRepository<Place, Long>, JpaSpecificationExecutor<Place> {
+public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationExecutor<Place> {
     /**
      * Finds all places related to the given {@code PlaceStatus}.
      *

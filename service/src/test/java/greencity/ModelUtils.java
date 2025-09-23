@@ -137,6 +137,7 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserClaims;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
@@ -2884,6 +2885,10 @@ public class ModelUtils {
             .mutualFriends(3L)
             .profilePicturePath("path-to-picture")
             .build();
+    }
+
+    public static UserEmailDto getUserEmailDto() {
+        return new UserEmailDto(1L, "test@gmail.com");
     }
 
     public static UserFriendDto getUserFriendDtoListFromUserPage() {

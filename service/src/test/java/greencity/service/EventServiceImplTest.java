@@ -62,6 +62,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -967,7 +968,7 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<Event> page = new PageImpl<>(events, pageRequest, events.size());
 
-        when(eventRepo.find(pageRequest, "search", null, null)).thenReturn(page);
+        when(eventRepo.findAll(any(Specification.class), eq(pageRequest))).thenReturn(page);
         when(modelMapper.map(ModelUtils.getEvent(), SearchEventsDto.class)).thenReturn(ModelUtils.getSearchEventsDto());
 
         PageableDto<SearchEventsDto> searched = eventService.search(pageRequest, "search", null, null);
@@ -1118,6 +1119,7 @@ class EventServiceImplTest {
         Pageable pageable = PageRequest.of(0, 6);
         Long userId = 1L;
         FilterEventDto filterEventDto = getFilterEventDto();
+        Page<Event> eventsPage = mock(Page.class);
         Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
         TupleElement<?>[] elements = getTupleElements();
 
@@ -1134,14 +1136,15 @@ class EventServiceImplTest {
             idsPage.isFirst(),
             idsPage.isLast());
         when(restClient.findById(userId)).thenReturn(getUserVO());
-        when(eventRepo.findEventsIds(pageable, filterEventDto, userId)).thenReturn(idsPage);
+        when(eventRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(eventsPage);
+        when(eventsPage.map(any())).thenReturn(idsPage.map(obj -> obj));
         when(eventRepo.loadEventDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
 
         PageableAdvancedDto<EventDto> result = eventService.getEvents(pageable, filterEventDto, userId);
         assertEquals(eventPreviewDtoPage, result);
 
         verify(restClient).findById(userId);
-        verify(eventRepo).findEventsIds(pageable, filterEventDto, userId);
+        verify(eventRepo).findAll(any(Specification.class), eq(pageable));
         verify(eventRepo).loadEventDataByIds(idsPage.getContent(), userId);
     }
 
@@ -1154,13 +1157,15 @@ class EventServiceImplTest {
         Long userId = 1L;
         FilterEventDto filterEventDto = getFilterEventDto();
 
+        Page<Event> eventsPage = mock(Page.class);
         Page<Long> idsPage = new PageImpl<>(
             List.of(3L, 1L),
             PageRequest.of(0, pageSize),
             totalPages * pageSize);
 
         when(restClient.findById(userId)).thenReturn(getUserVO());
-        when(eventRepo.findEventsIds(pageable, filterEventDto, userId)).thenReturn(idsPage);
+        when(eventRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(eventsPage);
+        when(eventsPage.map(any())).thenReturn(idsPage.map(obj -> obj));
 
         BadRequestException exception = assertThrows(
             BadRequestException.class,
@@ -1171,7 +1176,7 @@ class EventServiceImplTest {
         assertEquals(expectedMessage, exception.getMessage());
 
         verify(restClient).findById(userId);
-        verify(eventRepo).findEventsIds(pageable, filterEventDto, userId);
+        verify(eventRepo).findAll(any(Specification.class), eq(pageable));
         verify(eventRepo, never()).loadEventDataByIds(anyList(), anyLong());
     }
 
@@ -1179,6 +1184,7 @@ class EventServiceImplTest {
     void getEventsForUnauthorizedUserTest() {
         Pageable pageable = PageRequest.of(0, 6);
         FilterEventDto filterEventDto = getFilterEventDto();
+        Page<Event> eventsPage = mock(Page.class);
         Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
         TupleElement<?>[] elements = getTupleElements();
 
@@ -1194,13 +1200,14 @@ class EventServiceImplTest {
             idsPage.hasNext(),
             idsPage.isFirst(),
             idsPage.isLast());
-        when(eventRepo.findEventsIds(pageable, filterEventDto, null)).thenReturn(idsPage);
+        when(eventRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(eventsPage);
+        when(eventsPage.map(any())).thenReturn(idsPage.map(obj -> obj));
         when(eventRepo.loadEventDataByIds(idsPage.getContent())).thenReturn(tuples);
 
         PageableAdvancedDto<EventDto> result = eventService.getEvents(pageable, filterEventDto, null);
         assertEquals(eventPreviewDtoPage, result);
 
-        verify(eventRepo).findEventsIds(pageable, filterEventDto, null);
+        verify(eventRepo).findAll(any(Specification.class), eq(pageable));
         verify(eventRepo).loadEventDataByIds(idsPage.getContent());
     }
 
@@ -1209,6 +1216,7 @@ class EventServiceImplTest {
         Pageable pageable = PageRequest.of(0, 6);
         Long userId = 1L;
         FilterEventDto filterEventDto = getFilterEventDto();
+        Page<Event> eventsPage = mock(Page.class);
         Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
         TupleElement<?>[] elements = getTupleElements();
 
@@ -1225,14 +1233,15 @@ class EventServiceImplTest {
             idsPage.isFirst(),
             idsPage.isLast());
         when(restClient.findById(userId)).thenReturn(getUserVO());
-        when(eventRepo.findEventsIdsManagement(pageable, filterEventDto, userId)).thenReturn(idsPage);
+        when(eventRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(eventsPage);
+        when(eventsPage.map(any())).thenReturn(idsPage.map(obj -> obj));
         when(eventRepo.loadEventDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
 
         PageableAdvancedDto<EventDto> result = eventService.getEventsManagement(pageable, filterEventDto, userId);
         assertEquals(eventPreviewDtoPage, result);
 
         verify(restClient).findById(userId);
-        verify(eventRepo).findEventsIdsManagement(pageable, filterEventDto, userId);
+        verify(eventRepo).findAll(any(Specification.class), eq(pageable));
         verify(eventRepo).loadEventDataByIds(idsPage.getContent(), userId);
     }
 
@@ -1240,6 +1249,7 @@ class EventServiceImplTest {
     void getEventsManagementForUnauthorizedUserTest() {
         Pageable pageable = PageRequest.of(0, 6);
         FilterEventDto filterEventDto = getFilterEventDto();
+        Page<Event> eventsPage = mock(Page.class);
         Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
         TupleElement<?>[] elements = getTupleElements();
 
@@ -1255,13 +1265,14 @@ class EventServiceImplTest {
             idsPage.hasNext(),
             idsPage.isFirst(),
             idsPage.isLast());
-        when(eventRepo.findEventsIdsManagement(pageable, filterEventDto, null)).thenReturn(idsPage);
+        when(eventRepo.findAll(any(Specification.class), eq(pageable))).thenReturn(eventsPage);
+        when(eventsPage.map(any())).thenReturn(idsPage.map(obj -> obj));
         when(eventRepo.loadEventDataByIds(idsPage.getContent())).thenReturn(tuples);
 
         PageableAdvancedDto<EventDto> result = eventService.getEventsManagement(pageable, filterEventDto, null);
         assertEquals(eventPreviewDtoPage, result);
 
-        verify(eventRepo).findEventsIdsManagement(pageable, filterEventDto, null);
+        verify(eventRepo).findAll(any(Specification.class), eq(pageable));
         verify(eventRepo).loadEventDataByIds(idsPage.getContent());
     }
 
