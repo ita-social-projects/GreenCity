@@ -6,6 +6,7 @@ import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
+import greencity.enums.UserStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,6 +46,7 @@ class UserVOAdvancedDtoMapperTest {
                     .build())
                 .toList())
             .rating(10.0)
+            .status(UserStatus.ACTIVATED)
             .userLocation(userLocation)
             .userCredo(expected.getUserCredo())
             .build();

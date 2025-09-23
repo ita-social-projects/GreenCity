@@ -36,16 +36,15 @@ import greencity.entity.User;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.EcoNewsCreationException;
-import greencity.exception.exceptions.EcoNewsCreationUserMissingException;
 import greencity.exception.exceptions.JsonResponseParseException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.OpenAIRequestException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.TagsRepo;
-import greencity.repository.UserRepo;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -77,15 +76,11 @@ class AIServiceImplTest {
     @Mock
     private TagsRepo tagsRepo;
     @Mock
-    private UserRepo userRepo;
-    @Mock
-    private UserRemoteClient userRemoteClient;
+    private UserService userService;
     @Mock
     private HabitRepo habitRepo;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private WebClientRequestException webClientRequestException;
     @Mock
     private FloatArrayConverter floatArrayConverter;
     @Mock
@@ -192,8 +187,7 @@ class AIServiceImplTest {
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(
-            Optional.ofNullable(ModelUtils.getUserVO()));
+        when(userService.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
@@ -222,8 +216,7 @@ class AIServiceImplTest {
         when(languageService.findByCode(language)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
-            .thenReturn(Optional.of(ModelUtils.getUserVO()));
+        when(userService.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(Collections.emptyList());
 
         assertThrows(EcoNewsCreationException.class, () -> aiService.generateAndSaveEcoNews(language));
@@ -330,7 +323,7 @@ class AIServiceImplTest {
     }
 
     @Test
-    void generateAndSaveEcoNews_whenAiUserIsEmpty_shouldThrowUserNotFoundException() {
+    void generateAndSaveEcoNews_whenAiUserIsEmpty_shouldThrowWrongEmailException() {
         String jsonResponse = """
             {
                 "title": "New Title",
@@ -343,36 +336,10 @@ class AIServiceImplTest {
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
 
-        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(Optional.empty());
+        when(userService.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
+            .thenThrow(new WrongEmailException());
 
-        EcoNewsCreationUserMissingException exception = assertThrows(
-            EcoNewsCreationUserMissingException.class,
-            () -> aiService.generateAndSaveEcoNews(language));
-
-        assertEquals("Required AI-generated user is missing", exception.getMessage());
-    }
-
-    @Test
-    void generateAndSaveEcoNews_whenUserServiceUnavailable_shouldThrowUserNotFoundException() {
-        String jsonResponse = """
-            {
-                "title": "New Title",
-                "content": "New eco content"
-            }
-            """;
-        openAIResponseDTO.setContent(jsonResponse);
-
-        when(languageService.findByCode(language)).thenReturn(languageDTO);
-        when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
-            .thenReturn(openAIResponseDTO);
-        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
-            .thenThrow(webClientRequestException);
-
-        EcoNewsCreationUserMissingException exception = assertThrows(
-            EcoNewsCreationUserMissingException.class,
-            () -> aiService.generateAndSaveEcoNews(language));
-
-        assertEquals("Required AI-generated user is missing", exception.getMessage());
+        assertThrows(WrongEmailException.class, () -> aiService.generateAndSaveEcoNews(language));
     }
 
     @Test
@@ -387,8 +354,7 @@ class AIServiceImplTest {
         when(languageService.findByCode(languageCode)).thenReturn(languageDTO);
         when(openAIService.makeRequest(languageDTO, NEWS_WITHOUT_QUERY, OpenAIResponseFormat.JSON_SCHEMA))
             .thenReturn(openAIResponseDTO);
-        when(userRemoteClient.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
-            .thenReturn(Optional.of(ModelUtils.getUserVO()));
+        when(userService.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(tagsRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(List.of(tag));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 

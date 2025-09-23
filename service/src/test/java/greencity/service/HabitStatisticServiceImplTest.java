@@ -1,16 +1,32 @@
 package greencity.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import greencity.ModelUtils;
-import greencity.client.UserRemoteClient;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habitstatistic.*;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.GetHabitStatisticDto;
+import greencity.dto.habitstatistic.HabitDateCount;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
+import greencity.dto.habitstatistic.HabitStatusCount;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -26,10 +42,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -38,10 +50,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -62,9 +70,9 @@ class HabitStatisticServiceImplTest {
     @InjectMocks
     private HabitStatisticServiceImpl habitStatisticService;
     @Mock
-    private UserRemoteClient userRemoteClient;
-    @Mock
     private UserRepo userRepo;
+    @Mock
+    private UserService userService;
 
     private ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -258,13 +266,13 @@ class HabitStatisticServiceImplTest {
 
     @Test
     void testCalculateUserInterest() {
-        when(userRemoteClient.countActiveUsers()).thenReturn(100L);
+        when(userService.countAllByStatus(UserStatus.ACTIVATED)).thenReturn(100L);
         List<Long> habitCreators = List.of(1L, 2L, 3L, 7L, 9L);
         List<Long> habitFollowers = List.of(4L, 5L, 25L);
         when(habitRepo.countHabitCreators()).thenReturn(habitCreators);
-        when(userRemoteClient.getActivatedUsersIds(habitCreators)).thenReturn(List.of(1L, 2L, 3L));
+        when(userService.findAllActivatedUserIds(habitCreators)).thenReturn(List.of(1L, 2L, 3L));
         when(habitRepo.countHabitFollowers()).thenReturn(habitFollowers);
-        when(userRemoteClient.getActivatedUsersIds(habitFollowers)).thenReturn(List.of(4L, 5L));
+        when(userService.findAllActivatedUserIds(habitFollowers)).thenReturn(List.of(4L, 5L));
 
         Map<String, Long> result = habitStatisticService.calculateUserInterest();
 
@@ -283,7 +291,7 @@ class HabitStatisticServiceImplTest {
             new HabitStatusCount(HabitAssignStatus.INPROGRESS, 8L));
 
         List<Long> activatedUserIds = List.of(1L, 2L, 3L, 7L, 9L, 10L);
-        when(userRemoteClient.getActivatedUsersIds(null)).thenReturn(activatedUserIds);
+        when(userService.findAllActivatedUserIds(null)).thenReturn(activatedUserIds);
         when(habitAssignRepo.countHabitAssignsByStatus(activatedUserIds)).thenReturn(habitStatusCounts);
 
         Map<String, Long> result = habitStatisticService.calculateHabitBehaviorStatistic();

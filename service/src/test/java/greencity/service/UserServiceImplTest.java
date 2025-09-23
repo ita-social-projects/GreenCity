@@ -10,6 +10,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.user.GreenCityUserInfoDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
@@ -19,27 +20,27 @@ import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
+import greencity.entity.UserDeactivationReason;
 import greencity.entity.UserLocation;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
-import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.enums.UserStatus;
+import greencity.exception.exceptions.ForbiddenException;
 import greencity.exception.exceptions.InsufficientLocationDataException;
-import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.UserStatusUpdateException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.exception.exceptions.UserAlreadyExistsException;
-import greencity.enums.UserStatus;
+import greencity.filters.UserSpecification;
 import greencity.mapping.UserManagementVOMapper;
+import greencity.repository.UserDeactivationRepo;
 import greencity.repository.UserLocationRepo;
 import greencity.repository.UserRepo;
-import greencity.repository.options.UserFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -63,15 +64,8 @@ import static greencity.ModelUtils.getUnSortedPageable;
 import static greencity.ModelUtils.getUserFilterDto;
 import static greencity.ModelUtils.getUserManagementVOPage;
 import static greencity.ModelUtils.getUserPage;
-import static greencity.ModelUtils.testEmail;
-import static greencity.ModelUtils.testUser;
-import static greencity.ModelUtils.testUserRoleUser;
-import static greencity.ModelUtils.testUserStatusDto;
-import static greencity.ModelUtils.testUserVo;
-import static greencity.ModelUtils.userVORoleUser;
 import static greencity.ModelUtils.getUser;
 import static greencity.enums.UserStatus.ACTIVATED;
-import static greencity.enums.UserStatus.CREATED;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -103,6 +97,8 @@ class UserServiceImplTest {
     UserLocationRepo userLocationRepo;
     @Mock
     UserManagementVOMapper userManagementVOMapper;
+    @Mock
+    private UserDeactivationRepo userDeactivationRepo;
 
     @Mock
     GoogleApiService googleApiService;
@@ -112,7 +108,7 @@ class UserServiceImplTest {
         .name("Test Testing")
         .email("test@gmail.com")
         .role(Role.ROLE_USER)
-        .userStatus(ACTIVATED)
+        .status(ACTIVATED)
         .build();
     private final AddressType[] addressTypes =
         {AddressType.LOCALITY, AddressType.ADMINISTRATIVE_AREA_LEVEL_1, AddressType.COUNTRY};
@@ -1104,94 +1100,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findUserLocationDtoByEmailTest() {
-        User user = ModelUtils.getUser();
-        Long userId = user.getId();
-        String email = user.getEmail();
-        UserLocation userLocation = new UserLocation();
-        UserLocationDto userLocationDto = new UserLocationDto();
-
-        when(userRepo.findByEmail(email))
-            .thenReturn(Optional.of(user));
-        when(userRepo.existsById(userId))
-            .thenReturn(true);
-        when(userLocationRepo.findAllUsersCities(userId))
-            .thenReturn(Optional.of(userLocation));
-        when(modelMapper.map(userLocation, UserLocationDto.class))
-            .thenReturn(userLocationDto);
-
-        UserLocationDto actualResult = userService.findUserLocationDtoByEmail(email);
-
-        assertEquals(userLocationDto, actualResult);
-        verify(userRepo).findByEmail(email);
-        verify(userRepo).existsById(userId);
-        verify(userLocationRepo).findAllUsersCities(userId);
-        verify(modelMapper).map(userLocation, UserLocationDto.class);
-    }
-
-    @Test
-    void findUserLocationDtoByEmailWhenUserDidNotSetLocationTest() {
-        User user = ModelUtils.getUser();
-        Long userId = user.getId();
-        String email = user.getEmail();
-        UserLocation userLocation = new UserLocation();
-        String expectedExceptionMessage = ErrorMessage.USER_DID_NOT_SET_ANY_CITY;
-
-        when(userRepo.findByEmail(email))
-            .thenReturn(Optional.of(user));
-        when(userRepo.existsById(userId))
-            .thenReturn(true);
-        when(userLocationRepo.findAllUsersCities(userId))
-            .thenReturn(Optional.empty());
-
-        var notFoundException = assertThrows(
-            NotFoundException.class,
-            () -> userService.findAllUsersCities(email));
-
-        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
-        verify(userRepo).findByEmail(email);
-        verify(userRepo).existsById(userId);
-        verify(userLocationRepo).findAllUsersCities(userId);
-        verify(modelMapper, never()).map(userLocation, UserLocationDto.class);
-    }
-
-    @Test
-    void findUserLocationDtoByEmailWhenUserNotFoundTest() {
-        User user = ModelUtils.getUser();
-        Long userId = user.getId();
-        String email = user.getEmail();
-        UserLocation userLocation = new UserLocation();
-        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
-
-        when(userRepo.findByEmail(email))
-            .thenReturn(Optional.empty());
-
-        var notFoundException = assertThrows(
-            NotFoundException.class,
-            () -> userService.findAllUsersCities(email));
-
-        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
-        verify(userRepo).findByEmail(email);
-        verify(userLocationRepo, never()).findAllUsersCities(userId);
-        verify(modelMapper, never()).map(userLocation, UserLocationDto.class);
-    }
-
-    @Test
-    void checkUpdatableUserTest() {
-        User user = getUser();
-        Long userId = user.getId();
-        UserLocation userLocation = user.getUserLocation();
-        UserLocationDto userLocationDto = new UserLocationDto();
-
-        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(modelMapper.map(userLocation, UserLocationDto.class)).thenReturn(userLocationDto);
-        Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
-            userService.checkUpdatableUser(userId, userId);
-        });
-        assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
-    }
-
-    @Test
     void updateUserCredoTest() {
         Long userId = 3L;
         String userCredo = "new user credo";
@@ -1212,50 +1120,6 @@ class UserServiceImplTest {
 
         assertEquals("TT", userService.getInitialsById(id));
         assertEquals("T", userService.getInitialsById(id));
-    }
-
-    @Test
-    void testFindNotDeactivatedByEmail() {
-        when(userRemoteClient.findNotDeactivatedByEmail(testEmail))
-                .thenReturn(Optional.of(testUserVo));
-
-        UserVO actual = userService.findNotDeactivatedByEmail(testEmail);
-
-        assertEquals(testUserVo, actual);
-    }
-
-    @Test
-    void testFindNotDeactivatedByEmailThrowException() {
-        when(userRemoteClient.findNotDeactivatedByEmail(testEmail))
-                .thenReturn(Optional.empty());
-
-        assertThrows(
-                WrongEmailException.class,
-                () -> userService.findNotDeactivatedByEmail(testEmail)
-        );
-    }
-
-    @Test
-    void testUpdateStatus() {
-        UserStatusDto userStatusDto = UserStatusDto.builder()
-            .email(userVORoleUser.getEmail())
-            .userStatus(UserStatus.CREATED)
-            .build();
-
-        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.ofNullable(testUser));
-        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUserRoleUser));
-        when(modelMapper.map(testUserRoleUser, UserVO.class)).thenReturn(userVORoleUser);
-        when(modelMapper.map(userVORoleUser, UserStatusDto.class)).thenReturn(testUserStatusDto);
-
-        UserStatusDto actual = userService.updateStatus(2L, CREATED, TestConst.USER_ID);
-
-        assertEquals(testUserStatusDto, actual);
-
-        verify(userRepo, times(3)).findById(anyLong());
-        verify(modelMapper, times(3)).map(any(User.class), eq(UserVO.class));
-        verify(userRemoteClient).updateUserStatus(userStatusDto);
-        verify(modelMapper).map(userVORoleUser, UserStatusDto.class);
     }
 
     @Test
@@ -1291,26 +1155,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testUpdateStatusThrowsBadUpdateRequestException() {
-        when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.ofNullable(testUser));
-        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
-
-        assertThrows(BadUpdateRequestException.class,
-            () -> userService.updateStatus(TestConst.USER_ID, CREATED, TestConst.USER_ID));
-    }
-
-    @Test
-    void testUpdateStatusThrowsLowRoleLevelException() {
-         when(userRepo.findById(TestConst.USER_ID)).thenReturn(Optional.ofNullable(testUser));
-        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(testUser));
-        when(modelMapper.map(testUser, UserVO.class)).thenReturn(testUserVo);
-
-        assertThrows(LowRoleLevelException.class,
-            () -> userService.updateStatus(2L, CREATED, TestConst.USER_ID));
-    }
-
-    @Test
     void getAllUsersByCriteriaSortedPageableTest() {
         Page<User> userPage = getUserPage();
         Pageable sortedPageable = getSortedPageable();
@@ -1319,7 +1163,7 @@ class UserServiceImplTest {
         List<UserManagementVO> listUserManagementVO = getListUserManagementVO();
         Page<UserManagementVO> userManagementVOPage = getUserManagementVOPage();
 
-        when(userRepo.findAll(any(UserFilter.class), eq(sortedPageable))).thenReturn(userPage);
+        when(userRepo.findAll(any(UserSpecification.class), eq(sortedPageable))).thenReturn(userPage);
         when(userManagementVOMapper.mapAllToPage(getUserPage())).thenReturn(userManagementVOPage);
 
         PageableDetailedDto<UserManagementVO> allUsersByCriteria =
@@ -1327,7 +1171,7 @@ class UserServiceImplTest {
 
         assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));
 
-        verify(userRepo).findAll(any(UserFilter.class), eq(sortedPageable));
+        verify(userRepo).findAll(any(UserSpecification.class), eq(sortedPageable));
         verify(userManagementVOMapper).mapAllToPage(getUserPage());
     }
 
@@ -1341,7 +1185,7 @@ class UserServiceImplTest {
         List<UserManagementVO> listUserManagementVO = getListUserManagementVO();
         Page<UserManagementVO> userManagementVOPage = getUserManagementVOPage();
 
-        when(userRepo.findAll(any(UserFilter.class), eq(sortedPageable))).thenReturn(userPage);
+        when(userRepo.findAll(any(UserSpecification.class), eq(sortedPageable))).thenReturn(userPage);
         when(userManagementVOMapper.mapAllToPage(getUserPage())).thenReturn(userManagementVOPage);
 
         PageableDetailedDto<UserManagementVO> allUsersByCriteria =
@@ -1349,7 +1193,7 @@ class UserServiceImplTest {
 
         assertTrue(allUsersByCriteria.getPage().containsAll(listUserManagementVO));
 
-        verify(userRepo).findAll(any(UserFilter.class), eq(sortedPageable));
+        verify(userRepo).findAll(any(UserSpecification.class), eq(sortedPageable));
         verify(userManagementVOMapper).mapAllToPage(getUserPage());
     }
 
@@ -1645,5 +1489,494 @@ class UserServiceImplTest {
         verify(userRepo).getUserIdsByEmails(emails);
         verify(userRepo).findGreenCityUserProfilesByUserIds(userIds);
         verify(userLocationRepo, never()).findAllUsersCities(anyLong());
+    }
+
+    @Test
+    void fillGreenCityInfoInUsersTest() {
+        List<UserManagementVO> users = List.of(
+            UserManagementVO.builder().email("test1@email.com").build(),
+            UserManagementVO.builder().email("test2@email.com").build()
+        );
+        List<String> emails = List.of("test1@email.com", "test2@email.com");
+
+        GreenCityUserInfoDto userInfo1 = new GreenCityUserInfoDto(1L, "test1@email.com", "path1", "credo1", ACTIVATED, 5.0);
+        GreenCityUserInfoDto userInfo2 = new GreenCityUserInfoDto(2L, "test2@email.com", "path2", "credo2", ACTIVATED, 4.5);
+        List<GreenCityUserInfoDto> userInfoList = List.of(userInfo1, userInfo2);
+
+        when(userRepo.findGreenCityUserInfoDtosByEmails(emails)).thenReturn(userInfoList);
+
+        userService.fillGreenCityInfoInUsers(users);
+
+        verify(userRepo).findGreenCityUserInfoDtosByEmails(emails);
+        assertEquals(1L, users.get(0).getId());
+        assertEquals("path1", users.get(0).getProfilePicturePath());
+        assertEquals("credo1", users.get(0).getUserCredo());
+        assertEquals(ACTIVATED, users.get(0).getStatus());
+        assertEquals(5.0, users.get(0).getRating());
+
+        assertEquals(2L, users.get(1).getId());
+        assertEquals("path2", users.get(1).getProfilePicturePath());
+        assertEquals("credo2", users.get(1).getUserCredo());
+        assertEquals(ACTIVATED, users.get(1).getStatus());
+        assertEquals(4.5, users.get(1).getRating());
+    }
+
+    @Test
+    void fillGreenCityInfoInUsersWithNullUsersTest() {
+        List<UserManagementVO> users = new ArrayList<>();
+        users.add(null);
+        users.add(UserManagementVO.builder().email("test@email.com").build());
+
+        GreenCityUserInfoDto userInfo = new GreenCityUserInfoDto(1L, "test@email.com", "path", "credo", ACTIVATED, 5.0);
+
+        when(userRepo.findGreenCityUserInfoDtosByEmails(List.of("test@email.com")))
+            .thenReturn(List.of(userInfo));
+
+        userService.fillGreenCityInfoInUsers(users);
+
+        verify(userRepo).findGreenCityUserInfoDtosByEmails(List.of("test@email.com"));
+        assertEquals(1L, users.get(1).getId());
+    }
+
+    @Test
+    void getUserStatusByEmailTest() {
+        String email = "test@email.com";
+        User user = ModelUtils.getUser();
+        user.setStatus(ACTIVATED);
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+
+        UserStatus actualStatus = userService.getUserStatusByEmail(email);
+
+        assertEquals(ACTIVATED, actualStatus);
+        verify(userRepo).findByEmail(email);
+    }
+
+    @Test
+    void getUserStatusByEmailWhenUserNotFoundTest() {
+        String email = "test@email.com";
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.empty());
+
+        NotFoundException notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.getUserStatusByEmail(email));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
+    }
+
+    @Test
+    void deleteUserByEmailTest() {
+        String email = "test@email.com";
+        User user = ModelUtils.getUser();
+        user.setStatus(ACTIVATED);
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepo.save(user)).thenReturn(user);
+
+        userService.deleteUserByEmail(email);
+
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).save(user);
+        assertEquals(UserStatus.DELETED, user.getStatus());
+    }
+
+    @Test
+    void deleteUserByEmailWhenUserNotFoundTest() {
+        String email = "test@email.com";
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.empty());
+
+        NotFoundException notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.deleteUserByEmail(email));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(userRepo, never()).save(any());
+    }
+
+    @Test
+    void deleteUserByEmailWhenUserDeactivatedTest() {
+        String email = "test@email.com";
+        User user = ModelUtils.getUser();
+        user.setStatus(UserStatus.DEACTIVATED);
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+
+        ForbiddenException forbiddenException = assertThrows(
+            ForbiddenException.class,
+            () -> userService.deleteUserByEmail(email));
+
+        assertEquals(ErrorMessage.FORBIDDEN_USER_DELETION, forbiddenException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(userRepo, never()).save(any());
+    }
+
+    @Test
+    void deleteUserByEmailWhenUserBlockedTest() {
+        String email = "test@email.com";
+        User user = ModelUtils.getUser();
+        user.setStatus(UserStatus.BLOCKED);
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+
+        ForbiddenException forbiddenException = assertThrows(
+            ForbiddenException.class,
+            () -> userService.deleteUserByEmail(email));
+
+        assertEquals(ErrorMessage.FORBIDDEN_USER_DELETION, forbiddenException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(userRepo, never()).save(any());
+    }
+
+    @Test
+    void findAllActivatedUserIdsWithIdsTest() {
+        List<Long> inputIds = List.of(1L, 2L, 3L);
+        List<Long> expectedIds = List.of(1L, 3L);
+
+        when(userRepo.findAllActivatedUserIdsFromList(inputIds)).thenReturn(expectedIds);
+
+        List<Long> actualIds = userService.findAllActivatedUserIds(inputIds);
+
+        assertEquals(expectedIds, actualIds);
+        verify(userRepo).findAllActivatedUserIdsFromList(inputIds);
+        verify(userRepo, never()).findAllActivatedUserIds();
+    }
+
+    @Test
+    void findAllActivatedUserIdsWithNullIdsTest() {
+        List<Long> expectedIds = List.of(1L, 2L, 3L);
+
+        when(userRepo.findAllActivatedUserIds()).thenReturn(expectedIds);
+
+        List<Long> actualIds = userService.findAllActivatedUserIds(null);
+
+        assertEquals(expectedIds, actualIds);
+        verify(userRepo).findAllActivatedUserIds();
+        verify(userRepo, never()).findAllActivatedUserIdsFromList(any());
+    }
+
+    @Test
+    void countAllByStatusTest() {
+        UserStatus status = ACTIVATED;
+        long expectedCount = 5L;
+
+        when(userRepo.countAllByStatus(status)).thenReturn(expectedCount);
+
+        long actualCount = userService.countAllByStatus(status);
+
+        assertEquals(expectedCount, actualCount);
+        verify(userRepo).countAllByStatus(status);
+    }
+
+    @Test
+    void deactivateAllUsersTest() {
+        List<Long> userIds = List.of(1L, 2L, 3L);
+        UserVO currentUser = UserVO.builder()
+            .id(10L)
+            .name("Admin User")
+            .email("admin@email.com")
+            .role(Role.ROLE_ADMIN)
+            .build();
+
+        UserService spyUserService = spy(userService);
+        doNothing().when(spyUserService).deactivateUserByIdWithReasons(eq(currentUser), anyLong(), any());
+
+        List<Long> result = spyUserService.deactivateAllUsers(userIds, currentUser);
+
+        assertEquals(userIds, result);
+        verify(spyUserService, times(3)).deactivateUserByIdWithReasons(eq(currentUser), anyLong(), any());
+    }
+
+    @Test
+    void updateUserStatusByIdActivateTest() {
+        Long targetUserId = 2L;
+        UserVO currentUser = UserVO.builder()
+            .id(1L)
+            .name("Admin")
+            .email("admin@email.com")
+            .role(Role.ROLE_ADMIN)
+            .build();
+
+        User targetUser = ModelUtils.getUser();
+        targetUser.setId(targetUserId);
+        targetUser.setEmail("target@email.com");
+        targetUser.setStatus(UserStatus.DEACTIVATED);
+
+        UserVO targetUserVO = UserVO.builder()
+            .id(targetUserId)
+            .email("target@email.com")
+            .role(Role.ROLE_USER)
+            .build();
+
+        String userLanguage = "en";
+
+        when(userRemoteClient.findByEmail(currentUser.getEmail())).thenReturn(Optional.of(currentUser));
+        when(userRepo.findById(targetUserId)).thenReturn(Optional.of(targetUser));
+        when(userRemoteClient.findByEmail(targetUser.getEmail())).thenReturn(Optional.of(targetUserVO));
+        when(userRemoteClient.findUserLanguageByEmail(targetUser.getEmail())).thenReturn(userLanguage);
+        doNothing().when(userRemoteClient).sendMessageOfActivation(any());
+        when(userRepo.save(targetUser)).thenReturn(targetUser);
+
+        userService.updateUserStatusById(currentUser, targetUserId, ACTIVATED);
+
+        assertEquals(ACTIVATED, targetUser.getStatus());
+        verify(userRemoteClient).findByEmail(currentUser.getEmail());
+        verify(userRepo).findById(targetUserId);
+        verify(userRemoteClient).findByEmail(targetUser.getEmail());
+        verify(userRemoteClient).findUserLanguageByEmail(targetUser.getEmail());
+        verify(userRemoteClient).sendMessageOfActivation(any());
+        verify(userRepo).save(targetUser);
+    }
+
+    @Test
+    void updateUserStatusByIdDeactivateTest() {
+        Long targetUserId = 2L;
+        UserVO currentUser = UserVO.builder()
+            .id(1L)
+            .name("Admin")
+            .email("admin@email.com")
+            .role(Role.ROLE_ADMIN)
+            .build();
+
+        User targetUser = ModelUtils.getUser();
+        targetUser.setId(targetUserId);
+        targetUser.setEmail("target@email.com");
+        targetUser.setStatus(ACTIVATED);
+
+        UserVO targetUserVO = UserVO.builder()
+            .id(targetUserId)
+            .email("target@email.com")
+            .role(Role.ROLE_USER)
+            .build();
+
+        String userLanguage = "en";
+
+        when(userRemoteClient.findByEmail(currentUser.getEmail())).thenReturn(Optional.of(currentUser));
+        when(userRepo.findById(targetUserId)).thenReturn(Optional.of(targetUser));
+        when(userRemoteClient.findByEmail(targetUser.getEmail())).thenReturn(Optional.of(targetUserVO));
+        when(userRemoteClient.findUserLanguageByEmail(targetUser.getEmail())).thenReturn(userLanguage);
+        doNothing().when(userRemoteClient).sendReasonOfDeactivation(any());
+        when(userRepo.save(targetUser)).thenReturn(targetUser);
+        when(userDeactivationRepo.save(any())).thenReturn(any());
+
+        userService.updateUserStatusById(currentUser, targetUserId, UserStatus.DEACTIVATED);
+
+        assertEquals(UserStatus.DEACTIVATED, targetUser.getStatus());
+        verify(userRemoteClient).findByEmail(currentUser.getEmail());
+        verify(userRepo).findById(targetUserId);
+        verify(userRemoteClient).findByEmail(targetUser.getEmail());
+        verify(userRemoteClient).findUserLanguageByEmail(targetUser.getEmail());
+        verify(userRemoteClient).sendReasonOfDeactivation(any());
+        verify(userDeactivationRepo).save(any());
+        verify(userRepo).save(targetUser);
+    }
+
+    @Test
+    void updateUserStatusByIdWhenCurrentUserNotFoundTest() {
+        UserVO currentUser = UserVO.builder()
+            .email("admin@email.com")
+            .build();
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + currentUser.getEmail();
+
+        when(userRemoteClient.findByEmail(currentUser.getEmail())).thenReturn(Optional.empty());
+
+        NotFoundException notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.updateUserStatusById(currentUser, 2L, ACTIVATED));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRemoteClient).findByEmail(currentUser.getEmail());
+    }
+
+    @Test
+    void updateUserStatusByIdWhenTargetUserNotFoundTest() {
+        Long targetUserId = 2L;
+        UserVO currentUser = UserVO.builder()
+            .id(1L)
+            .email("admin@email.com")
+            .build();
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_ID + targetUserId;
+
+        when(userRemoteClient.findByEmail(currentUser.getEmail())).thenReturn(Optional.of(currentUser));
+        when(userRepo.findById(targetUserId)).thenReturn(Optional.empty());
+
+        NotFoundException notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.updateUserStatusById(currentUser, targetUserId, ACTIVATED));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRemoteClient).findByEmail(currentUser.getEmail());
+        verify(userRepo).findById(targetUserId);
+    }
+
+    @Test
+    void updateUserStatusByIdWhenUserTriesToDeactivateThemselveTest() {
+        Long userId = 1L;
+        UserVO currentUser = UserVO.builder()
+            .id(userId)
+            .email("user@email.com")
+            .build();
+
+        when(userRemoteClient.findByEmail(currentUser.getEmail())).thenReturn(Optional.of(currentUser));
+
+        UserStatusUpdateException exception = assertThrows(
+            UserStatusUpdateException.class,
+            () -> userService.updateUserStatusById(currentUser, userId, UserStatus.DEACTIVATED));
+
+        assertEquals(ErrorMessage.USER_CANNOT_DEACTIVATE_YOURSELF, exception.getMessage());
+        verify(userRemoteClient).findByEmail(currentUser.getEmail());
+    }
+
+    @Test
+    void updateUserStatusByIdWhenAdminTriesToDeactivateAnotherAdminTest() {
+        Long targetUserId = 2L;
+        UserVO currentUser = UserVO.builder()
+            .id(1L)
+            .email("admin1@email.com")
+            .role(Role.ROLE_ADMIN)
+            .build();
+
+        User targetUser = ModelUtils.getUser();
+        targetUser.setId(targetUserId);
+        targetUser.setEmail("admin2@email.com");
+
+        UserVO targetUserVO = UserVO.builder()
+            .id(targetUserId)
+            .email("admin2@email.com")
+            .role(Role.ROLE_ADMIN)
+            .build();
+
+        when(userRemoteClient.findByEmail(currentUser.getEmail())).thenReturn(Optional.of(currentUser));
+        when(userRepo.findById(targetUserId)).thenReturn(Optional.of(targetUser));
+        when(userRemoteClient.findByEmail(targetUser.getEmail())).thenReturn(Optional.of(targetUserVO));
+
+        UserStatusUpdateException exception = assertThrows(
+            UserStatusUpdateException.class,
+            () -> userService.updateUserStatusById(currentUser, targetUserId, UserStatus.DEACTIVATED));
+
+        assertEquals(ErrorMessage.ADMIN_CANNOT_DEACTIVATE_OTHER_ADMIN, exception.getMessage());
+        verify(userRemoteClient).findByEmail(currentUser.getEmail());
+        verify(userRepo).findById(targetUserId);
+        verify(userRemoteClient).findByEmail(targetUser.getEmail());
+    }
+
+    @Test
+    void deactivateUserByIdWithReasonsTest() {
+        Long targetUserId = 2L;
+        UserVO currentUser = UserVO.builder()
+            .id(1L)
+            .name("Admin")
+            .email("admin@email.com")
+            .role(Role.ROLE_ADMIN)
+            .build();
+
+        User targetUser = ModelUtils.getUser();
+        targetUser.setId(targetUserId);
+        targetUser.setEmail("target@email.com");
+        targetUser.setStatus(ACTIVATED);
+
+        UserVO targetUserVO = UserVO.builder()
+            .id(targetUserId)
+            .email("target@email.com")
+            .role(Role.ROLE_USER)
+            .build();
+
+        List<String> reasons = List.of("Reason 1", "Reason 2");
+        String userLanguage = "en";
+
+        when(userRemoteClient.findByEmail(currentUser.getEmail())).thenReturn(Optional.of(currentUser));
+        when(userRepo.findById(targetUserId)).thenReturn(Optional.of(targetUser));
+        when(userRemoteClient.findByEmail(targetUser.getEmail())).thenReturn(Optional.of(targetUserVO));
+        when(userRemoteClient.findUserLanguageByEmail(targetUser.getEmail())).thenReturn(userLanguage);
+        doNothing().when(userRemoteClient).sendReasonOfDeactivation(any());
+        when(userRepo.save(targetUser)).thenReturn(targetUser);
+        when(userDeactivationRepo.save(any())).thenReturn(any());
+
+        userService.deactivateUserByIdWithReasons(currentUser, targetUserId, reasons);
+
+        assertEquals(UserStatus.DEACTIVATED, targetUser.getStatus());
+        verify(userRemoteClient).findByEmail(currentUser.getEmail());
+        verify(userRepo).findById(targetUserId);
+        verify(userRemoteClient).findByEmail(targetUser.getEmail());
+        verify(userRemoteClient).findUserLanguageByEmail(targetUser.getEmail());
+        verify(userRemoteClient).sendReasonOfDeactivation(any());
+        verify(userDeactivationRepo, times(2)).save(any()); // Called for each reason
+        verify(userRepo).save(targetUser);
+    }
+
+    @Test
+    void getDeactivationReasonsTest() {
+        Long userId = 1L;
+        UserVO currentUser = UserVO.builder()
+            .email("admin@email.com")
+            .build();
+
+        UserDeactivationReason reason = UserDeactivationReason.builder()
+            .reason("{en}Spam/Inappropriate Content{en}/{uk}Спам/Неприйнятний контент{uk}")
+            .build();
+
+        when(userDeactivationRepo.getLastDeactivationReasons(userId)).thenReturn(List.of(reason));
+        when(userRemoteClient.findUserLanguageByEmail(currentUser.getEmail())).thenReturn("en");
+
+        List<String> actualReasons = userService.getDeactivationReasons(userId, currentUser);
+
+        assertEquals(List.of("Spam", "Inappropriate Content"), actualReasons);
+        verify(userDeactivationRepo).getLastDeactivationReasons(userId);
+        verify(userRemoteClient).findUserLanguageByEmail(currentUser.getEmail());
+    }
+
+    @Test
+    void getDeactivationReasonsUkrainianTest() {
+        Long userId = 1L;
+        UserVO currentUser = UserVO.builder()
+            .email("admin@email.com")
+            .build();
+
+        UserDeactivationReason reason = UserDeactivationReason.builder()
+            .reason("{en}Spam/Inappropriate Content{en}/{uk}Спам/Неприйнятний контент{uk}")
+            .build();
+
+        when(userDeactivationRepo.getLastDeactivationReasons(userId)).thenReturn(List.of(reason));
+        when(userRemoteClient.findUserLanguageByEmail(currentUser.getEmail())).thenReturn("uk");
+
+        List<String> actualReasons = userService.getDeactivationReasons(userId, currentUser);
+
+        assertEquals(List.of("Спам", "Неприйнятний контент"), actualReasons);
+        verify(userDeactivationRepo).getLastDeactivationReasons(userId);
+        verify(userRemoteClient).findUserLanguageByEmail(currentUser.getEmail());
+    }
+
+    @Test
+    void getDeactivationReasonsWhenReasonsEmptyTest() {
+        Long userId = 1L;
+        UserVO currentUser = UserVO.builder()
+            .email("admin@email.com")
+            .build();
+
+        when(userDeactivationRepo.getLastDeactivationReasons(userId)).thenReturn(Collections.emptyList());
+
+        NotFoundException notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.getDeactivationReasons(userId, currentUser));
+
+        assertEquals(ErrorMessage.USER_DEACTIVATION_REASON_IS_EMPTY, notFoundException.getMessage());
+        verify(userDeactivationRepo).getLastDeactivationReasons(userId);
+    }
+
+    @Test
+    void getActivatedUsersAmountTest() {
+        long expectedCount = 100L;
+
+        when(userRepo.countAllByStatus(ACTIVATED)).thenReturn(expectedCount);
+
+        long actualCount = userService.getActivatedUsersAmount();
+
+        assertEquals(expectedCount, actualCount);
+        verify(userRepo).countAllByStatus(ACTIVATED);
     }
 }

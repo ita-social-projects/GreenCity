@@ -1,10 +1,12 @@
 package greencity.controller;
 
+import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.constant.ErrorMessage;
+import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.CreateGreenCityUserDto;
@@ -23,6 +26,8 @@ import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserAddRatingExternalDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserProfileDtoRequest;
+import greencity.dto.user.UserVO;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyExistsException;
 import greencity.exception.handler.CustomExceptionHandler;
@@ -37,6 +42,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +60,7 @@ class UserControllerTest {
     static final String userLink = "/users";
     private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
     final ObjectMapper objectMapper = new ObjectMapper();
+    final ModelMapper modelMapper = new ModelMapper();
 
     MockMvc mockMvc;
 
@@ -70,7 +77,7 @@ class UserControllerTest {
     void setup() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(userController)
-            .setCustomArgumentResolvers(
+            .setCustomArgumentResolvers(new UserArgumentResolver(userService, modelMapper),
                 new PageableHandlerMethodArgumentResolver())
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper, endpointValidationHelper))
             .build();
@@ -675,5 +682,83 @@ class UserControllerTest {
             .andExpect(status().isNotFound());
 
         verify(userService).updateUserCredo(updateUserCredoDto);
+    }
+
+    @Test
+    void changeUserStatusTest() throws Exception {
+        UserStatus status = UserStatus.ACTIVATED;
+        UserVO currentUser = getUserVO();
+        long userId = 1L;
+
+        when(userService.findNotDeactivatedByEmail(currentUser.getEmail()))
+            .thenReturn(currentUser);
+
+        mockMvc.perform(put(userLink + "/status/" + userId)
+                .param("status", status.name())
+                .principal(currentUser::getEmail))
+            .andExpect(status().isOk());
+
+        verify(userService).updateUserStatusById(currentUser, userId, status);
+    }
+
+    @Test
+    void getReasonsOfDeactivationTest() throws Exception {
+        List<String> reasons = List.of("reason1", "reason2", "reason3");
+        UserVO currentUser = getUserVO();
+        long userId = 1L;
+
+        when(userService.findNotDeactivatedByEmail(currentUser.getEmail()))
+            .thenReturn(currentUser);
+        when(userService.getDeactivationReasons(userId, currentUser))
+            .thenReturn(reasons);
+
+        mockMvc.perform(get(userLink + "/reasons")
+                .param("id", String.valueOf(userId))
+                .principal(currentUser::getEmail))
+            .andExpect(status().isOk());
+
+        verify(userService).getDeactivationReasons(userId, currentUser);
+    }
+
+    @Test
+    void getUserStatusTest() throws Exception {
+        UserStatus status = UserStatus.ACTIVATED;
+        String email = "test@email";
+
+        when(userService.getUserStatusByEmail(email))
+            .thenReturn(status);
+
+        mockMvc.perform(get(userLink + "/status")
+                .param("email", email))
+            .andExpect(status().isOk());
+
+        verify(userService).getUserStatusByEmail(email);
+    }
+
+    @Test
+    void deleteUserTest() throws Exception {
+        UserVO currentUser = getUserVO();
+
+        when(userService.findNotDeactivatedByEmail(currentUser.getEmail()))
+            .thenReturn(currentUser);
+
+        mockMvc.perform(delete(userLink + "/delete")
+                .principal(currentUser::getEmail))
+            .andExpect(status().isOk());
+
+        verify(userService).deleteUserByEmail(currentUser.getEmail());
+    }
+
+    @Test
+    void getActivatedUsersAmountTest() throws Exception {
+        long amount = 100L;
+
+        when(userService.getActivatedUsersAmount())
+            .thenReturn(amount);
+
+        mockMvc.perform(get(userLink + "/activatedUsersAmount"))
+            .andExpect(status().isOk());
+
+        verify(userService).getActivatedUsersAmount();
     }
 }
