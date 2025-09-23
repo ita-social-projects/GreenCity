@@ -494,6 +494,7 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
+            .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .rating(10.)
             .profilePicturePath("image path")

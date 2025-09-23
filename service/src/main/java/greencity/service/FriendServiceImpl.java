@@ -1,12 +1,10 @@
 package greencity.service;
 
-import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
-import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -39,7 +37,6 @@ public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
     private final UserNotificationService userNotificationService;
-    private final UserRemoteClient userRemoteClient;
 
     /**
      * {@inheritDoc}
@@ -286,11 +283,10 @@ public class FriendServiceImpl implements FriendService {
         List<Long> userIds = users.stream().map(User::getId).toList();
         List<UserFriendDto> resultList = userRepo.findUserFriendsWithMutualCountAndChatId(userId, userIds);
 
-        List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
-        Map<Long, String> userIdToUserEmailMap = userEmailDtos.stream()
+        Map<Long, String> userIdToUserEmailMap = users.stream()
             .collect(Collectors.toMap(
-                UserEmailDto::userId,
-                UserEmailDto::userEmail));
+                User::getId,
+                User::getEmail));
 
         resultList.forEach(userFriendDto -> {
             String email = userIdToUserEmailMap.get(userFriendDto.getId());

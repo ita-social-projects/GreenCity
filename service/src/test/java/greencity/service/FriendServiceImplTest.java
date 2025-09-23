@@ -1,13 +1,11 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.client.UserRemoteClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.FriendTupleConstant;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
-import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
@@ -52,8 +50,6 @@ class FriendServiceImplTest {
 
     @Mock
     private UserRepo userRepo;
-    @Mock
-    private UserRemoteClient userRemoteClient;
     @Mock
     private ModelMapper modelMapper;
 
@@ -531,7 +527,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -542,7 +537,6 @@ class FriendServiceImplTest {
             .thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds)).thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name, false, false,
@@ -560,7 +554,6 @@ class FriendServiceImplTest {
         verify(userRepo).getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, false, false,
             pageable);
         verify(userRepo).findUserFriendsWithMutualCountAndChatId(userId, friendIds);
-        verify(userRemoteClient).findUserEmailsByUserIds(friendIds);
     }
 
     @ParameterizedTest
@@ -572,7 +565,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<User> userPage = ModelUtils.getUserPage();
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -582,8 +574,6 @@ class FriendServiceImplTest {
             filterByFriendsOfFriends, filterByCity, pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> result =
             friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name, false, false,
@@ -607,7 +597,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -617,8 +606,6 @@ class FriendServiceImplTest {
             .thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(currentUserId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto = friendService
             .findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(pageable, userId, currentUserId);
@@ -659,7 +646,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -669,8 +655,6 @@ class FriendServiceImplTest {
         when(userRepo.getRecommendedFriendsOfFriends(userId, pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.FRIENDS_OF_FRIENDS, pageable);
@@ -697,7 +681,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -707,8 +690,6 @@ class FriendServiceImplTest {
         when(userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, null, pageable);
@@ -735,7 +716,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -745,8 +725,6 @@ class FriendServiceImplTest {
         when(userRepo.findRecommendedFriendsByHabits(userId, pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.HABITS, pageable);
@@ -773,7 +751,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -787,8 +764,6 @@ class FriendServiceImplTest {
         when(userRepo.findRecommendedFriendsByCity(userId, "testCity", pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.CITY, pageable);
 
@@ -865,7 +840,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -875,8 +849,6 @@ class FriendServiceImplTest {
         when(userRepo.getMutualFriends(userId, friendId, pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.getMutualFriends(userId, friendId, pageable);
@@ -944,7 +916,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -953,8 +924,6 @@ class FriendServiceImplTest {
         when(userRepo.getAllUserFriendRequests(userId, name, filterByCity, pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.getAllUserFriendRequests(userId, name, filterByCity, pageable);
@@ -1017,7 +986,6 @@ class FriendServiceImplTest {
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         expectedResult.setFriendStatus("FRIEND");
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -1026,8 +994,6 @@ class FriendServiceImplTest {
         when(userRepo.findAllFriendsOfUser(userId, name, filterByCity, pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findAllFriendsOfUser(userId, name, filterByCity, pageable);
@@ -1055,7 +1021,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
-        UserEmailDto userEmailDto = ModelUtils.getUserEmailDto();
         List<Long> friendIds = userPage.getContent().stream()
             .map(User::getId)
             .toList();
@@ -1064,8 +1029,6 @@ class FriendServiceImplTest {
         when(userRepo.findAllFriendsOfUser(userId, null, filterByCity, pageable)).thenReturn(userPage);
         when(userRepo.findUserFriendsWithMutualCountAndChatId(userId, friendIds))
             .thenReturn(List.of(expectedResult));
-        when(userRemoteClient.findUserEmailsByUserIds(friendIds))
-            .thenReturn(List.of(userEmailDto));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findAllFriendsOfUser(userId, null, filterByCity, pageable);
