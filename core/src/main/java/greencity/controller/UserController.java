@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.location.UserLocationDto;
@@ -11,8 +12,10 @@ import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.CreateGreenCityUserDto;
+import greencity.enums.UserStatus;
 import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,12 +25,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -490,5 +495,93 @@ public class UserController {
     public ResponseEntity<List<GreenCityUserProfileDtoResponse>> findGreenCityUserProfilesByEmails(
         @RequestParam List<String> emails) {
         return ResponseEntity.ok(userService.findGreenCityUserProfilesByEmails(emails));
+    }
+
+    /**
+     * Change user status.
+     *
+     * @param currentUser - current user
+     * @param userId - target user id
+     * @param status - user status
+     */
+    @Operation(summary = "Change user status")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST, content = @Content),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED, content = @Content),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND, content = @Content),
+    })
+    @PutMapping("/status/{userId}")
+    public ResponseEntity<HttpStatus> changeUserStatus(
+        @Parameter(hidden = true) @CurrentUser UserVO currentUser,
+        @PathVariable Long userId,
+        @RequestParam UserStatus status) {
+        userService.updateUserStatusById(currentUser, userId, status);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for getting a {@link List} of {@link String} - reasons for
+     * deactivation of the current user.
+     *
+     * @param id        {@link Long} - user's id.
+     * @param currentUser - current user
+     * @return {@link List} of {@link String} - reasons for deactivation of the
+     *         current user.
+     */
+    @Operation(summary = "Get list reasons of deactivating the user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/reasons")
+    public ResponseEntity<List<String>> getReasonsOfDeactivation(
+        @RequestParam("id") Long id, @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        return ResponseEntity.ok().body(userService.getDeactivationReasons(id, currentUser));
+    }
+
+    /**
+     * Method to get status of user. Used by GreenCityRemoteClient in other services.
+     *
+     * @param email user's email
+     * @return {@link UserStatus}
+     */
+    @GetMapping("/status")
+    @ResponseBody
+    public ResponseEntity<UserStatus> getUserStatus(@RequestParam String email) {
+        return ResponseEntity.ok(userService.getUserStatusByEmail(email));
+    }
+
+    /**
+     * Method for deleting current authenticated user. Deleted user is still existed in system but with DELETED
+     * status and can be restored.
+     *
+     * @return {@link ResponseEntity}
+     */
+    @Operation(summary = "Delete current user.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND, content = @Content)
+    })
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteUser(@Parameter(hidden = true) @CurrentUser UserVO user) {
+        userService.deleteUserByEmail(user.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Counts all users by user {@link UserStatus} ACTIVATED.
+     *
+     * @return amount of users with {@link UserStatus} ACTIVATED.
+     */
+    @Operation(summary = "Get all activated users amount")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("/activatedUsersAmount")
+    public ResponseEntity<Long> getActivatedUsersAmount() {
+        return ResponseEntity.ok().body(userService.getActivatedUsersAmount());
     }
 }

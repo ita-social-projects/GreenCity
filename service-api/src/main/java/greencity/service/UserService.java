@@ -11,11 +11,9 @@ import greencity.dto.user.UserAddRatingDto;
 import greencity.dto.user.UserAddRatingExternalDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
-import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.EmailPreference;
@@ -43,15 +41,6 @@ public interface UserService {
      * @return {@link UserVO} with this id.
      */
     UserVO findById(Long id);
-
-    /**
-     * Update status of user.
-     *
-     * @param id         {@link UserVO} id.
-     * @param userStatus {@link UserStatus} for user.
-     * @return {@link UserStatusDto}
-     */
-    UserStatusDto updateStatus(Long id, UserStatus userStatus, Long currentUserId);
 
     /**
      * Update {@code ROLE} of user.
@@ -140,14 +129,6 @@ public interface UserService {
      * @return {@link UserLocationDto}
      **/
     UserLocationDto findUserLocationDtoByUserId(Long userId);
-
-    /**
-     * Find and return user location by user email.
-     *
-     * @param email user's email
-     * @return {@link UserLocationDto}
-     **/
-    UserLocationDto findUserLocationDtoByEmail(String email);
 
     /**
      * Update user credo by user id.
@@ -334,23 +315,80 @@ public interface UserService {
     List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByEmails(List<String> emails);
 
     /**
-     * Method to set internal GreenCity ids for {@link UserVO}.
+     * Method to fill GreenCity info in users.
      *
-     * @param users users for whom to set internal ids
+     * @param users users.
      */
-    void setInternalUserVOIds(List<UserVO> users);
+    void fillGreenCityInfoInUsers(List<? extends UserManagementVO> users);
 
     /**
-     * Method to set internal GreenCity ids for {@link UserManagementDto}.
+     * Method to find user's status by email.
      *
-     * @param users users for whom to set internal ids
+     * @param email user's email.
+     * @return user's status.
      */
-    void setInternalUserManagementDtoIds(List<UserManagementDto> users);
+    UserStatus getUserStatusByEmail(String email);
 
     /**
-     * Method to set internal GreenCity ids for {@link UserManagementVO}.
+     * Method to delete a user by uuid, setting their status to DELETED.
      *
-     * @param users users for whom to set internal ids
+     * @param email user's email.
      */
-    void setInternalUserManagementVOIds(List<UserManagementVO> users);
+    void deleteUserByEmail(String email);
+
+    /**
+     * Retrieves the list of IDs of all users who have the {@code UserStatus} set to
+     * {@code ACTIVATED}. This method is typically used to filter active users for
+     * further processing or analysis.
+     *
+     * @return a list of {@code Long} values representing the IDs of all activated
+     *         users
+     */
+    List<Long> findAllActivatedUserIds(List<Long> ids);
+
+    /**
+     * Counts all users by user {@link UserStatus}.
+     *
+     * @return amount of user with given {@link UserStatus}.
+     */
+    long countAllByStatus(UserStatus userStatus);
+
+    /**
+     * Method deactivates all the {@link UserVO} by list of IDs.
+     *
+     * @param listId {@link List} of {@link UserVO}s` ids to be deactivated
+     * @param currentUser - current user
+     * @return {@link List} of {@link UserVO}s` ids
+     */
+    List<Long> deactivateAllUsers(List<Long> listId, UserVO currentUser);
+
+    /**
+     * Method that change user status.
+     *
+     * @param currentUser        {@link UserVO} current user
+     * @param targetUserId       {@link Long} user uuid that is deactivated.
+     * @param status             {@link UserStatus} user status.
+     */
+    void updateUserStatusById(UserVO currentUser, Long targetUserId, UserStatus status);
+
+    void deactivateUserByIdWithReasons(UserVO currentUser, Long targetUserId, List<String> reasons);
+
+    /**
+     * Method for getting a {@link List} of {@link String} - reasons for
+     * deactivation of the current user.
+     *
+     * @param id        {@link Long} - user's id.
+     * @param currentUser - current user
+     * @return {@link List} of {@link String}.
+     */
+    List<String> getDeactivationReasons(Long id, UserVO currentUser);
+
+
+
+    /**
+     * Counts all users by user {@link UserStatus} ACTIVATED.
+     *
+     * @return amount of users with {@link UserStatus} ACTIVATED.
+     */
+    long getActivatedUsersAmount();
 }

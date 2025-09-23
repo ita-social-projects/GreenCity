@@ -105,4 +105,7 @@
     <include file="db/changelog/logs/ch-add-table-tags-coherence-Zadyraichuk.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tags-coherence-Zadyraichuk.xml"/>
     <include file="db/changelog/logs/ch-add-table-eco-news-relevance-Yukhno.xml"/>
+    <include file="db/changelog/logs/ch-update-greencity-users-add-user-status-column-Zadyraichuk.xml"/>
+    <include file="db/changelog/logs/ch-add-reasons-for-greencity_user-deactivatiom-table-Pikhotskyi.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-greencity_users-service-user-Zadyraichuk.xml"/>
 </databaseChangeLog>

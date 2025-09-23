@@ -43,7 +43,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.converters.FloatArrayConverter;
 import greencity.dto.habit.DurationHabitDto;
@@ -94,13 +93,13 @@ public class AIServiceImpl implements AIService {
     private final EcoNewsRepo ecoNewsRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final TagsRepo tagsRepo;
-    private final UserRemoteClient userRemoteClient;
     private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final FloatArrayConverter floatArrayConverter;
     private final LanguageService languageService;
     private final EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
+    private final UserService userService;
 
     /**
      * Generates a personalized ecological habit forecast for a given user and
@@ -555,7 +554,7 @@ public class AIServiceImpl implements AIService {
         JsonNode jsonNode = parseJsonResponse(jsonResponse);
         Optional<UserVO> aiGeneratedUser = Optional.empty();
         try {
-            aiGeneratedUser = userRemoteClient.findNotDeactivatedByEmail(AI_USER_EMAIL);
+            aiGeneratedUser = Optional.of(userService.findNotDeactivatedByEmail(AI_USER_EMAIL));
         } catch (WebClientRequestException | WebClientResponseException e) {
             log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
         }

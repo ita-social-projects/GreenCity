@@ -15,7 +15,6 @@ public class ErrorMessage {
         "To-do list item with such id is already selected ";
     public static final String TO_DO_LIST_ITEM_NOT_FOUND_BY_NAMES =
         "To-do list item with such name(s) does not exist: ";
-    public static final String PARSING_URL_FAILED = "Can't parse image's url: ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists with such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
     public static final String USER_ALREADY_HAS_MAX_NUMBER_OF_HABIT_ASSIGNS =
@@ -79,7 +78,6 @@ public class ErrorMessage {
     public static final String LOCATION_IS_PRESENT = "Location is present.";
     public static final String PHOTO_IS_PRESENT = "Photo is present.";
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
-    public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
     public static final String USERS_NOT_FOUND_BY_IDS = "Users do not exist by these ids: ";
     public static final String USER_ID_NULL = "User ID cannot be null";
@@ -90,8 +88,6 @@ public class ErrorMessage {
     public static final String USER_TO_DO_LIST_ITEM_NOT_FOUND_BY_USER_ID =
         "UserToDoListItem(s) for this user not found";
     public static final String DUPLICATED_USER_TO_DO_LIST_ITEM = "UserToDoListItems should be unique";
-    public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
-    public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
     public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
@@ -153,7 +149,6 @@ public class ErrorMessage {
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
         "Habit assign status is not REQUESTED or user has not any assigned habits";
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
-    public static final String NO_EVENTS_FOUND = "No events found for user with ID: %d";
     public static final String WRONG_COUNT_OF_EVENT_DATES =
         "Count of dates should be at least one but not more seven";
     public static final String NO_EVENT_LINK_OR_ADDRESS = "Invalid online-link or address";
@@ -180,17 +175,12 @@ public class ErrorMessage {
         "User has already added this event to requested.";
     public static final String EVENT_IS_NOT_IN_REQUESTED = "This event is not in requested.";
     public static final String USER_DID_NOT_REQUEST_FOR_EVENT = "User with this id did not request to join event: ";
-    public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
     public static final String INVALID_COORDINATES = "The coordinates field must not be empty";
-    public static final String INVALID_LONGITUDE = "Longitude must be between -180 and 180 degrees";
-    public static final String INVALID_LATITUDE = "Latitude must be between -90 and 90 degrees";
     public static final String INVALID_DATE = "Date can't be null or empty";
-    public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT =
-        "No friends are assigned on current habit with id: ";
     public static final String INVALID_TIME_RANGE = "Start date and end date must be greater than end date";
     public static final String NOT_FOUND_IN_CURRENT_TIME_RANGE = "Not found backups in current time range";
     public static final String COMMENT_NOT_FOUND_BY_ID = "Comment doesn't exist by this id: ";
@@ -223,7 +213,6 @@ public class ErrorMessage {
     public static final String INVITATION_ALREADY_EXIST = "Invitation already exist";
     public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish";
     public static final String PAGE_NOT_FOUND_MESSAGE = "Requested page %d exceeds total pages %d.";
-    public static final String OPEN_AI_IS_NOT_RESPONDING = "Could not get a response from OpenAI.";
     public static final String WARNING_GIT_DIRECTORY_NOT_FOUND =
         "WARNING: .git directory not found. Git commit info will be unavailable.";
     public static final String GIT_REPOSITORY_NOT_INITIALIZED =
@@ -261,4 +250,8 @@ public class ErrorMessage {
     public static final String INVALID_RATIO_VALUE = "Expected value in range [0.0, 1.0], but provided value are '%s'.";
     public static final String INVALID_RATIO_SUM =
         "Sum of all elements must be equal 1.0, but provided value are '%s'.";
+    public static final String FORBIDDEN_USER_DELETION = "Blocker or deactivated user cannot be deleted";
+    public static final String USER_CANNOT_DEACTIVATE_YOURSELF = "You cannot deactivate yourself if you are not a USER";
+    public static final String ADMIN_CANNOT_DEACTIVATE_OTHER_ADMIN = "ADMIN cannot deactivate other ADMIN users";
+    public static final String USER_DEACTIVATION_REASON_IS_EMPTY = "The User deactivation reasons list is empty";
 }

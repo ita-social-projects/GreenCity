@@ -96,11 +96,6 @@
                                                         [[#{greenCity.user.page.role.validation.error}]]
                                                     </div>
                                                 </div>
-
-                                                <div class="form-group">
-                                                    <label>[[#{greenCity.pages.table.status}]]</label>
-                                                    <input type="text" class="form-control" name="userStatus" value="CREATED" readonly required>
-                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
@@ -220,7 +215,7 @@
                         </th>
                         <th style="width: 131px;">
                             [[#{greenCity.pages.table.status}]]
-                            <img id="tags-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userStatus')">
+                            <img id="tags-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('status')">
                             <span class="table-filter-icon"></span>
                         </th>
                         <th>
@@ -265,22 +260,22 @@
                                 </div>
                             </td>
                             <td
-                                th:class="|${user.userStatus.name().equals('BLOCKED') ? 'whiteHover cyan':''}
-                                ${user.userStatus.name().equals('ACTIVATED') ? 'whiteHover lightgreen':''}
-                                ${user.userStatus.name().equals('CREATED') ? 'whiteHover lightmustard':''}
-                                ${user.userStatus.name().equals('DEACTIVATED') ? 'whiteHover lightpink':''}|"
+                                th:class="|${user.status.name().equals('BLOCKED') ? 'whiteHover cyan':''}
+                                ${user.status.name().equals('ACTIVATED') ? 'whiteHover lightgreen':''}
+                                ${user.status.name().equals('CREATED') ? 'whiteHover lightmustard':''}
+                                ${user.status.name().equals('DEACTIVATED') ? 'whiteHover lightpink':''}|"
                             >
                                 <div class="dropdown status" >
-                                    <button class="dropbtn status"  th:text="${user.userStatus.name()}">
+                                    <button class="dropbtn status"  th:text="${user.status.name()}">
                                     </button>
                                     <img class="rotate dropdown-arrow" src="/img/arrow-down.svg" alt="arrow-icon">
                                     <div class="dropdown-content status">
                                         <a
-                                           th:each="userStatus : ${T(greencity.enums.UserStatus).values()}"
-                                           th:text="${userStatus}"
-                                           th:value="${userStatus}"
-                                           th:selected="${userStatus} == ${user.getUserStatus()}"
-                                           th:data-status="${userStatus}"
+                                           th:each="status : ${T(greencity.enums.UserStatus).values()}"
+                                           th:text="${status}"
+                                           th:value="${status}"
+                                           th:selected="${status} == ${user.getStatus()}"
+                                           th:data-status="${status}"
                                            th:data-userId="${user.id}"
                                            onclick="changeStatus(this.getAttribute('data-userId'), this.getAttribute('data-status'));"
                                         ></a>
@@ -339,8 +334,8 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="userStatus">Status</label>
-                                                        <input th:value="${user.getUserStatus().name()}" type="text" class="form-control" id="userStatus" name="userStatus" required>
+                                                        <label for="status">Status</label>
+                                                        <input th:value="${user.getStatus().name()}" type="text" class="form-control" id="status" name="status" required>
                                                     </div>
                                                     <div class="form-group">
                                                         <span th:id="serverErrorEditModal+${user.getId()}" class="errorSpan"></span>

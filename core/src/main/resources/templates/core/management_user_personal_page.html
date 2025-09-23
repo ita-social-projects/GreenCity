@@ -153,32 +153,32 @@
                         <button class="dropbtn userpage green">
                             <div class="button-container">
                                 <div class="button-text"
-                                     th:with="userStatus=${user.userStatus.name()}"
-                                     th:text="${userStatus.substring(0, 1).concat(userStatus.substring(1).toLowerCase())}"></div>
+                                     th:with="status=${user.status.name()}"
+                                     th:text="${status.substring(0, 1).concat(status.substring(1).toLowerCase())}"></div>
                                 <div class="button-arrow">
                                     <img src="/img/arrow-down.svg" alt="arrow-icon">
                                 </div>
                             </div>
                         </button>
                         <div class="dropdown-content userpage" style="height: 70px">
-                            <form th:action="@{/management/users/{id}/updateUserStatus (id=${user.id})}" method="post">
-                                <input th:if="${!user.userStatus.name().equals('ACTIVATED')}"
-                                       type="submit" name="userStatus"
+                            <form th:action="@{/management/users/{id}/status (id=${user.id})}" method="post">
+                                <input th:if="${!user.status.name().equals('ACTIVATED')}"
+                                       type="submit" name="status"
                                        th:value="Activated">
-                                <input th:if="${!user.userStatus.name().equals('DEACTIVATED')}"
-                                       type="submit" name="userStatus"
+                                <input th:if="${!user.status.name().equals('DEACTIVATED')}"
+                                       type="submit" name="status"
                                        th:value="Deactivated">
-                                <input th:if="${!user.userStatus.name().equals('BLOCKED')}"
-                                       type="submit" name="userStatus"
+                                <input th:if="${!user.status.name().equals('BLOCKED')}"
+                                       type="submit" name="status"
                                        th:value="Blocked">
-                                <input th:if="${!user.userStatus.name().equals('CREATED')}"
-                                       type="submit" name="userStatus"
+                                <input th:if="${!user.status.name().equals('CREATED')}"
+                                       type="submit" name="status"
                                        th:value="Created">
 
-                                <!--<a href="#" th:if="${!user.userStatus.name().equals('ACTIVATED')}">Activated</a>
-                                <a href="#" th:if="${!user.userStatus.name().equals('DEACTIVATED')}">Deactivated</a>
-                                <a href="#" th:if="${!user.userStatus.name().equals('BLOCKED')}">Blocked</a>
-                                <a href="#" th:if="${!user.userStatus.name().equals('CREATED')}">Created</a>-->
+                                <!--<a href="#" th:if="${!user.status.name().equals('ACTIVATED')}">Activated</a>
+                                <a href="#" th:if="${!user.status.name().equals('DEACTIVATED')}">Deactivated</a>
+                                <a href="#" th:if="${!user.status.name().equals('BLOCKED')}">Blocked</a>
+                                <a href="#" th:if="${!user.status.name().equals('CREATED')}">Created</a>-->
                             </form>
                         </div>
                     </div>

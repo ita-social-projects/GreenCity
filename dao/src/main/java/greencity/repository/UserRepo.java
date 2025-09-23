@@ -2,10 +2,12 @@ package greencity.repository;
 
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
-import greencity.dto.user.UserEmailDto;
+import greencity.dto.user.GreenCityUserInfoDto;
 import greencity.dto.user.UserLocationStatisticDto;
+import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import java.util.List;
 import java.util.Optional;
@@ -648,7 +650,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * Method for getting all users who made request for joining the event.
      *
      * @param eventId  - id of the event
-     * @param pageable
+     * @param pageable - pageable object
      *
      */
     @Query(nativeQuery = true, value = "SELECT greencity_users.* FROM greencity_users "
@@ -845,15 +847,74 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean existsByEmail(String email);
 
     /**
-     * Method to find list of user ids by emails.
+     * Method to find green city user info by emails.
      *
      * @param emails emails of users for whom to fetch the data
-     * @return list of {@link UserEmailDto}
+     * @return list of {@link GreenCityUserInfoDto}
      */
     @Query("""
-            SELECT new greencity.dto.user.UserEmailDto(u.id, u.email)
+            SELECT new greencity.dto.user.GreenCityUserInfoDto(u.id, u.email, u.profilePicturePath, u.userCredo,
+                     u.status, u.rating)
             FROM User u
             WHERE u.email IN :emails
         """)
-    List<UserEmailDto> findUserIdsByEmails(@Param("emails") List<String> emails);
+    List<GreenCityUserInfoDto> findGreenCityUserInfoDtosByEmails(@Param("emails") List<String> emails);
+
+    /**
+     * Retrieves the list of IDs of users from the given list who have the
+     * {@code UserStatus} set to {@code ACTIVATED}. This method is typically used to
+     * filter active users for further processing or analysis.
+     *
+     * @return a list of {@code Long} values representing the IDs of all activated
+     *         users
+     */
+    @Query("""
+        SELECT u.id
+        FROM User u
+        WHERE u.status = 'ACTIVATED' AND u.id IN :ids
+        """)
+    List<Long> findAllActivatedUserIdsFromList(@Param("ids") List<Long> ids);
+
+    /**
+     * Retrieves the list of IDs of users who have the {@code UserStatus} set to
+     * {@code ACTIVATED}.
+     *
+     * @return a list of {@code Long} values representing the IDs of all activated
+     *         users
+     */
+    @Query("""
+        SELECT u.id
+        FROM User u
+        WHERE u.status = 'ACTIVATED'
+        """)
+    List<Long> findAllActivatedUserIds();
+
+    /**
+     * Counts all users by user {@link UserStatus}.
+     *
+     * @return amount of user with given {@link UserStatus}.
+     */
+    long countAllByStatus(UserStatus userStatus);
+
+    /**
+     * Retrieves the distribution of user statuses across all users.
+     *
+     * @return A list of UserStatusStatisticDto objects containing the status and
+     *         the count of users with that status.
+     */
+    @Query("""
+        SELECT new greencity.dto.user.UserStatusStatisticDto(u.status, COUNT(u.id))
+        FROM User u
+        GROUP BY u.status
+        """)
+    List<UserStatusStatisticDto> getUserStatusesDistribution();
+
+    /**
+     * Find not 'DEACTIVATED' {@link User} by email.
+     *
+     * @param email - {@link User}'s email
+     * @return found {@link User}
+     */
+    @Query("FROM User WHERE email=:email AND status = 'ACTIVATED'")
+    Optional<User> findNotDeactivatedByEmail(String email);
 }
