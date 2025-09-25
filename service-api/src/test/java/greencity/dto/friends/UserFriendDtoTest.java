@@ -23,7 +23,7 @@ class UserFriendDtoTest {
         UserFriendDto userFriendDto = new UserFriendDto(id, name, rating, uLocation.getId(),
             uLocation.getCityEn(), uLocation.getCityUk(), uLocation.getRegionEn(), uLocation.getRegionUk(),
             uLocation.getCountryEn(), uLocation.getCountryUk(), uLocation.getLatitude(), uLocation.getLongitude(),
-            mutualFriends, profilePicture, chatId, friendStatus, requesterId);
+            mutualFriends, profilePicture, friendStatus, requesterId);
         userFriendDto.setEmail(email);
 
         assertEquals(id, userFriendDto.getId());
@@ -33,7 +33,6 @@ class UserFriendDtoTest {
         assertEquals(rating, userFriendDto.getRating());
         assertEquals(mutualFriends, userFriendDto.getMutualFriends());
         assertEquals(profilePicture, userFriendDto.getProfilePicturePath());
-        assertEquals(chatId, userFriendDto.getChatId());
         assertEquals(friendStatus, userFriendDto.getFriendStatus());
         assertEquals(requesterId, userFriendDto.getRequesterId());
     }
@@ -52,7 +51,7 @@ class UserFriendDtoTest {
 
         UserFriendDto userFriendDto = new UserFriendDto(
             id, name, rating, ulId, null, null, null, null, null, null,
-            null, null, mutualFriends, profilePicturePath, chatId, friendStatus, requesterId);
+            null, null, mutualFriends, profilePicturePath, friendStatus, requesterId);
 
         assertNull(userFriendDto.getUserLocationDto());
     }

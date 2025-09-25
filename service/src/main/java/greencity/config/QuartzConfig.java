@@ -1,22 +1,18 @@
 package greencity.config;
 
-import greencity.constant.QuartzConstants;
+import static greencity.constant.QuartzConstants.*;
 import greencity.logging.LoggingJobListener;
 import greencity.exception.exceptions.InvalidCronException;
 import greencity.exception.exceptions.TriggerException;
 import greencity.scheduler.EcoNewsGenerationJob;
+import greencity.scheduler.EcoNewsRelevanceJob;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
+import org.quartz.*;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +33,9 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 @RequiredArgsConstructor
 public class QuartzConfig {
     @Value("${cron.generateEcoNews}")
-    private String cronExpression;
+    private String generateEcoNewsCron;
+    @Value("${cron.calculateRelevance}")
+    private String calculateRelevanceCron;
     private final ApplicationContext applicationContext;
 
     @Bean
@@ -71,48 +69,72 @@ public class QuartzConfig {
     @Bean
     public JobDetail ecoNewsGenerationJobDetail() {
         return JobBuilder.newJob(EcoNewsGenerationJob.class)
-            .withIdentity(QuartzConstants.ECO_NEWS_GENERATION_JOB_IDENTITY)
+            .withIdentity(ECO_NEWS_GENERATION_JOB_IDENTITY)
             .storeDurably()
             .build();
     }
 
     @Bean
     public Trigger ecoNewsGenerationTrigger(JobDetail ecoNewsGenerationJobDetail) {
-        String fixedCron = fixCronExpression(cronExpression);
+        String fixedCron = fixCronExpression(generateEcoNewsCron);
         try {
             return TriggerBuilder.newTrigger()
                 .forJob(ecoNewsGenerationJobDetail)
-                .withIdentity(QuartzConstants.ECO_NEWS_GENERATION_TRIGGER_IDENTITY)
+                .withIdentity(ECO_NEWS_GENERATION_TRIGGER_IDENTITY)
                 .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
                 .build();
         } catch (RuntimeException e) {
-            throw new TriggerException(QuartzConstants.CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
+            throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
+        }
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "enabled")
+    public JobDetail ecoNewsRelevanceJobDetail() {
+        return JobBuilder.newJob(EcoNewsRelevanceJob.class)
+            .withIdentity("ecoNewsRelevanceJob")
+            .storeDurably()
+            .build();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "enabled")
+    public Trigger ecoNewsRelevanceTrigger() {
+        String fixedCron = fixCronExpression(calculateRelevanceCron);
+        try {
+            return TriggerBuilder.newTrigger()
+                .forJob(ecoNewsRelevanceJobDetail())
+                .withIdentity("ecoNewsRelevanceTrigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
+                .build();
+        } catch (RuntimeException e) {
+            throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
         }
     }
 
     private String fixCronExpression(String cron) {
-        String[] fields = cron.trim().split(QuartzConstants.CRON_FIELD_SPLIT_REGEX);
-        if (fields.length != QuartzConstants.CRON_FIELDS_COUNT_EXPECTED) {
-            throw new InvalidCronException(QuartzConstants.INVALID_CRON_EXPRESSION_ERROR + cron);
+        String[] fields = cron.trim().split(CRON_FIELD_SPLIT_REGEX);
+        if (fields.length != CRON_FIELDS_COUNT_EXPECTED) {
+            throw new InvalidCronException(INVALID_CRON_EXPRESSION_ERROR + cron);
         }
 
         if (shouldFixDayOfMonth(fields)) {
-            fields[QuartzConstants.CRON_FIELD_DAY_OF_MONTH_INDEX] = QuartzConstants.CRON_DAY_OF_MONTH_PLACEHOLDER;
+            fields[CRON_FIELD_DAY_OF_MONTH_INDEX] = CRON_DAY_OF_MONTH_PLACEHOLDER;
         }
 
-        return String.join(QuartzConstants.CRON_SPACE_SEPARATOR, fields);
+        return String.join(CRON_SPACE_SEPARATOR, fields);
     }
 
     private boolean shouldFixDayOfMonth(String[] fields) {
-        boolean hasDayOfMonth = !fields[QuartzConstants.CRON_FIELD_DAY_OF_MONTH_INDEX]
-            .equals(QuartzConstants.CRON_DAY_OF_MONTH_PLACEHOLDER)
-            && !fields[QuartzConstants.CRON_FIELD_DAY_OF_MONTH_INDEX].equals(QuartzConstants.CRON_WILDCARD);
-        boolean hasDayOfWeek = !fields[QuartzConstants.CRON_FIELD_DAY_OF_WEEK_INDEX]
-            .equals(QuartzConstants.CRON_DAY_OF_MONTH_PLACEHOLDER)
-            && !fields[QuartzConstants.CRON_FIELD_DAY_OF_WEEK_INDEX].equals(QuartzConstants.CRON_WILDCARD);
+        boolean hasDayOfMonth = !fields[CRON_FIELD_DAY_OF_MONTH_INDEX]
+            .equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
+            && !fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD);
+        boolean hasDayOfWeek = !fields[CRON_FIELD_DAY_OF_WEEK_INDEX]
+            .equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
+            && !fields[CRON_FIELD_DAY_OF_WEEK_INDEX].equals(CRON_WILDCARD);
 
         return (hasDayOfMonth && hasDayOfWeek)
-            || fields[QuartzConstants.CRON_FIELD_DAY_OF_MONTH_INDEX].equals(QuartzConstants.CRON_WILDCARD);
+            || fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD);
     }
 
     @RequiredArgsConstructor

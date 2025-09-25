@@ -40,6 +40,7 @@ import greencity.repository.RatingPointsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -211,6 +212,59 @@ class CommentServiceImplTest {
 
         verify(userNotificationService)
             .createNotification(any(), any(), any(), anyLong(), anyString(), anyLong(), anyString());
+    }
+
+    @Test
+    void saveCommentReplyNotificationCommentTextIsMoreThanTwentyChar() {
+        Event event = getEvent();
+        User user = getUser();
+        UserVO userVO = getUserVO();
+        User parentCommentCreator = getUser().setId(2L);
+        UserVO parentCommentCreatorVO = getUserVO().setId(2L);
+        Comment parentComment = getComment()
+            .setUser(parentCommentCreator)
+            .setArticleId(1L)
+            .setArticleType(ArticleType.EVENT);
+        Comment comment = getComment();
+        comment.setText("length of the text is more than 20 characters");
+        CommentVO commentVO = getCommentVO();
+        AddCommentDtoRequest addCommentDtoRequest = ModelUtils.getAddCommentDtoRequest();
+        addCommentDtoRequest.setParentCommentId(1L);
+
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(commentRepo.findById(1L))
+            .thenReturn(Optional.of(parentComment));
+        when(modelMapper.map(parentCommentCreator, UserVO.class)).thenReturn(parentCommentCreatorVO);
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(modelMapper.map(commentRepo.save(comment), AddCommentDtoResponse.class))
+            .thenReturn(getAddCommentDtoResponse());
+        when(notificationRepo.countUnviewedRepliesByTargetAndParent(anyLong(), any(), anyLong(), anyLong()))
+            .thenReturn(6L);
+
+        commentService.save(
+            ArticleType.EVENT,
+            1L,
+            addCommentDtoRequest,
+            null,
+            getUserVO(),
+            Locale.of("en"));
+
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userNotificationService).createNotification(
+            any(),
+            any(),
+            eq(NotificationType.EVENT_COMMENT_REPLY),
+            anyLong(),
+            messageCaptor.capture(),
+            anyLong(),
+            anyString());
+
+        String expectedSnippet = comment.getText().substring(0, 20);
+        assertEquals("7 REPLIES \"" + expectedSnippet + "\"", messageCaptor.getValue());
     }
 
     @Test
@@ -429,6 +483,115 @@ class CommentServiceImplTest {
         commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
 
         verify(commentRepo, times(1)).save(any(Comment.class));
+    }
+
+    @Test
+    void sendNotificationIfUserTaggedInCommentWhenTextIsMoreThanTwentyChar() {
+        String commentText = "length of the text is more than 20 characters";
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = ModelUtils.getHabit().setUserId(getUser().getId());
+        HabitTranslation habitTranslation = getHabitTranslation();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO().setText(commentText);
+        AddCommentDtoResponse response = getAddCommentDtoResponse().setText(commentText);
+        AddCommentDtoRequest addCommentDtoRequest = AddCommentDtoRequest.builder()
+            .text(commentText)
+            .build();
+        ArticleType articleType = ArticleType.HABIT;
+        CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        MultipartFile[] images = getMultipartImageFiles();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
+        when(modelMapper.map(any(UserVO.class), eq(CommentAuthorDto.class))).thenReturn(commentAuthorDto);
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(modelMapper.map(any(CommentVO.class), eq(Comment.class))).thenReturn(comment);
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
+            .id(5L)
+            .email("test@email.com")
+            .build()));
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
+        when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+            .thenReturn(Optional.of(habitTranslation));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList("test.jpg"));
+        when(notificationRepo.countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(3L);
+
+        commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
+
+        verify(commentRepo, times(1)).save(any(Comment.class));
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userNotificationService).createNotification(
+            any(),
+            any(),
+            eq(NotificationType.HABIT_COMMENT),
+            anyLong(),
+            messageCaptor.capture(),
+            anyString());
+
+        String expectedSnippet = comment.getText().substring(0, 20);
+        assertEquals("4 COMMENTS \"" + expectedSnippet + "\"", messageCaptor.getValue());
+    }
+
+    @Test
+    void sendNotificationIfUserTaggedInCommentWhenTextIsLessThanTwentyChar() {
+        String commentText = "test";
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        Habit habit = ModelUtils.getHabit().setUserId(getUser().getId());
+        HabitTranslation habitTranslation = getHabitTranslation();
+        Comment comment = getComment();
+        CommentVO commentVO = getCommentVO().setText(commentText);
+        AddCommentDtoResponse response = getAddCommentDtoResponse().setText(commentText);
+        AddCommentDtoRequest addCommentDtoRequest = AddCommentDtoRequest.builder()
+            .text(commentText)
+            .build();
+        ArticleType articleType = ArticleType.HABIT;
+        CommentAuthorDto commentAuthorDto = ModelUtils.getCommentAuthorDto();
+        MultipartFile[] images = getMultipartImageFiles();
+        RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("LIKE_COMMENT_OR_REPLY").points(1).build();
+
+        when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
+        when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
+        when(modelMapper.map(any(UserVO.class), eq(User.class))).thenReturn(user);
+        when(modelMapper.map(any(UserVO.class), eq(CommentAuthorDto.class))).thenReturn(commentAuthorDto);
+        when(modelMapper.map(any(Comment.class), eq(CommentVO.class))).thenReturn(commentVO);
+        when(modelMapper.map(any(CommentVO.class), eq(Comment.class))).thenReturn(comment);
+        when(commentRepo.save(any(Comment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(User.builder()
+            .id(5L)
+            .email("test@email.com")
+            .build()));
+        when(modelMapper.map(addCommentDtoRequest, Comment.class)).thenReturn(comment.setText(commentText));
+        when(modelMapper.map(comment, AddCommentDtoResponse.class)).thenReturn(response);
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.ofNullable(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, Locale.of("en").getLanguage()))
+            .thenReturn(Optional.of(habitTranslation));
+        when(userRemoteClient.uploadAllFiles(List.of(images))).thenReturn(Collections.singletonList("test.jpg"));
+        when(notificationRepo.countActionUsersByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(anyLong(),
+            any(), anyLong()))
+            .thenReturn(3L);
+
+        commentService.save(articleType, 1L, addCommentDtoRequest, images, userVO, Locale.of("en"));
+
+        verify(commentRepo, times(1)).save(any(Comment.class));
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(userNotificationService).createNotification(
+            any(),
+            any(),
+            eq(NotificationType.HABIT_COMMENT),
+            anyLong(),
+            messageCaptor.capture(),
+            anyString());
+
+        assertEquals("4 COMMENTS \"" + comment.getText() + "\"", messageCaptor.getValue());
     }
 
     @Test

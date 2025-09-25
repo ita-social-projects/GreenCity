@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UserLocationStatisticDto;
@@ -660,8 +661,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method for getting all users who made request for joining the event.
      *
-     * @param eventId  - id of the event
-     * @param pageable
+     * @param eventId - id of the event
      *
      */
     @Query(nativeQuery = true, value = "SELECT greencity_users.* FROM greencity_users "
@@ -842,4 +842,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return - return true if User exists and false if not.
      */
     boolean existsByEmail(String email);
+
+    @Query(
+        nativeQuery = true,
+        name = "User.findListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser")
+    List<UserFriendDto> findUserFriendsWithMutualCountAndChatId(
+        @Param("userId") Long userId,
+        @Param("greencity_users") List<Long> userIds);
 }

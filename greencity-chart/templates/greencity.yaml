@@ -96,18 +96,6 @@ spec:
                   name: {{ .Values.externalSecret.secretName }}
                   key: ECO-NEWS-ADDRESS
 
-            - name: FACEBOOK_APP_ID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.externalSecret.secretName }}
-                  key: FACEBOOK-APP-ID
-
-            - name: FACEBOOK_APP_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.externalSecret.secretName }}
-                  key: FACEBOOK-APP-SECRET
-
             - name: GREENCITYUSER_SERVER_ADDRESS
               valueFrom:
                 secretKeyRef:
@@ -270,12 +258,29 @@ spec:
                   name: {{ .Values.externalSecret.secretName }}
                   key: LDM-SECRET-KEY
 
+            - name: ECONEWS_RELEVANCE_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: ECONEWS-RELEVANCE-ENABLED
+
+            - name: RELEVANCE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: ECONEWS-RELEVANCE-ENABLED
+
             - name: SPRING_LIQUIBASE_PARAMETERS_SERVICE_EMAIL
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalSecret.secretName }}
                   key: SPRING-LIQUIBASE-PARAMETERS-SERVICE-EMAIL
 
+            - name: GOOGLE_MAP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.secretName }}
+                  key: GOOGLE-MAP-API-KEY
           ports:
             - containerPort: 8080
               name: tomcat

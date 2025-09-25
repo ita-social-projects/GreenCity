@@ -253,4 +253,12 @@ public class ErrorMessage {
     public static final String UNAUTHORIZED_RESPONSE = "Authorize first.";
     public static final String USER_APP_UNAVAILABLE = "the User service is unavailable";
     public static final String INTERNAL_SERVER_ERROR = "Internal server error: ";
+    public static final String INVALID_RELEVANCE_POOLS = "Invalid relevance pools ratio parameter value.";
+    public static final String INVALID_SCORES_WEIGHTS = "Invalid relevance scores weights parameter value.";
+    public static final String INVALID_SCORES_STRENGTH = "Invalid relevance scores strength parameter value.";
+    public static final String INVALID_TAGS_WEIGHTS = "Invalid tags weights parameter value.";
+    public static final String INVALID_RATIO_FORMAT = "Expected %d values in format '%s', but got %s.";
+    public static final String INVALID_RATIO_VALUE = "Expected value in range [0.0, 1.0], but provided value are '%s'.";
+    public static final String INVALID_RATIO_SUM =
+        "Sum of all elements must be equal 1.0, but provided value are '%s'.";
 }
