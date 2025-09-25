@@ -623,7 +623,7 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = findPlaceById(dto.getId());
         Category category = getCategory(dto.getCategoryId());
 
-        Location location = buildLocation(dto.getName());
+        Location location = buildLocation(dto.getAddress());
         Set<OpeningHours> openingHours = mapOpeningHours(dto.getOpeningHoursList());
 
         openingHoursService.deleteAllByPlaceId(place.getId());
