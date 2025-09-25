@@ -186,7 +186,6 @@ $(document).ready(function () {
             processData: false,
             contentType: false,
             success: function (data) {
-                console.log('Success:', data);
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
                         $(document.getElementById(getErrorSpanId(el.fieldName))).text(el.fieldError).show();
