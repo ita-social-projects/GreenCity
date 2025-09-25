@@ -43,6 +43,8 @@ import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.exception.exceptions.*;
+import greencity.filters.PlaceSearchSpecification;
+import greencity.filters.SearchCriteria;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PhotoRepo;
