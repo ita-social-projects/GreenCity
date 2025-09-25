@@ -104,9 +104,9 @@ public class PlaceController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PutMapping(value = "/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping(value = "/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updatePlace(@Parameter(required = true) @RequestPart PlaceUpdateDto dto,
+    public void updatePlace(@Parameter(required = true) @Valid @RequestPart PlaceUpdateDto dto,
         @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         placeService.update(dto, images, userId);

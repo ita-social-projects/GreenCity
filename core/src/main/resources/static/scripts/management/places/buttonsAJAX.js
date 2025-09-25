@@ -353,7 +353,6 @@ $(document).ready(function () {
             $('#address').val(place.address);
             $('#placeName').val(place.name);
             $('#category').val(place.categoryId);
-            addMarker(location);
             place.openingHoursList.forEach(function (day) {
                 let dayElement = $(`#${day.weekDay}`);
                 dayElement.prop('checked', true);

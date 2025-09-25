@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -126,7 +128,7 @@ public class JwtTool {
             }
             Cookie[] cookies = request.getCookies();
 
-            String accessToken = Arrays.stream(cookies)
+            String accessToken = Optional.ofNullable(request.getCookies()).stream().flatMap(Arrays::stream)
                 .filter(c -> c.getName().equals("accessToken"))
                 .findFirst()
                 .map(Cookie::getValue).orElse(null);

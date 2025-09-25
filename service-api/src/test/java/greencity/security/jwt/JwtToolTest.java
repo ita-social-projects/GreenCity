@@ -9,6 +9,7 @@ import greencity.enums.Role;
 import greencity.exception.exceptions.NoJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
@@ -139,6 +140,60 @@ class JwtToolTest {
             NoJwtException.class,
             () -> jwtTool.extractJwtFromNativeWebRequest(nativeWebRequest));
         assertEquals(expectedExceptionMessage, ex.getMessage());
+    }
+
+    @Test
+    void extractJwtFromCookies_AuthHeaderNotFound_TokenExtractedFromCookies() throws NoJwtException {
+        // given
+        NativeWebRequest webRequest = mock(NativeWebRequest.class);
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+
+        when(webRequest.getHeader("Authorization")).thenReturn(null);
+        when(webRequest.getNativeRequest(HttpServletRequest.class)).thenReturn(servletRequest);
+
+        Cookie[] cookies = { new Cookie("accessToken", "cookie-token-123") };
+        when(servletRequest.getCookies()).thenReturn(cookies);
+
+        // when
+        String token = jwtTool.extractJwtFromNativeWebRequest(webRequest);
+
+        // then
+        assertEquals("cookie-token-123", token);
+    }
+
+    @Test
+    void extractJwtFromCookies_AuthHeaderNotFoundInCookies_ShouldThrow() {
+        // given
+        NativeWebRequest webRequest = mock(NativeWebRequest.class);
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+
+        when(webRequest.getHeader("Authorization")).thenReturn(null);
+        when(webRequest.getNativeRequest(HttpServletRequest.class)).thenReturn(servletRequest);
+
+        Cookie[] cookies = { new Cookie("other", "value") };
+        when(servletRequest.getCookies()).thenReturn(cookies);
+
+        NoJwtException ex = assertThrows(NoJwtException.class,
+                () -> jwtTool.extractJwtFromNativeWebRequest(webRequest));
+
+        assertEquals(ErrorMessage.NO_JWT_TOKEN_FOUND, ex.getMessage());
+    }
+
+    @Test
+    void extractJwtFromCookies_NoCookies_ShouldThrow() {
+        // given
+        NativeWebRequest webRequest = mock(NativeWebRequest.class);
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+
+        when(webRequest.getHeader("Authorization")).thenReturn(null);
+        when(webRequest.getNativeRequest(HttpServletRequest.class)).thenReturn(servletRequest);
+
+        when(servletRequest.getCookies()).thenReturn(null);
+
+        NoJwtException ex = assertThrows(NoJwtException.class,
+                () -> jwtTool.extractJwtFromNativeWebRequest(webRequest));
+
+        assertEquals(ErrorMessage.NO_JWT_TOKEN_FOUND, ex.getMessage());
     }
 
     @Test
