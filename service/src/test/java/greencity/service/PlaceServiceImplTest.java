@@ -1017,6 +1017,7 @@ class PlaceServiceImplTest {
         PlaceUpdateDto dto = PlaceUpdateDto.builder()
             .id(existingPlace.getId())
             .name("New Place")
+            .address("New Address")
             .categoryId(category.getId())
             .openingHoursList(Set.of(ModelUtils.getOpeningHoursDto()))
             .build();
@@ -1029,7 +1030,7 @@ class PlaceServiceImplTest {
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
         when(placeRepo.findById(existingPlace.getId())).thenReturn(Optional.of(existingPlace));
         when(categoryRepo.findById(category.getId())).thenReturn(Optional.of(category));
-        when(googleApiService.getResultFromGeoCode("New Place"))
+        when(googleApiService.getResultFromGeoCode(dto.getAddress()))
             .thenReturn(List.of(geo1, geo2));
 
         placeService.update(dto, images, 1L);
