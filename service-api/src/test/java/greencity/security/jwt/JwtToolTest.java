@@ -151,7 +151,7 @@ class JwtToolTest {
         when(webRequest.getHeader("Authorization")).thenReturn(null);
         when(webRequest.getNativeRequest(HttpServletRequest.class)).thenReturn(servletRequest);
 
-        Cookie[] cookies = { new Cookie("accessToken", "cookie-token-123") };
+        Cookie[] cookies = {new Cookie("accessToken", "cookie-token-123")};
         when(servletRequest.getCookies()).thenReturn(cookies);
 
         // when
@@ -170,11 +170,11 @@ class JwtToolTest {
         when(webRequest.getHeader("Authorization")).thenReturn(null);
         when(webRequest.getNativeRequest(HttpServletRequest.class)).thenReturn(servletRequest);
 
-        Cookie[] cookies = { new Cookie("other", "value") };
+        Cookie[] cookies = {new Cookie("other", "value")};
         when(servletRequest.getCookies()).thenReturn(cookies);
 
         NoJwtException ex = assertThrows(NoJwtException.class,
-                () -> jwtTool.extractJwtFromNativeWebRequest(webRequest));
+            () -> jwtTool.extractJwtFromNativeWebRequest(webRequest));
 
         assertEquals(ErrorMessage.NO_JWT_TOKEN_FOUND, ex.getMessage());
     }
@@ -191,7 +191,7 @@ class JwtToolTest {
         when(servletRequest.getCookies()).thenReturn(null);
 
         NoJwtException ex = assertThrows(NoJwtException.class,
-                () -> jwtTool.extractJwtFromNativeWebRequest(webRequest));
+            () -> jwtTool.extractJwtFromNativeWebRequest(webRequest));
 
         assertEquals(ErrorMessage.NO_JWT_TOKEN_FOUND, ex.getMessage());
     }
