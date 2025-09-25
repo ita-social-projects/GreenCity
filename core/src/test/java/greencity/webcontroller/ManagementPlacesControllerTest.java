@@ -152,17 +152,17 @@ class ManagementPlacesControllerTest {
             """;
 
         MockMultipartFile addPlaceDto = new MockMultipartFile(
-                "placeUpdateDto",
-                "",
-                "application/json",
-                (json)
-                        .getBytes());
+            "placeUpdateDto",
+            "",
+            "application/json",
+            (json)
+                .getBytes());
 
         this.mockMvc.perform(multipart(HttpMethod.PUT, "/management/places/")
-                        .file(addPlaceDto)
-                        .principal(principal)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isOk());
+            .file(addPlaceDto)
+            .principal(principal)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isOk());
 
         verify(placeService).update(any(), any(), any());
     }

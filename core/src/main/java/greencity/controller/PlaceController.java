@@ -54,10 +54,44 @@ public class PlaceController {
     private final PlaceService placeService;
 
     /**
-     * The controller which returns new updated {@code Place}.
+     * Updates an existing Place with new data provided in {@link PlaceUpdateDto}.
+     * <p>
+     * This endpoint allows updating the basic information of a place (name,
+     * category, location, opening hours, etc.) and optionally uploading new images.
+     * Existing opening hours and images may be replaced depending on the update
+     * logic in {@code PlaceService}.
+     * </p>
      *
-     * @param dto - Place dto for updating with all parameters.
-     * @return new {@code Place}.
+     * <p>
+     * <b>Request:</b>
+     * </p>
+     * <ul>
+     * <li><b>Content-Type:</b> {@code multipart/form-data} or
+     * {@code application/json}</li>
+     * <li>{@code dto} – JSON object containing updated place data.</li>
+     * <li>{@code images} – optional array of images to be associated with the
+     * place.</li>
+     * </ul>
+     *
+     * <p>
+     * <b>Responses:</b>
+     * </p>
+     * <ul>
+     * <li>{@code 204 NO_CONTENT} – if the update is successful.</li>
+     * <li>{@code 400 BAD_REQUEST} – if the provided data is invalid.</li>
+     * <li>{@code 401 UNAUTHORIZED} – if the user is not authenticated.</li>
+     * <li>{@code 403 FORBIDDEN} – if the user does not have permission to update
+     * this place.</li>
+     * <li>{@code 404 NOT_FOUND} – if the place with the given ID does not
+     * exist.</li>
+     * </ul>
+     *
+     * @param dto    the {@link PlaceUpdateDto} containing updated place
+     *               information, required
+     * @param userId the ID of the currently authenticated user (injected
+     *               automatically), required
+     * @param images optional array of {@link MultipartFile} representing new images
+     *               for the place
      */
     @Operation(summary = "Update place")
     @ApiResponses(value = {
@@ -73,8 +107,8 @@ public class PlaceController {
     @PutMapping(value = "/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updatePlace(@Parameter(required = true) @RequestPart PlaceUpdateDto dto,
-                            @Parameter(hidden = true) @CurrentUserId Long userId,
-                            @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        @Parameter(hidden = true) @CurrentUserId Long userId,
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
         placeService.update(dto, images, userId);
     }
 

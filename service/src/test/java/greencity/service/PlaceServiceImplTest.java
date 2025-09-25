@@ -212,11 +212,11 @@ class PlaceServiceImplTest {
     @Test
     void save_successfullySavesPlace() {
         AddPlaceDto dto = AddPlaceDto.builder()
-                .name("My Cafe")
-                .categoryId(category.getId())
-                .address("Kyiv")
-                .openingHoursList(Set.of(ModelUtils.getOpeningHoursDto()))
-                .build();
+            .name("My Cafe")
+            .categoryId(category.getId())
+            .address("Kyiv")
+            .openingHoursList(Set.of(ModelUtils.getOpeningHoursDto()))
+            .build();
 
         MultipartFile[] images = new MultipartFile[0];
 
@@ -226,20 +226,18 @@ class PlaceServiceImplTest {
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepo.findById(category.getId())).thenReturn(Optional.of(category));
         when(googleApiService.getResultFromGeoCode("Kyiv"))
-                .thenReturn(List.of(geo1, geo2));
+            .thenReturn(List.of(geo1, geo2));
         when(locationService.existsByLatAndLng(50.45, 30.52)).thenReturn(false);
 
         placeService.save(dto, 1L, images);
 
-        verify(placeRepo).save(argThat(place ->
-                {
-                    System.out.println(place.getLocation());
-                    return place.getName().equals("My Cafe") &&
-                            place.getAuthor().equals(user) &&
-                            place.getCategory().equals(category) &&
-                            place.getOpeningHoursList().size() == 1;
-                }
-        ));
+        verify(placeRepo).save(argThat(place -> {
+            System.out.println(place.getLocation());
+            return place.getName().equals("My Cafe") &&
+                place.getAuthor().equals(user) &&
+                place.getCategory().equals(category) &&
+                place.getOpeningHoursList().size() == 1;
+        }));
     }
 
     @Test
@@ -248,7 +246,7 @@ class PlaceServiceImplTest {
         when(userRepo.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
-                () -> placeService.save(dto, 1L, new MultipartFile[0]));
+            () -> placeService.save(dto, 1L, new MultipartFile[0]));
     }
 
     @Test
@@ -258,7 +256,7 @@ class PlaceServiceImplTest {
         when(categoryRepo.findById(99L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
-                () -> placeService.save(dto, 1L, new MultipartFile[0]));
+            () -> placeService.save(dto, 1L, new MultipartFile[0]));
     }
 
     @Test
@@ -269,7 +267,7 @@ class PlaceServiceImplTest {
         when(googleApiService.getResultFromGeoCode("Nowhere")).thenReturn(List.of());
 
         assertThrows(NotFoundException.class,
-                () -> placeService.save(dto, 1L, new MultipartFile[0]));
+            () -> placeService.save(dto, 1L, new MultipartFile[0]));
     }
 
     @Test
@@ -285,7 +283,7 @@ class PlaceServiceImplTest {
         when(locationService.existsByLatAndLng(any(), any())).thenReturn(true);
 
         assertThrows(PlaceAlreadyExistsException.class,
-                () -> placeService.save(dto, 1L, new MultipartFile[0]));
+            () -> placeService.save(dto, 1L, new MultipartFile[0]));
     }
 
     @Test
@@ -1017,11 +1015,11 @@ class PlaceServiceImplTest {
         Place existingPlace = ModelUtils.getPlace();
         // given
         PlaceUpdateDto dto = PlaceUpdateDto.builder()
-                .id(existingPlace.getId())
-                .name("New Place")
-                .categoryId(category.getId())
-                .openingHoursList(Set.of(ModelUtils.getOpeningHoursDto()))
-                .build();
+            .id(existingPlace.getId())
+            .name("New Place")
+            .categoryId(category.getId())
+            .openingHoursList(Set.of(ModelUtils.getOpeningHoursDto()))
+            .build();
 
         MultipartFile[] images = new MultipartFile[0];
 
@@ -1032,15 +1030,13 @@ class PlaceServiceImplTest {
         when(placeRepo.findById(existingPlace.getId())).thenReturn(Optional.of(existingPlace));
         when(categoryRepo.findById(category.getId())).thenReturn(Optional.of(category));
         when(googleApiService.getResultFromGeoCode("New Place"))
-                .thenReturn(List.of(geo1, geo2));
+            .thenReturn(List.of(geo1, geo2));
 
         placeService.update(dto, images, 1L);
 
-        verify(placeRepo).save(argThat(place ->
-                place.getId().equals(place.getId()) &&
-                        place.getName().equals(place.getName()) &&
-                        place.getOpeningHoursList().size() == 1
-        ));
+        verify(placeRepo).save(argThat(place -> place.getId().equals(place.getId()) &&
+            place.getName().equals(place.getName()) &&
+            place.getOpeningHoursList().size() == 1));
     }
 
     @Test
@@ -1070,12 +1066,12 @@ class PlaceServiceImplTest {
         when(categoryRepo.findById(999L)).thenReturn(Optional.empty());
 
         PlaceUpdateDto dto = PlaceUpdateDto.builder()
-                .id(existingPlace.getId())
-                .categoryId(999L)
-                .build();
+            .id(existingPlace.getId())
+            .categoryId(999L)
+            .build();
 
         assertThrows(NotFoundException.class,
-                () -> placeService.update(dto, new MultipartFile[0], 1L));
+            () -> placeService.update(dto, new MultipartFile[0], 1L));
     }
 
     @Test
@@ -1087,12 +1083,12 @@ class PlaceServiceImplTest {
         when(googleApiService.getResultFromGeoCode("Bad Place")).thenReturn(List.of());
 
         PlaceUpdateDto dto = PlaceUpdateDto.builder()
-                .id(existingPlace.getId())
-                .categoryId(category.getId())
-                .name("Bad Place")
-                .build();
+            .id(existingPlace.getId())
+            .categoryId(category.getId())
+            .name("Bad Place")
+            .build();
 
         assertThrows(NotFoundException.class,
-                () -> placeService.update(dto, new MultipartFile[0], 1L));
+            () -> placeService.update(dto, new MultipartFile[0], 1L));
     }
 }

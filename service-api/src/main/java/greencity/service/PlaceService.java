@@ -84,9 +84,29 @@ public interface PlaceService {
     List<PlaceVO> getAllCreatedPlacesByUserId(Long userId);
 
     /**
-     * Method for updating {@link PlaceVO}.
+     * Updates an existing PlaPce with new data and optional images.
+     * <p>
+     * This method retrieves the target Place by its ID from the provided
+     * {@link PlaceUpdateDto}, validates ownership/permissions using the given
+     * {@code userId}, and applies the following updates:
+     * <ul>
+     * <li>Basic attributes (e.g. name, category, location)</li>
+     * <li>Opening hours (replaced with the new set provided in the DTO)</li>
+     * <li>Associated images (mapped from {@link MultipartFile}[], if provided)</li>
+     * </ul>
+     * The updated entity is then persisted in the repository.
+     * </p>
      *
-     * @param dto - dto for Place entity
+     * @param dto    the {@link PlaceUpdateDto} containing updated place
+     *               information, must not be {@code null}
+     * @param images optional array of {@link MultipartFile} representing new images
+     *               for the place
+     * @param userId the ID of the user performing the update, must not be
+     *               {@code null}
+     * @throws EntityNotFoundException if the place or related entities (e.g.
+     *                                 category) are not found
+     * @throws AccessDeniedException   if the user does not have permission to
+     *                                 update this place
      */
     void update(PlaceUpdateDto dto, MultipartFile[] images, Long userId);
 
@@ -240,6 +260,29 @@ public interface PlaceService {
      */
     List<FilterPlaceCategory> getAllPlaceCategories();
 
+    /**
+     * Creates and persists a new Place using the provided details and optional
+     * images.
+     * <p>
+     * This method performs the following steps:
+     * <ul>
+     * <li>Builds a new Place entity from the given {@link AddPlaceDto}</li>
+     * <li>Sets the User identified by {@code userId} as the creator/owner of the
+     * place</li>
+     * <li>Maps the provided {@link MultipartFile} images (if any) to associated
+     * {@code Photo} entities</li>
+     * <li>Persists the newly created Place in the repository</li>
+     * </ul>
+     * </p>
+     *
+     * @param dto    the {@link AddPlaceDto} containing information for the new
+     *               place, must not be {@code null}
+     * @param userId the ID of the user creating the place, must not be {@code null}
+     * @param images optional array of {@link MultipartFile} representing images to
+     *               be linked to the place
+     * @throws EntityNotFoundException if related entities (e.g. category)
+     *                                 referenced in the DTO are not found
+     */
     void save(AddPlaceDto dto, Long userId, MultipartFile[] images);
 
     /**

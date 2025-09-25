@@ -42,8 +42,6 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
-import greencity.enums.Role;
-import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.CategoryRepo;
 import greencity.repository.FavoritePlaceRepo;
@@ -123,23 +121,6 @@ public class PlaceServiceImpl implements PlaceService {
         return placeRepo.findAllByUserId(userId).stream()
             .map(place -> modelMapper.map(place, PlaceVO.class))
             .collect(Collectors.toList());
-    }
-
-    /**
-     * Method for setting this {@link User} to place.
-     *
-     * @param userVO  - {@link User} entity.
-     * @param placeVO - {@link Place} entity.
-     */
-    private void setUserToPlace(UserVO userVO, PlaceVO placeVO) {
-        placeVO.setAuthor(userVO);
-        if (userVO.getRole() == Role.ROLE_ADMIN || userVO.getRole() == Role.ROLE_MODERATOR) {
-            placeVO.setStatus(PlaceStatus.APPROVED);
-            List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
-                EmailPreferencePeriodicity.IMMEDIATELY);
-            userNotificationService.createNewNotificationForPlaceAdded(usersId, placeVO.getId(),
-                placeVO.getCategory().getName(), placeVO.getName());
-        }
     }
 
     /**
@@ -338,24 +319,24 @@ public class PlaceServiceImpl implements PlaceService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.PLACE_NOT_FOUND_BY_ID + id));
 
         Set<OpeningHoursDto> openingHoursDtos = place
-                .getOpeningHoursList()
-                .stream()
-                .map(i -> OpeningHoursDto
-                        .builder()
-                        .openTime(i.getOpenTime())
-                        .closeTime(i.getCloseTime())
-                        .weekDay(i.getWeekDay())
-                        .build())
-                .collect(Collectors.toSet());
+            .getOpeningHoursList()
+            .stream()
+            .map(i -> OpeningHoursDto
+                .builder()
+                .openTime(i.getOpenTime())
+                .closeTime(i.getCloseTime())
+                .weekDay(i.getWeekDay())
+                .build())
+            .collect(Collectors.toSet());
 
         return PlaceUpdateDto
-                .builder()
-                .id(place.getId())
-                .openingHoursList(openingHoursDtos)
-                .categoryId(place.getCategory().getId())
-                .address(place.getLocation().getAddressEn())
-                .name(place.getName())
-                .build();
+            .builder()
+            .id(place.getId())
+            .openingHoursList(openingHoursDtos)
+            .categoryId(place.getCategory().getId())
+            .address(place.getLocation().getAddressEn())
+            .name(place.getName())
+            .build();
     }
 
     /**
@@ -625,15 +606,19 @@ public class PlaceServiceImpl implements PlaceService {
         return dto;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public void update(PlaceUpdateDto dto, MultipartFile[] images, Long userId) {
-        User user = getUser(userId);
         Place place = findPlaceById(dto.getId());
         Category category = getCategory(dto.getCategoryId());
 
         Location location = buildLocation(dto.getName());
         Set<OpeningHours> openingHours = mapOpeningHours(dto.getOpeningHoursList());
+
+        openingHoursService.deleteAllByPlaceId(place.getId());
 
         place
             .setName(dto.getName())
@@ -642,10 +627,16 @@ public class PlaceServiceImpl implements PlaceService {
             .setOpeningHoursList(openingHours);
 
         linkOpeningHoursToPlace(place);
+
+        User user = getUser(userId);
+
         mapMultipartFilesToPhotos(images, place, user);
         placeRepo.save(place);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public void save(AddPlaceDto dto, Long userId, MultipartFile[] images) {
@@ -656,33 +647,39 @@ public class PlaceServiceImpl implements PlaceService {
 
         if (locationService.existsByLatAndLng(location.getLat(), location.getLng())) {
             throw new PlaceAlreadyExistsException(
-                    ErrorMessage.PLACE_ALREADY_EXISTS.formatted(location.getLat(), location.getLng()));
+                ErrorMessage.PLACE_ALREADY_EXISTS.formatted(location.getLat(), location.getLng()));
         }
 
         Set<OpeningHours> openingHours = mapOpeningHours(dto.getOpeningHoursList());
 
         Place place = Place.builder()
-                .name(dto.getName())
-                .location(location)
-                .category(category)
-                .author(user)
-                .openingHoursList(openingHours)
-                .build();
+            .name(dto.getName())
+            .location(location)
+            .category(category)
+            .author(user)
+            .openingHoursList(openingHours)
+            .build();
 
         linkOpeningHoursToPlace(place);
         mapMultipartFilesToPhotos(images, place, user);
         placeRepo.save(place);
+
+        List<UserVO> usersId = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
+            EmailPreferencePeriodicity.IMMEDIATELY);
+
+        userNotificationService.createNewNotificationForPlaceAdded(usersId, place.getId(),
+            place.getCategory().getNameEn(), place.getName());
     }
 
     private User getUser(Long userId) {
         return userRepo
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+            .findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
     }
 
     private Category getCategory(Long categoryId) {
         return categoryRepo.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + categoryId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.CATEGORY_NOT_FOUND_BY_ID + categoryId));
     }
 
     private Location buildLocation(String searchString) {
@@ -695,26 +692,26 @@ public class PlaceServiceImpl implements PlaceService {
         GeocodingResult engLang = geocodingResults.get(1);
 
         return Location.builder()
-                .addressUk(ukrLang.formattedAddress)
-                .addressEn(engLang.formattedAddress)
-                .lat(ukrLang.geometry.location.lat)
-                .lng(ukrLang.geometry.location.lng)
-                .build();
+            .addressUk(ukrLang.formattedAddress)
+            .addressEn(engLang.formattedAddress)
+            .lat(ukrLang.geometry.location.lat)
+            .lng(ukrLang.geometry.location.lng)
+            .build();
     }
 
     private Set<OpeningHours> mapOpeningHours(Set<OpeningHoursDto> dtos) {
         return dtos.stream()
-                .map(i -> OpeningHours.builder()
-                        .openTime(i.getOpenTime())
-                        .closeTime(i.getCloseTime())
-                        .weekDay(i.getWeekDay())
-                        .build())
-                .collect(Collectors.toSet());
+            .map(i -> OpeningHours.builder()
+                .openTime(i.getOpenTime())
+                .closeTime(i.getCloseTime())
+                .weekDay(i.getWeekDay())
+                .build())
+            .collect(Collectors.toSet());
     }
 
     private void linkOpeningHoursToPlace(Place place) {
         Optional.ofNullable(place.getOpeningHoursList())
-                .orElse(Collections.emptySet())
-                .forEach(i -> i.setPlace(place));
+            .orElse(Collections.emptySet())
+            .forEach(i -> i.setPlace(place));
     }
 }

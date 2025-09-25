@@ -366,17 +366,17 @@ class PlaceControllerTest {
         Principal principal = Mockito.mock(Principal.class);
 
         MockMultipartFile updatePlaceDto = new MockMultipartFile(
-                "dto",
-                "",
-                "application/json",
-                (json)
-                        .getBytes());
+            "dto",
+            "",
+            "application/json",
+            (json)
+                .getBytes());
 
         this.mockMvc.perform(multipart(HttpMethod.PUT, placeLink + "/update")
-                        .file(updatePlaceDto)
-                        .principal(principal)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isNoContent());
+            .file(updatePlaceDto)
+            .principal(principal)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isNoContent());
 
         verify(placeService).update(any(), any(), any());
     }
@@ -453,17 +453,17 @@ class PlaceControllerTest {
         Principal principal = Mockito.mock(Principal.class);
 
         MockMultipartFile addPlaceDto = new MockMultipartFile(
-                "dto",
-                "",
-                "application/json",
-                (json)
-                        .getBytes());
+            "dto",
+            "",
+            "application/json",
+            (json)
+                .getBytes());
 
         this.mockMvc.perform(multipart(HttpMethod.POST, placeLink + "/v2/save")
-                        .file(addPlaceDto)
-                        .principal(principal)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(status().isNoContent());
+            .file(addPlaceDto)
+            .principal(principal)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .andExpect(status().isNoContent());
 
         verify(placeService).save(any(), any(), any());
 //        String json = """

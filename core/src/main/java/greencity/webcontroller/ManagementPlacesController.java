@@ -89,11 +89,44 @@ public class ManagementPlacesController {
     }
 
     /**
-     * Method which saves {@link PlaceVO}.
+     * Creates and saves a new Place with the provided details and optional images.
+     * <p>
+     * This endpoint accepts a {@code multipart/form-data} request containing:
+     * <ul>
+     * <li><b>addPlaceDto</b> – JSON object with the details of the place to be
+     * created (validated).</li>
+     * <li><b>images</b> – optional array of {@link MultipartFile} representing
+     * images of the place.</li>
+     * </ul>
+     * </p>
      *
-     * @param addPlaceDto dto with info for registering place.
-     * @param userId      {@link Long} current user id
-     * @return {@link GenericResponseDto}
+     * <p>
+     * If validation succeeds, the new place is persisted via {@link PlaceService}.
+     * If validation fails, the corresponding errors are collected and returned
+     * inside {@link GenericResponseDto}.
+     * </p>
+     *
+     * <p>
+     * <b>Responses:</b>
+     * </p>
+     * <ul>
+     * <li>{@code 200 OK} – if the request is processed; the response body contains
+     * success confirmation or validation errors.</li>
+     * <li>{@code 400 BAD_REQUEST} – invalid request format or validation failure
+     * (reported in {@link GenericResponseDto}).</li>
+     * <li>{@code 401 UNAUTHORIZED} – if the user is not authenticated.</li>
+     * <li>{@code 403 FORBIDDEN} – if the user is not allowed to create a
+     * place.</li>
+     * </ul>
+     *
+     * @param addPlaceDto   the DTO with details of the new place to create,
+     *                      required and validated
+     * @param bindingResult the validation result for {@code addPlaceDto}
+     * @param userId        the ID of the authenticated user (injected
+     *                      automatically)
+     * @param images        optional uploaded images associated with the place
+     * @return {@link GenericResponseDto} containing success confirmation or
+     *         validation errors
      */
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
@@ -109,10 +142,46 @@ public class ManagementPlacesController {
     }
 
     /**
-     * Method which updates {@link PlaceVO}.
+     * Updates an existing Place with the provided data and optional images.
+     * <p>
+     * This endpoint accepts a multipart/form-data request containing:
+     * <ul>
+     * <li><b>placeUpdateDto</b> – JSON object with updated place information
+     * (validated).</li>
+     * <li><b>images</b> – optional array of {@link MultipartFile} representing new
+     * place images.</li>
+     * </ul>
+     * </p>
      *
-     * @param placeUpdateDto of {@link PlaceUpdateDto}
-     * @return {@link GenericResponseDto}
+     * <p>
+     * If validation succeeds, the place is updated via {@link PlaceService}.
+     * Otherwise, validation errors are collected and returned in
+     * {@link GenericResponseDto}.
+     * </p>
+     *
+     * <p>
+     * <b>Responses:</b>
+     * </p>
+     * <ul>
+     * <li>{@code 200 OK} – update attempt completed; response body contains success
+     * status or validation errors.</li>
+     * <li>{@code 400 BAD_REQUEST} – invalid request format or validation failure
+     * (included in {@code GenericResponseDto}).</li>
+     * <li>{@code 401 UNAUTHORIZED} – user is not authenticated.</li>
+     * <li>{@code 403 FORBIDDEN} – user does not have permission to update this
+     * place.</li>
+     * <li>{@code 404 NOT_FOUND} – place with the given ID does not exist.</li>
+     * </ul>
+     *
+     * @param placeUpdateDto the DTO with updated place information, required and
+     *                       validated
+     * @param bindingResult  the result of validation for {@code placeUpdateDto}
+     * @param userId         the ID of the authenticated user (injected
+     *                       automatically)
+     * @param images         optional uploaded images to be associated with the
+     *                       place
+     * @return {@link GenericResponseDto} containing either success confirmation or
+     *         validation errors
      */
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody

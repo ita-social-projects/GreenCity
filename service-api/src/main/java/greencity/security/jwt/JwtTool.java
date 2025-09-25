@@ -127,9 +127,9 @@ public class JwtTool {
             Cookie[] cookies = request.getCookies();
 
             String accessToken = Arrays.stream(cookies)
-                    .filter(c -> c.getName().equals("accessToken"))
-                    .findFirst()
-                    .map(Cookie::getValue).orElse(null);
+                .filter(c -> c.getName().equals("accessToken"))
+                .findFirst()
+                .map(Cookie::getValue).orElse(null);
 
             if (accessToken == null) {
                 throw new NoJwtException(ErrorMessage.NO_JWT_TOKEN_FOUND);
