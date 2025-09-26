@@ -15,8 +15,11 @@ import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
+import greencity.dto.user.UserAddRatingExternalDto;
 import greencity.dto.user.UserCityDto;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserFilterDto;
+import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
@@ -43,6 +46,7 @@ import greencity.repository.options.UserFilter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -103,7 +107,7 @@ public class UserServiceImpl implements UserService {
         userVO.setUserStatus(userStatus);
 
         UserStatusDto userStatusDto = UserStatusDto.builder()
-            .id(id)
+            .email(userVO.getEmail())
             .userStatus(userStatus)
             .build();
 
@@ -275,6 +279,16 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public List<Long> getAllUserFriendsIds(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return userRepo.getAllUserFriendsIds(user.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PageableAdvancedDto<Long> getAllUserFriendsIds(Long userId, Pageable pageable) {
         if (!userRepo.existsById(userId)) {
             throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
@@ -298,11 +312,31 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public PageableAdvancedDto<Long> getAllUserFriendsIds(String email, Pageable pageable) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return getAllUserFriendsIds(user.getId(), pageable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<Long> getSixFriendsIdsWithTheHighestRating(Long userId) {
         if (!userRepo.existsById(userId)) {
             throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
         return userRepo.getSixFriendsIdsWithTheHighestRating(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Long> getSixFriendsIdsWithTheHighestRating(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return userRepo.getSixFriendsIdsWithTheHighestRating(user.getId());
     }
 
     /**
@@ -372,6 +406,16 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public void setLocationForUser(String email, UserProfileDtoRequest userProfileDtoRequest) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        setLocationForUser(user.getId(), userProfileDtoRequest);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Double findUserRating(Long userId) {
         if (!userRepo.existsById(userId)) {
             throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
@@ -393,6 +437,18 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public void increaseUserRating(UserAddRatingExternalDto userAddRatingDto) {
+        String email = userAddRatingDto.getEmail();
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        user.setRating(user.getRating() + userAddRatingDto.getRating());
+        userRepo.save(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public UserCityDto findAllUsersCities(Long userId) {
         return findUserLocation(userId, UserCityDto.class);
     }
@@ -401,8 +457,28 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public UserCityDto findAllUsersCities(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return findUserLocation(user.getId(), UserCityDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public UserLocationDto findUserLocationDtoByUserId(Long userId) {
         return findUserLocation(userId, UserLocationDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserLocationDto findUserLocationDtoByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return findUserLocation(user.getId(), UserLocationDto.class);
     }
 
     /**
@@ -536,10 +612,10 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public void updateUserProfilePicture(Long userId, String profilePicturePath) {
-        int updatedRows = userRepo.updateUserProfilePictureByUserId(userId, profilePicturePath);
+    public void updateUserProfilePicture(String email, String profilePicturePath) {
+        int updatedRows = userRepo.updateUserProfilePictureByEmail(email, profilePicturePath);
         if (updatedRows == 0) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email);
         }
     }
 
@@ -552,6 +628,16 @@ public class UserServiceImpl implements UserService {
         if (updatedRows == 0) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUserName(String email, String userName) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        userRepo.updateUserName(user.getId(), userName);
     }
 
     /**
@@ -583,6 +669,15 @@ public class UserServiceImpl implements UserService {
         return greenCityProfiles;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByEmails(List<String> emails) {
+        List<Long> userIds = userRepo.getUserIdsByEmails(emails);
+        return findGreenCityUserProfilesByUserIds(userIds);
+    }
+
     private <T> T findUserLocation(Long userId, Class<T> clazz) {
         if (!userRepo.existsById(userId)) {
             throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
@@ -590,5 +685,48 @@ public class UserServiceImpl implements UserService {
         UserLocation userLocation = userLocationRepo.findAllUsersCities(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_DID_NOT_SET_ANY_CITY));
         return modelMapper.map(userLocation, clazz);
+    }
+
+    @Override
+    public void setInternalUserVOIds(List<UserVO> users) {
+        List<String> emails = users.stream()
+            .filter(Objects::nonNull)
+            .map(UserVO::getEmail)
+            .toList();
+        Map<String, Long> internalIds = findInternalIdsByEmails(emails);
+        users.stream()
+            .filter(Objects::nonNull)
+            .forEach(user -> user.setId(internalIds.get(user.getEmail())));
+    }
+
+    @Override
+    public void setInternalUserManagementDtoIds(List<UserManagementDto> users) {
+        List<String> emails = users.stream()
+            .filter(Objects::nonNull)
+            .map(UserManagementDto::getEmail)
+            .toList();
+        Map<String, Long> internalIds = findInternalIdsByEmails(emails);
+        users.stream()
+            .filter(Objects::nonNull)
+            .forEach(user -> user.setId(internalIds.get(user.getEmail())));
+    }
+
+    @Override
+    public void setInternalUserManagementVOIds(List<UserManagementVO> users) {
+        List<String> emails = users.stream()
+            .filter(Objects::nonNull)
+            .map(UserManagementVO::getEmail)
+            .toList();
+        Map<String, Long> internalIds = findInternalIdsByEmails(emails);
+        users.stream()
+            .filter(Objects::nonNull)
+            .forEach(user -> user.setId(internalIds.get(user.getEmail())));
+    }
+
+    private Map<String, Long> findInternalIdsByEmails(List<String> emails) {
+        return userRepo.findUserIdsByEmails(emails).stream()
+            .collect(Collectors.toMap(
+                UserEmailDto::userEmail,
+                UserEmailDto::userId));
     }
 }

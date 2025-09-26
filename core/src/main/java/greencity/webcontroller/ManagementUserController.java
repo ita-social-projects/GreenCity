@@ -5,6 +5,7 @@ import greencity.annotations.CurrentUserId;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
+import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserFilterDtoRequest;
@@ -25,7 +26,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +51,6 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 @AllArgsConstructor
 @RequestMapping("/management/users")
 public class ManagementUserController {
-    private final ModelMapper modelMapper;
     private final RestClient restClient;
     private final UserService userService;
     private final HabitAssignService habitAssignService;
@@ -92,6 +91,18 @@ public class ManagementUserController {
     }
 
     /**
+     * Method that find {@link UserManagementDto} by given email.
+     *
+     * @param id {@link Long} - user's id.
+     * @return {@link List} of {@link UserManagementDto} instance.
+     */
+    @GetMapping("/user/{id}")
+    @ResponseBody
+    public UserManagementDto findManagementUserById(@PathVariable("id") Long id) {
+        return restClient.findUserForManagement(id);
+    }
+
+    /**
      * Register new user from admin panel.
      *
      * @param userDto dto with info for registering user.
@@ -115,23 +126,11 @@ public class ManagementUserController {
     @ResponseBody
     public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
+            UpdateUserCredoDto updateUserCredoDto = new UpdateUserCredoDto(userDto.getId(), userDto.getUserCredo());
+            userService.updateUserCredo(updateUserCredoDto);
             restClient.updateUser(userDto);
         }
         return buildGenericResponseDto(bindingResult);
-    }
-
-    /**
-     * Method for finding {@link UserVO} by id.
-     *
-     * @param id of the searched {@link UserVO}.
-     * @return dto {@link UserManagementDto} of the {@link UserVO}.
-     * @author Vasyl Zhovnir
-     */
-    @GetMapping("/findById")
-    @ResponseBody
-    public UserManagementDto findById(@RequestParam("id") Long id) {
-        UserVO byId = restClient.findById(id);
-        return modelMapper.map(byId, UserManagementDto.class);
     }
 
     /**

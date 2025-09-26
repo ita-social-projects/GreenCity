@@ -494,6 +494,7 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
+            .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .rating(10.)
             .profilePicturePath("image path")
@@ -1770,7 +1771,7 @@ public class ModelUtils {
 
     private static UserStatusDto createUserStatusDto() {
         return UserStatusDto.builder()
-            .id(2L)
+            .email("test@email")
             .userStatus(UserStatus.CREATED)
             .build();
     }
@@ -3246,7 +3247,6 @@ public class ModelUtils {
             .id(1L)
             .requesterId(1L)
             .friendStatus("FRIEND")
-            .chatId(1L)
             .build();
     }
 
@@ -3711,6 +3711,7 @@ public class ModelUtils {
     public static GreenCityUserProfileDtoResponse getGreenCityUserProfileDtoResponse(Long userId) {
         return new GreenCityUserProfileDtoResponse(
             userId,
+            "test@email",
             TestConst.PICTURE_PATH,
             "user credo",
             0.);

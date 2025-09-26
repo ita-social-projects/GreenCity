@@ -196,6 +196,27 @@ public class HabitStatisticController {
     }
 
     /**
+     * For external services usage. Method for getting amount of acquired
+     * {@link HabitVO} by {@link UserVO} email.
+     *
+     * @param email {@link UserVO} email.
+     * @return amount of acquired habits.
+     */
+    @Operation(summary = "Get amount of acquired habit", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/acquired/count/external")
+    public ResponseEntity<Long> findAmountOfAcquiredHabits(@RequestParam String email) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitStatisticService.getAmountOfAcquiredHabitsByEmail(email));
+    }
+
+    /**
      * Method for getting amount of in progress {@link HabitVO} by {@link UserVO}
      * id.
      *
@@ -215,5 +236,27 @@ public class HabitStatisticController {
     public ResponseEntity<Long> findAmountOfHabitsInProgress(@RequestParam Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitStatisticService.getAmountOfHabitsInProgressByUserId(userId));
+    }
+
+    /**
+     * For external services usage. Method for getting amount of in progress
+     * {@link HabitVO} by {@link UserVO} email.
+     *
+     * @param email {@link UserVO} email.
+     * @return amount of acquired habits.
+     * @author Mamchuk Orest
+     */
+    @Operation(summary = "Get amount of in progress habit", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("in-progress/count/external")
+    public ResponseEntity<Long> findAmountOfHabitsInProgress(@RequestParam String email) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitStatisticService.getAmountOfHabitsInProgressByEmail(email));
     }
 }

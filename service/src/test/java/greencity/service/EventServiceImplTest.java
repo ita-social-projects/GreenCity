@@ -1421,6 +1421,19 @@ class EventServiceImplTest {
     }
 
     @Test
+    void getCountOfAttendedEventsByEmailTest() {
+        User user = getUser();
+
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(eventRepo.countDistinctByAttendersId(user.getId())).thenReturn(5L);
+
+        Long countOfAttendedEventsByEmail = eventService.getCountOfAttendedEventsByEmail(user.getEmail());
+
+        assertEquals(5L, countOfAttendedEventsByEmail);
+        verify(eventRepo).countDistinctByAttendersId(user.getId());
+    }
+
+    @Test
     void getCountOfOrganizedEventsByUserIdTest() {
         Long userId = 1L;
 

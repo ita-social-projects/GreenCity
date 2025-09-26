@@ -213,7 +213,7 @@ public class NotificationServiceImpl implements NotificationService {
                 notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
             if (!notifications.isEmpty()) {
                 notifications.stream()
-                    .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
+                    .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getEmail(), emailPreference, now))
                     .map(notification -> notification.setEmailSent(true))
                     .forEach(notification -> {
                         User targetUser = notification.getTargetUser();
@@ -229,22 +229,22 @@ public class NotificationServiceImpl implements NotificationService {
         });
     }
 
-    private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference, LocalDateTime now) {
-        boolean timeToSend = userRemoteClient.searchUserNotificationPreference(new EmailPreferenceDto(userId,
+    private boolean isTimeToSendScheduleNotification(String email, EmailPreference emailPreference, LocalDateTime now) {
+        boolean timeToSend = userRemoteClient.searchUserNotificationPreference(new EmailPreferenceDto(email,
             emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY));
         if (now.getHour() < 12) {
             timeToSend = timeToSend || userRemoteClient
-                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                .searchUserNotificationPreference(new EmailPreferenceDto(email, emailPreference,
                     EmailPreferencePeriodicity.DAILY));
         }
         if (now.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
             timeToSend = timeToSend || userRemoteClient
-                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                .searchUserNotificationPreference(new EmailPreferenceDto(email, emailPreference,
                     EmailPreferencePeriodicity.WEEKLY));
         }
         if (now.getDayOfMonth() == 1) {
             timeToSend = timeToSend || userRemoteClient
-                .searchUserNotificationPreference(new EmailPreferenceDto(userId, emailPreference,
+                .searchUserNotificationPreference(new EmailPreferenceDto(email, emailPreference,
                     EmailPreferencePeriodicity.MONTHLY));
         }
         return timeToSend;
@@ -318,7 +318,7 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         List<SubscriberDto> subscribers = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(
             EmailPreference.PLACES, periodicity).stream()
-            .filter(u -> isTimeToSendScheduleNotification(u.getId(), EmailPreference.PLACES, now))
+            .filter(u -> isTimeToSendScheduleNotification(u.getEmail(), EmailPreference.PLACES, now))
             .map(o -> modelMapper.map(o, SubscriberDto.class))
             .toList();
 

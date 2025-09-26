@@ -82,12 +82,28 @@ public interface HabitStatisticService {
     Long getAmountOfHabitsInProgressByUserId(Long id);
 
     /**
+     * Method for getting amount of habits in progress by user email.
+     *
+     * @param email {@code User} email.
+     * @return amount of habits in progress by user id.
+     */
+    Long getAmountOfHabitsInProgressByEmail(String email);
+
+    /**
      * Method for getting amount of acquired habits by user id.
      *
      * @param id {@link Long} user id.
      * @return amount of acquired habits by user id.
      */
     Long getAmountOfAcquiredHabitsByUserId(Long id);
+
+    /**
+     * Method for getting amount of acquired habits by user email.
+     *
+     * @param email {@link String} user email.
+     * @return amount of acquired habits by user id.
+     */
+    Long getAmountOfAcquiredHabitsByEmail(String email);
 
     /**
      * Method for deleting all statistics for certain {@code HabitAssign}.

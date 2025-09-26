@@ -615,6 +615,26 @@ public class EventController {
     }
 
     /**
+     * For external services usage. The method finds count of events attended by
+     * user email.
+     *
+     * @param email {@link String} email of current user.
+     * @return {@link Long} count of attended events.
+     */
+    @Operation(summary = "Finds amount of events where user is attender", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/attenders/count/external")
+    public ResponseEntity<Long> getAllAttendersCount(@RequestParam String email) {
+        return ResponseEntity.ok().body(eventService.getCountOfAttendedEventsByEmail(email));
+    }
+
+    /**
      * The method finds count of events organized by user id.
      *
      * @param userId {@link Long} id of current user.
@@ -631,6 +651,26 @@ public class EventController {
     @GetMapping("/organizers/count")
     public ResponseEntity<Long> getOrganizersCount(@RequestParam(name = "user-id") Long userId) {
         return ResponseEntity.ok().body(eventService.getCountOfOrganizedEventsByUserId(userId));
+    }
+
+    /**
+     * For external services usage. The method finds count of events organized by
+     * user email.
+     *
+     * @param email {@link String} email of current user.
+     * @return {@link Long} count of organized events.
+     */
+    @Operation(summary = "Finds amount of events where user is organizer", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/organizers/count/external")
+    public ResponseEntity<Long> getOrganizersCount(@RequestParam String email) {
+        return ResponseEntity.ok().body(eventService.getCountOfOrganizedEventsByEmail(email));
     }
 
     /**

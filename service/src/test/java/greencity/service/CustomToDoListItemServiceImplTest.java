@@ -20,6 +20,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.UserToDoListItemRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -65,6 +66,9 @@ class CustomToDoListItemServiceImplTest {
     @Mock
     private UserToDoListItemRepo userToDoListItemRepo;
 
+    @Mock
+    private UserRepo userRepo;
+
     @InjectMocks
     private CustomToDoListItemServiceImpl customToDoListItemService;
 
@@ -72,7 +76,7 @@ class CustomToDoListItemServiceImplTest {
         User.builder()
             .id(1L)
             .name("Test Testing")
-            // .email("test@gmail.com")
+            .email("test@gmail.com")
             .customToDoListItems(new ArrayList<>())
             .build();
 
@@ -132,6 +136,19 @@ class CustomToDoListItemServiceImplTest {
         }.getType())).thenReturn(items);
 
         assertEquals(items, customToDoListItemService.findAllAvailableCustomToDoListItems(1L, 1L));
+    }
+
+    @Test
+    void findAllAvailableCustomToDoListItemsExternal() {
+        List<CustomToDoListItem> items = new ArrayList<>();
+        items.add(item);
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(anyLong(), anyLong()))
+            .thenReturn(items);
+        when(modelMapper.map(items, new TypeToken<List<CustomToDoListItemResponseDto>>() {
+        }.getType())).thenReturn(items);
+
+        assertEquals(items, customToDoListItemService.findAllAvailableCustomToDoListItems(user.getEmail(), 1L));
     }
 
     @Test

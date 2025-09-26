@@ -11,6 +11,7 @@ import greencity.exception.exceptions.GreenCityUserServiceException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.security.jwt.JwtTool;
 import io.netty.channel.ChannelOption;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import java.time.Duration;
@@ -51,6 +53,7 @@ public class UserRemoteClientConfig {
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .filter(authorizationHeaderFilter())
             .filter(handlingWebClientExceptions())
+            .filter(encodePlusInQuery())
             .clientConnector(
                 new ReactorClientHttpConnector(
                     HttpClient.create()
@@ -105,5 +108,28 @@ public class UserRemoteClientConfig {
         } catch (JsonProcessingException e) {
             throw new ErrorParsingException(e.getMessage());
         }
+    }
+
+    public ExchangeFilterFunction encodePlusInQuery() {
+        return ExchangeFilterFunction.ofRequestProcessor(request -> {
+            URI original = request.url();
+
+            if (original.getRawQuery() != null && original.getRawQuery().contains("+")) {
+                String strictlyEscapedQuery = original.getRawQuery().replace("+", "%2B");
+
+                URI newUri = UriComponentsBuilder.fromUri(original)
+                    .replaceQuery(strictlyEscapedQuery)
+                    .build(true)
+                    .toUri();
+
+                ClientRequest mutated = ClientRequest.from(request)
+                    .url(newUri)
+                    .build();
+
+                return Mono.just(mutated);
+            }
+
+            return Mono.just(request);
+        });
     }
 }

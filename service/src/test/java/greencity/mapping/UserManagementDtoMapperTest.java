@@ -38,7 +38,7 @@ class UserManagementDtoMapperTest {
             .userStatus(userVO.getUserStatus())
             .build();
 
-        when(userRemoteClient.findNotDeactivatedById(user.getId())).thenReturn(Optional.of(userVO));
+        when(userRemoteClient.findNotDeactivatedByEmail(user.getEmail())).thenReturn(Optional.of(userVO));
 
         assertEquals(expected, userManagementDtoMapper.convert(user));
     }

@@ -26,11 +26,11 @@ class UserVOMapperTest {
     void convert() {
         User userToConvert = User.builder()
             .id(1L)
-            // .email("email")
+            .email("email")
             .build();
         UserVO expected = ModelUtils.getUserVOWithData();
 
-        when(userRemoteClient.findNotDeactivatedById(userToConvert.getId()))
+        when(userRemoteClient.findByEmail(userToConvert.getEmail()))
             .thenReturn(Optional.of(expected));
 
         assertEquals(expected, mapper.convert(userToConvert));

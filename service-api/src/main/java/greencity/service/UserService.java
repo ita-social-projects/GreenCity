@@ -8,8 +8,10 @@ import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
+import greencity.dto.user.UserAddRatingExternalDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
+import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
@@ -124,12 +126,28 @@ public interface UserService {
     UserCityDto findAllUsersCities(Long userId);
 
     /**
+     * Find and return city and coordinates.
+     *
+     * @param email user's email
+     * @return {@link UserCityDto}
+     **/
+    UserCityDto findAllUsersCities(String email);
+
+    /**
      * Find and return user location by user id.
      *
      * @param userId id of the user
      * @return {@link UserLocationDto}
      **/
     UserLocationDto findUserLocationDtoByUserId(Long userId);
+
+    /**
+     * Find and return user location by user email.
+     *
+     * @param email user's email
+     * @return {@link UserLocationDto}
+     **/
+    UserLocationDto findUserLocationDtoByEmail(String email);
 
     /**
      * Update user credo by user id.
@@ -147,6 +165,14 @@ public interface UserService {
     void setLocationForUser(Long userId, UserProfileDtoRequest userProfileDtoRequest);
 
     /**
+     * Set user location by coordinates from {@link UserProfileDtoRequest}.
+     *
+     * @param email                 user's email
+     * @param userProfileDtoRequest contains location data
+     */
+    void setLocationForUser(String email, UserProfileDtoRequest userProfileDtoRequest);
+
+    /**
      * Get the rating of the user by user id.
      *
      * @param userId id of the user
@@ -160,6 +186,13 @@ public interface UserService {
      * @param userAddRatingDto contains rating data.
      */
     void increaseUserRating(UserAddRatingDto userAddRatingDto);
+
+    /**
+     * Increase user rating by amount specified in {@link UserAddRatingExternalDto}.
+     *
+     * @param userAddRatingDto contains rating data.
+     */
+    void increaseUserRating(UserAddRatingExternalDto userAddRatingDto);
 
     /**
      * Find list of {@link UserVO}'s by emails.
@@ -188,6 +221,14 @@ public interface UserService {
     List<Long> getAllUserFriendsIds(Long userId);
 
     /**
+     * Get all user's friends ids by user email.
+     *
+     * @param email user's email.
+     * @return list of friends ids.
+     */
+    List<Long> getAllUserFriendsIds(String email);
+
+    /**
      * Get all user friends ids as a page.
      *
      * @param userId   id of the user.
@@ -197,12 +238,29 @@ public interface UserService {
     PageableAdvancedDto<Long> getAllUserFriendsIds(Long userId, Pageable pageable);
 
     /**
+     * Get all user friends ids as a page.
+     *
+     * @param email    email of the user.
+     * @param pageable pageable configuration.
+     * @return {@link Page}
+     */
+    PageableAdvancedDto<Long> getAllUserFriendsIds(String email, Pageable pageable);
+
+    /**
      * Get top 6 friends ids with the highest rating.
      *
      * @param userId - {@link UserVO}'s id
      * @return {@link List} of friends ids
      */
     List<Long> getSixFriendsIdsWithTheHighestRating(Long userId);
+
+    /**
+     * Get top 6 friends ids with the highest rating.
+     *
+     * @param email - {@link UserVO}'s email
+     * @return {@link List} of friends ids
+     */
+    List<Long> getSixFriendsIdsWithTheHighestRating(String email);
 
     /**
      * Method that allows to find {@link UserVOAdvancedDto} by id.
@@ -234,10 +292,10 @@ public interface UserService {
     /**
      * Method for updating user's profilePicturePath.
      *
-     * @param userId             - {@link Long} of user's id.
+     * @param email              - user's email.
      * @param profilePicturePath - new picturePath.
      */
-    void updateUserProfilePicture(Long userId, String profilePicturePath);
+    void updateUserProfilePicture(String email, String profilePicturePath);
 
     /**
      * Method for updating user's name.
@@ -248,12 +306,51 @@ public interface UserService {
     void updateUserName(Long userId, String userName);
 
     /**
-     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing.
-     * information about user
+     * Method for updating user's name.
+     *
+     * @param email    - user's email.
+     * @param userName - new user's name.
+     */
+    void updateUserName(String email, String userName);
+
+    /**
+     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing
+     * information about user.
      *
      * @param userIds ids of users for whom to fetch the data
      * @return list of {@link GreenCityUserProfileDtoResponse} containing
      *         information about user
      */
     List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
+
+    /**
+     * Method to find list of {@link GreenCityUserProfileDtoResponse} containing
+     * information about user.
+     *
+     * @param emails emails of users for whom to fetch the data
+     * @return list of {@link GreenCityUserProfileDtoResponse} containing
+     *         information about user
+     */
+    List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByEmails(List<String> emails);
+
+    /**
+     * Method to set internal GreenCity ids for {@link UserVO}.
+     *
+     * @param users users for whom to set internal ids
+     */
+    void setInternalUserVOIds(List<UserVO> users);
+
+    /**
+     * Method to set internal GreenCity ids for {@link UserManagementDto}.
+     *
+     * @param users users for whom to set internal ids
+     */
+    void setInternalUserManagementDtoIds(List<UserManagementDto> users);
+
+    /**
+     * Method to set internal GreenCity ids for {@link UserManagementVO}.
+     *
+     * @param users users for whom to set internal ids
+     */
+    void setInternalUserManagementVOIds(List<UserManagementVO> users);
 }

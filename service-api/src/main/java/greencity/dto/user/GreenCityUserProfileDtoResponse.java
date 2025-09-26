@@ -9,15 +9,17 @@ import lombok.Setter;
 @Setter
 public class GreenCityUserProfileDtoResponse {
     private final Long userId;
+    private final String email;
     private final String profilePicturePath;
     private final String userCredo;
     private final Double userRating;
     @Nullable
     private UserLocationDto userLocationDto;
 
-    public GreenCityUserProfileDtoResponse(Long userId, String profilePicturePath, String userCredo,
+    public GreenCityUserProfileDtoResponse(Long userId, String email, String profilePicturePath, String userCredo,
         Double userRating) {
         this.userId = userId;
+        this.email = email;
         this.profilePicturePath = profilePicturePath;
         this.userCredo = userCredo;
         this.userRating = userRating;

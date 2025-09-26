@@ -6,7 +6,6 @@ import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
-import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
@@ -20,12 +19,13 @@ import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.service.UserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,14 +38,20 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UserRemoteClient {
     private final WebClient webClient;
+    private final UserService userService;
 
     private static final String PAGE_QUERY_PARAM = "page";
     private static final String PAGE_SIZE_QUERY_PARAM = "size";
     private static final String USER_EMAIL_QUERY_PARAM = "email";
     private static final String ID_QUERY_PARAM = "id";
+    private static final String EMAIL_QUERY_PARAM = "email";
+
+    public UserRemoteClient(WebClient webClient, @Lazy UserService userService) {
+        this.webClient = webClient;
+        this.userService = userService;
+    }
 
     /**
      * Method for uploading files.
@@ -126,23 +132,29 @@ public class UserRemoteClient {
             .retrieve()
             .bodyToMono(UserVO.class)
             .block();
+        if (userVO != null) {
+            userService.setInternalUserVOIds(List.of(userVO));
+        }
         return Optional.ofNullable(userVO);
     }
 
     /**
-     * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by id.
+     * Finds {@link UserVO} by {@link UserVO}'s Email.
      *
-     * @param id - {@link UserVO}'s id
-     * @return {@link Optional} of found {@link UserVO}.
+     * @param email {@link UserVO}'s Email.
+     * @return {@link Optional} of {@link UserVO}.
      */
-    public Optional<UserVO> findNotDeactivatedById(Long id) {
+    public Optional<UserVO> findByEmail(String email) {
         UserVO userVO = webClient.get()
-            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedById")
-                .queryParam(ID_QUERY_PARAM, id)
+            .uri(uriBuilder -> uriBuilder.path("/user/findByEmail")
+                .queryParam(USER_EMAIL_QUERY_PARAM, email)
                 .build())
             .retrieve()
             .bodyToMono(UserVO.class)
             .block();
+        if (userVO != null) {
+            userService.setInternalUserVOIds(List.of(userVO));
+        }
         return Optional.ofNullable(userVO);
     }
 
@@ -170,8 +182,11 @@ public class UserRemoteClient {
      * @return {@link Optional} of updated {@link UserRoleDto}
      */
     public Optional<UserRoleDto> updateUserRole(Long id, Map<String, String> body) {
+        String email = userService.findById(id).getEmail();
         UserRoleDto updatedRole = webClient.patch()
-            .uri(uriBuilder -> uriBuilder.path("/user/{id}/role").build(id))
+            .uri(uriBuilder -> uriBuilder.path("/user/role")
+                .queryParam(EMAIL_QUERY_PARAM, email)
+                .build())
             .bodyValue(body)
             .retrieve()
             .bodyToMono(UserRoleDto.class)
@@ -256,8 +271,11 @@ public class UserRemoteClient {
      * @return boolean of whether user by that id is online.
      */
     public Boolean checkIfTheUserIsOnline(Long userId) {
+        String email = userService.findById(userId).getEmail();
         return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path("/user/isOnline/{userId}/").build(userId))
+            .uri(uriBuilder -> uriBuilder.path("/user/isOnline")
+                .queryParam(EMAIL_QUERY_PARAM, email)
+                .build())
             .retrieve()
             .bodyToMono(Boolean.class)
             .block();
@@ -272,7 +290,7 @@ public class UserRemoteClient {
      */
     public List<UserVO> findAllByEmailPreferenceAndEmailPeriodicity(
         EmailPreference emailPreference, EmailPreferencePeriodicity periodicity) {
-        return webClient.get()
+        List<UserVO> users = webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/user/email")
                 .queryParam("email-preference", emailPreference.name())
                 .queryParam("email-periodicity", periodicity.name())
@@ -281,6 +299,10 @@ public class UserRemoteClient {
             .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {
             })
             .block();
+        if (users != null) {
+            userService.setInternalUserVOIds(users);
+        }
+        return users;
     }
 
     /**
@@ -331,15 +353,33 @@ public class UserRemoteClient {
 
     /**
      * Finds {@link UserVOAdvancedDto} that is not 'DEACTIVATED' by
-     * {@link UserVOAdvancedDto}'s id.
+     * {@link UserVOAdvancedDto}'s email.
      *
-     * @param id {@link UserVOAdvancedDto}'s id.
+     * @param email {@link UserVOAdvancedDto}'s email.
      * @return {@link Optional} of {@link UserVOAdvancedDto}.
      */
-    public Optional<UserVOAdvancedDto> findNotDeactivatedByIdAdvanced(Long id) {
+    public Optional<UserVOAdvancedDto> findNotDeactivatedByEmailAdvanced(String email) {
         UserVOAdvancedDto userVO = webClient.get()
-            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByIdAdvanced")
-                .queryParam(ID_QUERY_PARAM, id)
+            .uri(uriBuilder -> uriBuilder.path("/user/findNotDeactivatedByEmailAdvanced")
+                .queryParam(USER_EMAIL_QUERY_PARAM, email)
+                .build())
+            .retrieve()
+            .bodyToMono(UserVOAdvancedDto.class)
+            .block();
+
+        return Optional.ofNullable(userVO);
+    }
+
+    /**
+     * Finds {@link UserVOAdvancedDto} by {@link UserVOAdvancedDto}'s email.
+     *
+     * @param email {@link UserVOAdvancedDto}'s email.
+     * @return {@link Optional} of {@link UserVOAdvancedDto}.
+     */
+    public Optional<UserVOAdvancedDto> findByEmailAdvanced(String email) {
+        UserVOAdvancedDto userVO = webClient.get()
+            .uri(uriBuilder -> uriBuilder.path("/user/findByEmailAdvanced")
+                .queryParam(USER_EMAIL_QUERY_PARAM, email)
                 .build())
             .retrieve()
             .bodyToMono(UserVOAdvancedDto.class)
@@ -517,8 +557,7 @@ public class UserRemoteClient {
      */
     public List<UserVO> findAllByEmailIn(List<String> emails) {
         String emailsListQueryParam = "emails";
-
-        return webClient.get()
+        List<UserVO> users = webClient.get()
             .uri(uriBuilder -> uriBuilder.path("/user/email/findAll")
                 .queryParam(emailsListQueryParam, emails)
                 .build())
@@ -526,6 +565,10 @@ public class UserRemoteClient {
             .bodyToMono(new ParameterizedTypeReference<List<UserVO>>() {
             })
             .block();
+        if (users != null) {
+            userService.setInternalUserVOIds(users);
+        }
+        return users;
     }
 
     /**
@@ -535,26 +578,8 @@ public class UserRemoteClient {
      * @return boolean of whether user by that email exists
      */
     public boolean userExistsByEmail(String email) {
-        Optional<UserVO> userVOOptional = findNotDeactivatedByEmail(email);
+        Optional<UserVO> userVOOptional = findByEmail(email);
         return userVOOptional.isPresent();
-    }
-
-    /**
-     * Method to find all {@link UserEmailDto} user emails by user ids.
-     *
-     * @param userIds list of user ids
-     * @return list of {@link UserEmailDto} containing information about user's
-     *         email
-     */
-    public List<UserEmailDto> findUserEmailsByUserIds(List<Long> userIds) {
-        return webClient.get()
-            .uri(uriBuilder -> uriBuilder.path("/user/email/findByIds")
-                .queryParam("userIds", userIds)
-                .build())
-            .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<List<UserEmailDto>>() {
-            })
-            .block();
     }
 
     private BodyInserters.MultipartInserter multipartInserter(MultipartFile... multipartFiles) {
