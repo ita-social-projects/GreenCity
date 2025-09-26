@@ -136,4 +136,27 @@ public class AchievementController {
     public ResponseEntity<List<UserAchievementVO>> findAllUserAchievementsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok().body(achievementService.findAllUserAchievementsByUserId(userId));
     }
+
+    /**
+     * For external services usage. Method returns all user achievements by user
+     * email.
+     *
+     * @param email email of the user
+     *
+     * @return list of {@link UserAchievementVO}
+     */
+    @Operation(summary = "Get all user achievements by user email.", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @GetMapping("/user-achievements")
+    public ResponseEntity<List<UserAchievementVO>> findAllUserAchievementsByEmail(@RequestParam String email) {
+        return ResponseEntity.ok().body(achievementService.findAllUserAchievementsByEmail(email));
+    }
 }

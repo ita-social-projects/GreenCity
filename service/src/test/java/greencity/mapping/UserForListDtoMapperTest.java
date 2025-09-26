@@ -39,7 +39,8 @@ class UserForListDtoMapperTest {
             .userCredo(user.getUserCredo())
             .build();
 
-        when(userRemoteClient.findNotDeactivatedByIdAdvanced(user.getId())).thenReturn(Optional.of(userVO));
+        when(userRemoteClient.findNotDeactivatedByEmailAdvanced(user.getEmail()))
+            .thenReturn(Optional.of(userVO));
 
         assertEquals(expected, userForListDtoMapper.convert(user));
     }

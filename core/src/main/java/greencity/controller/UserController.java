@@ -6,6 +6,7 @@ import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
+import greencity.dto.user.UserAddRatingExternalDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserVO;
@@ -60,6 +61,28 @@ public class UserController {
     }
 
     /**
+     * For external services usage. Method to find {@link UserCityDto} by user
+     * email.
+     *
+     * @param email user's email
+     * @return {@link UserCityDto}.
+     */
+    @Operation(summary = "View a list of user cities", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @GetMapping("/user/cities")
+    public ResponseEntity<UserCityDto> findAllUsersCities(@RequestParam String email) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findAllUsersCities(email));
+    }
+
+    /**
      * Method to find {@link UserLocationDto} by user id.
      *
      * @param userId id of the user
@@ -105,6 +128,30 @@ public class UserController {
     }
 
     /**
+     * For external services usage. Method to update user location by user email.
+     *
+     * @param email                 user's email
+     * @param userProfileDtoRequest contains location data
+     */
+    @Operation(summary = "Update user location", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @PatchMapping("/user/location")
+    public ResponseEntity<Void> setLocationForUser(
+        @RequestParam String email,
+        @RequestBody UserProfileDtoRequest userProfileDtoRequest) {
+        userService.setLocationForUser(email, userProfileDtoRequest);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
      * Get all user's friends ids by user id.
      *
      * @param userId id of the user.
@@ -123,6 +170,27 @@ public class UserController {
     @GetMapping("/{id}/all-friends")
     public ResponseEntity<List<Long>> getAllUserFriendsIds(@PathVariable("id") Long userId) {
         return ResponseEntity.ok(userService.getAllUserFriendsIds(userId));
+    }
+
+    /**
+     * For external services usage. Get all user's friends ids by user email.
+     *
+     * @param email user's email
+     * @return list of friends ids.
+     */
+    @Operation(summary = "Get all user's friends ids by user email", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @GetMapping("/user/all-friends")
+    public ResponseEntity<List<Long>> getAllUserFriendsIds(@RequestParam String email) {
+        return ResponseEntity.ok(userService.getAllUserFriendsIds(email));
     }
 
     /**
@@ -149,6 +217,29 @@ public class UserController {
     }
 
     /**
+     * For external services usage. Get all user friends ids as a page.
+     *
+     * @param email    email of the user.
+     * @param pageable pageable configuration.
+     * @return {@link Page}
+     */
+    @Operation(summary = "Get all user friends ids as a page", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @GetMapping("/user/friends")
+    public ResponseEntity<PageableAdvancedDto<Long>> getAllUserFriendsIds(@RequestParam String email,
+        Pageable pageable) {
+        return ResponseEntity.ok(userService.getAllUserFriendsIds(email, pageable));
+    }
+
+    /**
      * Get top 6 friends ids with the highest rating.
      *
      * @param userId - {@link UserVO}'s id
@@ -170,6 +261,27 @@ public class UserController {
     }
 
     /**
+     * For external services usage. Get top 6 friends ids with the highest rating.
+     *
+     * @param email - {@link UserVO}'s email
+     * @return {@link List} of friends ids
+     */
+    @Operation(summary = "Get top 6 friends ids with the highest rating", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @GetMapping("/user/top-friends")
+    public ResponseEntity<List<Long>> getSixFriendsIdsWithTheHighestRating(@RequestParam String email) {
+        return ResponseEntity.ok(userService.getSixFriendsIdsWithTheHighestRating(email));
+    }
+
+    /**
      * Increase user rating by amount specified in {@link UserAddRatingDto}.
      *
      * @param userAddRatingDto contains rating data.
@@ -187,6 +299,29 @@ public class UserController {
     @PatchMapping("/rating")
     public ResponseEntity<Void> increaseUserRating(
         @RequestBody UserAddRatingDto userAddRatingDto) {
+        userService.increaseUserRating(userAddRatingDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * For external services usage. Increase user rating by amount specified in
+     * {@link UserAddRatingDto}.
+     *
+     * @param userAddRatingDto contains rating data.
+     */
+    @Operation(summary = "Increase user rating", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @PatchMapping("/user-rating")
+    public ResponseEntity<Void> increaseUserRating(
+        @RequestBody UserAddRatingExternalDto userAddRatingDto) {
         userService.increaseUserRating(userAddRatingDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -218,7 +353,6 @@ public class UserController {
      * Method to synchronize GreenCityUser's new user entity with GreenCity entity.
      * Used by GreenCityRemoteClient on the GreenCityUser microservice as a remote
      * endpoint to create a new user.
-     *
      */
     @Operation(summary = "Creates GreenCity user when it is created on GreenCityUser microservice")
     @ApiResponses(value = {
@@ -238,11 +372,10 @@ public class UserController {
     }
 
     /**
-     * Method to update user's picture path. Used by GreenCityRemoteClient on the
-     * GreenCityUser microservice as a remote endpoint.
-     *
+     * For external services usage. Method to update user's picture path. Used by
+     * GreenCityRemoteClient on the GreenCityUser microservice as a remote endpoint.
      */
-    @Operation(summary = "Updates user's picture path")
+    @Operation(summary = "Updates user's picture path", description = "For external services usage.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
@@ -254,10 +387,10 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PutMapping("/picturePath")
-    public ResponseEntity<Void> updatePicturePath(@RequestParam(name = "userId") Long userId,
+    @PutMapping("/user/picturePath")
+    public ResponseEntity<Void> updatePicturePath(@RequestParam String email,
         @RequestParam(name = "profilePicturePath") String profilePicturePath) {
-        userService.updateUserProfilePicture(userId, profilePicturePath);
+        userService.updateUserProfilePicture(email, profilePicturePath);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -285,6 +418,30 @@ public class UserController {
     }
 
     /**
+     * For external services usage. Method for updating user's name.
+     *
+     * @param email    - user's email.
+     * @param userName - new user's name.
+     */
+    @Operation(summary = "Updates user's name", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PatchMapping("/user/name")
+    public ResponseEntity<Void> updateUserName(@RequestParam String email, @RequestParam String userName) {
+        userService.updateUserName(email, userName);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * Method to find list of {@link GreenCityUserProfileDtoResponse} containing
      * information about user.
      *
@@ -307,5 +464,31 @@ public class UserController {
     public ResponseEntity<List<GreenCityUserProfileDtoResponse>> findGreenCityUserProfilesByUserIds(
         @RequestParam List<Long> userIds) {
         return ResponseEntity.ok(userService.findGreenCityUserProfilesByUserIds(userIds));
+    }
+
+    /**
+     * For external services usage. Method to find list of
+     * {@link GreenCityUserProfileDtoResponse} containing information about user.
+     *
+     * @param emails emails of users for whom to fetch the data
+     * @return list of {@link GreenCityUserProfileDtoResponse} containing
+     *         information about user
+     */
+    @Operation(summary = "Get user profiles by emails", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/profiles/external")
+    public ResponseEntity<List<GreenCityUserProfileDtoResponse>> findGreenCityUserProfilesByEmails(
+        @RequestParam List<String> emails) {
+        return ResponseEntity.ok(userService.findGreenCityUserProfilesByEmails(emails));
     }
 }

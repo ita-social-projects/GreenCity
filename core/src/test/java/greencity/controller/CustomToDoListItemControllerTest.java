@@ -69,6 +69,21 @@ class CustomToDoListItemControllerTest {
     }
 
     @Test
+    void getAllAvailableCustomToDoListItemsExternal() throws Exception {
+        String email = "email";
+        Long habitId = 1L;
+        this.mockMvc.perform(get(customLink)
+            .param("email", email)
+            .param("habitId", habitId.toString())
+            .principal(principal)).andExpect(status().isOk());
+        when(customToDoListItemService.findAllAvailableCustomToDoListItems(email, habitId))
+            .thenReturn(Collections.singletonList(dto));
+        verify(customToDoListItemService).findAllAvailableCustomToDoListItems(email, habitId);
+        assertEquals(dto,
+            customController.getAllAvailableCustomToDoListItems(email, habitId).getBody().get(0));
+    }
+
+    @Test
     void save() throws Exception {
         Long id = 1L;
         BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto = new BulkSaveCustomToDoListItemDto();

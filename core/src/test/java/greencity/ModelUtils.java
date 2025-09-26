@@ -498,7 +498,6 @@ public class ModelUtils {
             .id(1L)
             .requesterId(1L)
             .friendStatus("FRIEND")
-            .chatId(1L)
             .build();
     }
 

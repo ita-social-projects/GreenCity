@@ -19,10 +19,8 @@ public class UserAsFriendDto {
     private Long id;
     private String friendStatus;
     private Long requesterId;
-    private Long chatId;
 
-    public UserAsFriendDto(Long id, Long chatId) {
+    public UserAsFriendDto(Long id) {
         this.id = id;
-        this.chatId = chatId;
     }
 }

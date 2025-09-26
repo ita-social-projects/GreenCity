@@ -49,7 +49,7 @@ class UserVOAdvancedDtoMapperTest {
             .userCredo(expected.getUserCredo())
             .build();
 
-        when(userRemoteClient.findNotDeactivatedByIdAdvanced(userToConvert.getId()))
+        when(userRemoteClient.findByEmailAdvanced(userToConvert.getEmail()))
             .thenReturn(Optional.of(toConvert));
         when(modelMapper.map(userLocation, UserLocationDto.class))
             .thenReturn(ModelUtils.getUserLocationDto());

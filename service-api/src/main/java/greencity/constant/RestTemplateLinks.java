@@ -12,8 +12,9 @@ public class RestTemplateLinks {
     public static final String USER_FIND_BY_EMAIL = "/user/findByEmail";
     public static final String ID = "?id=";
     public static final String USER_FIND_BY_ID = "/user/findById";
-    public static final String USER_FIND_BY_ID_FOR_ACHIEVEMENT = "/user/findByIdForAchievement";
+    public static final String USER_FIND_BY_EMAIL_FOR_ACHIEVEMENT = "/user/findByEmailForAchievement";
     public static final String USER_FIND_USER_FOR_MANAGEMENT = "/user/findUserForManagement";
+    public static final String USER_FIND_USERS_FOR_MANAGEMENT = "/user/findUsersForManagement";
     public static final String PAGE = "?page=";
     public static final String SIZE = "&size=";
     public static final String QUERY = "&query=";

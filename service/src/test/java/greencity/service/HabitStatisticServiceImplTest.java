@@ -8,6 +8,7 @@ import greencity.dto.habitstatistic.*;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
+import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
 import greencity.exception.exceptions.BadRequestException;
@@ -16,6 +17,7 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
+import greencity.repository.UserRepo;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -61,6 +63,8 @@ class HabitStatisticServiceImplTest {
     private HabitStatisticServiceImpl habitStatisticService;
     @Mock
     private UserRemoteClient userRemoteClient;
+    @Mock
+    private UserRepo userRepo;
 
     private ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -231,9 +235,25 @@ class HabitStatisticServiceImplTest {
     }
 
     @Test
+    void getAmountOfHabitsInProgressByEmailTest() {
+        User user = ModelUtils.getUser();
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(habitStatisticRepo.getAmountOfHabitsInProgressByUserId(user.getId())).thenReturn(4L);
+        assertEquals(4L, habitStatisticRepo.getAmountOfHabitsInProgressByUserId(user.getId()));
+    }
+
+    @Test
     void getAmountOfAcquiredHabitsByUserIdTest() {
         when(habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(1L)).thenReturn(4L);
         assertEquals(4L, habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(1L));
+    }
+
+    @Test
+    void getAmountOfAcquiredHabitsByEmailTest() {
+        User user = ModelUtils.getUser();
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(user.getId())).thenReturn(4L);
+        assertEquals(4L, habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(user.getId()));
     }
 
     @Test

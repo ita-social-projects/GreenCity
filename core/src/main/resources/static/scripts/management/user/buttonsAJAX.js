@@ -312,11 +312,12 @@ $(document).ready(function () {
     // Edit user button (popup)
     $('td .edit.eBtn').on('click', function (event) {
         event.preventDefault();
-        $("#editUserModal").each(function () {
+        let userId = $(this).attr('user-id');
+        $("#editUserModal" + userId).each(function () {
             $(this).find('input.eEdit').val("");
         });
         clearAllErrorsSpan();
-        $('#editUserModal').modal();
+        $('#editUserModal' + userId).modal();
         var href = $(this).attr('href');
         $.get(href, function (user, status) {
             $('#id').val(user.id);

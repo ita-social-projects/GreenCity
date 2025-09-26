@@ -13,6 +13,7 @@ import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserAddRatingDto;
+import greencity.dto.user.UserAddRatingExternalDto;
 import greencity.dto.user.UserCityDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
@@ -259,6 +260,43 @@ class UserServiceImplTest {
     }
 
     @Test
+    void getAllUserFriendsIdsByEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        List<Long> userFriendIds = List.of(1L, 2L, 3L);
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.getAllUserFriendsIds(userId))
+            .thenReturn(userFriendIds);
+
+        List<Long> actualResult = userService.getAllUserFriendsIds(email);
+
+        assertEquals(userFriendIds, actualResult);
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).getAllUserFriendsIds(userId);
+    }
+
+    @Test
+    void getAllUserFriendsIdsByEmailWhenUserNotFoundTest() {
+        User user = ModelUtils.getUser();
+        String email = user.getEmail();
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.empty());
+
+        var notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.getAllUserFriendsIds(email));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(userRepo, never()).getAllUserFriendsIds(any());
+    }
+
+    @Test
     void getAllUserFriendsIdsPageableTest() {
         Long userId = TestConst.USER_ID;
         Page<Long> userFriendIds = new PageImpl<>(List.of(1L, 2L, 3L));
@@ -308,6 +346,60 @@ class UserServiceImplTest {
     }
 
     @Test
+    void getAllUserFriendsIdsPageableByEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        Page<Long> userFriendIds = new PageImpl<>(List.of(1L, 2L, 3L));
+        int pageNumber = 0;
+        int pageSize = 5;
+        PageableAdvancedDto<Long> expectedResult = PageableAdvancedDto.<Long>builder()
+            .page(userFriendIds.getContent())
+            .totalElements(userFriendIds.getTotalElements())
+            .currentPage(pageNumber)
+            .totalPages(userFriendIds.getTotalPages())
+            .number(pageNumber)
+            .hasPrevious(userFriendIds.hasPrevious())
+            .hasNext(userFriendIds.hasNext())
+            .first(userFriendIds.isFirst())
+            .last(userFriendIds.isLast())
+            .build();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.existsById(userId))
+            .thenReturn(true);
+        when(userRepo.getAllUserFriendsIds(userId, pageable))
+            .thenReturn(userFriendIds);
+
+        PageableAdvancedDto<Long> actualResult = userService.getAllUserFriendsIds(email, pageable);
+
+        assertEquals(expectedResult, actualResult);
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).getAllUserFriendsIds(userId, pageable);
+    }
+
+    @Test
+    void getAllUserFriendsIdsPageableByEmailWhenUserNotFoundTest() {
+        User user = ModelUtils.getUser();
+        String email = user.getEmail();
+        Pageable pageable = PageRequest.of(0, 5);
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.empty());
+
+        var notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.getAllUserFriendsIds(email, pageable));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(userRepo, never()).getAllUserFriendsIds(any(), any());
+    }
+
+    @Test
     void getSixFriendsIdsWithTheHighestRatingTest() {
         Long userId = TestConst.USER_ID;
         List<Long> userFriendIds = List.of(1L, 2L, 3L, 4L, 5L, 6L);
@@ -338,6 +430,43 @@ class UserServiceImplTest {
 
         assertEquals(expectedExceptionMessage, wrongIdException.getMessage());
         verify(userRepo).existsById(userId);
+        verify(userRepo, never()).getSixFriendsWithTheHighestRating(any());
+    }
+
+    @Test
+    void getSixFriendsIdsWithTheHighestRatingByEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        List<Long> userFriendIds = List.of(1L, 2L, 3L, 4L, 5L, 6L);
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.getSixFriendsIdsWithTheHighestRating(userId))
+            .thenReturn(userFriendIds);
+
+        List<Long> actualResult = userService.getSixFriendsIdsWithTheHighestRating(email);
+
+        assertEquals(userFriendIds, actualResult);
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).getSixFriendsIdsWithTheHighestRating(userId);
+    }
+
+    @Test
+    void getSixFriendsIdsWithTheHighestRatingByEmailWhenUserNotFoundTest() {
+        User user = ModelUtils.getUser();
+        String email = user.getEmail();
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.empty());
+
+        var notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.getSixFriendsIdsWithTheHighestRating(email));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
         verify(userRepo, never()).getSixFriendsWithTheHighestRating(any());
     }
 
@@ -405,6 +534,80 @@ class UserServiceImplTest {
 
         userService.setLocationForUser(userId, request);
 
+        verify(userRepo).findById(userId);
+        verify(user).setUserLocation(null);
+    }
+
+    @Test
+    void setLocationForUserByEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        var request = ModelUtils.getUserProfileDtoRequest();
+        var userLocation = ModelUtils.getUserLocation();
+        var savedUserLocation = userLocation.setId(3L);
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
+        when(googleApiService.getLocationByCoordinates(
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageUa, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+        when(googleApiService.getLocationByCoordinates(
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageEn, addressTypes))
+            .thenReturn(ModelUtils.getGeocodingResult().getFirst());
+        when(userLocationRepo.getUserLocationByLatitudeAndLongitude(
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude())).thenReturn(Optional.of(userLocation));
+        when(userLocationRepo.save(userLocation))
+            .thenReturn(savedUserLocation);
+
+        userService.setLocationForUser(email, request);
+
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).findById(userId);
+        verify(googleApiService).getLocationByCoordinates(
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageUa, addressTypes);
+        verify(googleApiService).getLocationByCoordinates(
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude(),
+            languageEn, addressTypes);
+        verify(userLocationRepo).getUserLocationByLatitudeAndLongitude(
+            request.getCoordinates().getLatitude(),
+            request.getCoordinates().getLongitude());
+        verify(userLocationRepo).save(userLocation);
+        verify(userRepo).save(user);
+    }
+
+    @Test
+    void setLocationForUserByEmailRemoveOldLocationTest() {
+        User user = spy(ModelUtils.getUserWithUserLocation());
+        Long userId = user.getId();
+        String email = user.getEmail();
+        UserLocation userLocation = spy(user.getUserLocation());
+        List<User> users = spy(new ArrayList<>(List.of(user)));
+
+        var request = ModelUtils.getUserProfileDtoRequest();
+        request.getCoordinates().setLatitude(null);
+        request.getCoordinates().setLongitude(null);
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.findById(userId))
+            .thenReturn(Optional.of(user));
+        when(user.getUserLocation())
+            .thenReturn(userLocation);
+        when(userLocation.getUsers())
+            .thenReturn(users);
+
+        userService.setLocationForUser(email, request);
+
+        verify(userRepo).findByEmail(email);
         verify(userRepo).findById(userId);
         verify(user).setUserLocation(null);
     }
@@ -671,6 +874,41 @@ class UserServiceImplTest {
     }
 
     @Test
+    void increaseUserRatingExternalTest() {
+        User user = spy(ModelUtils.getUser());
+        String email = user.getEmail();
+        UserAddRatingExternalDto userAddRatingDto = new UserAddRatingExternalDto(email, 1.);
+        Double userRating = user.getRating();
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+
+        userService.increaseUserRating(userAddRatingDto);
+
+        verify(userRepo).findByEmail(email);
+        verify(user).setRating(userRating + userAddRatingDto.getRating());
+    }
+
+    @Test
+    void increaseUserRatingExternalWhenUserNotFoundTest() {
+        User user = spy(ModelUtils.getUser());
+        String email = user.getEmail();
+        UserAddRatingExternalDto userAddRatingDto = new UserAddRatingExternalDto(email, 1.);
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.empty());
+
+        var notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.increaseUserRating(userAddRatingDto));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(user, never()).setRating(any());
+    }
+
+    @Test
     void findAllUsersCitiesTest() {
         Long userId = TestConst.USER_ID;
         UserLocation userLocation = new UserLocation();
@@ -727,6 +965,79 @@ class UserServiceImplTest {
 
         assertEquals(expectedExceptionMessage, notFoundException.getMessage());
         verify(userRepo).existsById(userId);
+        verify(userLocationRepo, never()).findAllUsersCities(userId);
+        verify(modelMapper, never()).map(userLocation, UserCityDto.class);
+    }
+
+    @Test
+    void findAllUsersCitiesByEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        UserLocation userLocation = new UserLocation();
+        UserCityDto userCityDto = new UserCityDto();
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.existsById(userId))
+            .thenReturn(true);
+        when(userLocationRepo.findAllUsersCities(userId))
+            .thenReturn(Optional.of(userLocation));
+        when(modelMapper.map(userLocation, UserCityDto.class))
+            .thenReturn(userCityDto);
+
+        UserCityDto actualResult = userService.findAllUsersCities(email);
+
+        assertEquals(userCityDto, actualResult);
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).existsById(userId);
+        verify(userLocationRepo).findAllUsersCities(userId);
+        verify(modelMapper).map(userLocation, UserCityDto.class);
+    }
+
+    @Test
+    void findAllUsersCitiesByEmailWhenUserDidNotSetLocationTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        UserLocation userLocation = new UserLocation();
+        String expectedExceptionMessage = ErrorMessage.USER_DID_NOT_SET_ANY_CITY;
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.existsById(userId))
+            .thenReturn(true);
+        when(userLocationRepo.findAllUsersCities(userId))
+            .thenReturn(Optional.empty());
+
+        var notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.findAllUsersCities(email));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).existsById(userId);
+        verify(userLocationRepo).findAllUsersCities(userId);
+        verify(modelMapper, never()).map(userLocation, UserCityDto.class);
+    }
+
+    @Test
+    void findAllUsersCitiesByEmailWhenUserNotFoundTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        UserLocation userLocation = new UserLocation();
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.empty());
+
+        var notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.findAllUsersCities(email));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
         verify(userLocationRepo, never()).findAllUsersCities(userId);
         verify(modelMapper, never()).map(userLocation, UserCityDto.class);
     }
@@ -793,6 +1104,79 @@ class UserServiceImplTest {
     }
 
     @Test
+    void findUserLocationDtoByEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        UserLocation userLocation = new UserLocation();
+        UserLocationDto userLocationDto = new UserLocationDto();
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.existsById(userId))
+            .thenReturn(true);
+        when(userLocationRepo.findAllUsersCities(userId))
+            .thenReturn(Optional.of(userLocation));
+        when(modelMapper.map(userLocation, UserLocationDto.class))
+            .thenReturn(userLocationDto);
+
+        UserLocationDto actualResult = userService.findUserLocationDtoByEmail(email);
+
+        assertEquals(userLocationDto, actualResult);
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).existsById(userId);
+        verify(userLocationRepo).findAllUsersCities(userId);
+        verify(modelMapper).map(userLocation, UserLocationDto.class);
+    }
+
+    @Test
+    void findUserLocationDtoByEmailWhenUserDidNotSetLocationTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        UserLocation userLocation = new UserLocation();
+        String expectedExceptionMessage = ErrorMessage.USER_DID_NOT_SET_ANY_CITY;
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.existsById(userId))
+            .thenReturn(true);
+        when(userLocationRepo.findAllUsersCities(userId))
+            .thenReturn(Optional.empty());
+
+        var notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.findAllUsersCities(email));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).existsById(userId);
+        verify(userLocationRepo).findAllUsersCities(userId);
+        verify(modelMapper, never()).map(userLocation, UserLocationDto.class);
+    }
+
+    @Test
+    void findUserLocationDtoByEmailWhenUserNotFoundTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        UserLocation userLocation = new UserLocation();
+        String expectedExceptionMessage = ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email;
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.empty());
+
+        var notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.findAllUsersCities(email));
+
+        assertEquals(expectedExceptionMessage, notFoundException.getMessage());
+        verify(userRepo).findByEmail(email);
+        verify(userLocationRepo, never()).findAllUsersCities(userId);
+        verify(modelMapper, never()).map(userLocation, UserLocationDto.class);
+    }
+
+    @Test
     void checkUpdatableUserTest() {
         User user = getUser();
         Long userId = user.getId();
@@ -854,7 +1238,7 @@ class UserServiceImplTest {
     @Test
     void testUpdateStatus() {
         UserStatusDto userStatusDto = UserStatusDto.builder()
-            .id(2L)
+            .email(userVORoleUser.getEmail())
             .userStatus(UserStatus.CREATED)
             .build();
 
@@ -1090,28 +1474,28 @@ class UserServiceImplTest {
 
     @Test
     void updateUserProfilePictureTest() {
-        Long userId = 1L;
+        String email = "test@email";
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
-        when(userRepo.updateUserProfilePictureByUserId(1L, profilePicturePath))
+        when(userRepo.updateUserProfilePictureByEmail(email, profilePicturePath))
             .thenReturn(1);
 
-        userService.updateUserProfilePicture(userId, profilePicturePath);
+        userService.updateUserProfilePicture(email, profilePicturePath);
 
-        verify(userRepo).updateUserProfilePictureByUserId(userId, profilePicturePath);
+        verify(userRepo).updateUserProfilePictureByEmail(email, profilePicturePath);
     }
 
     @Test
     void updateUserProfilePictureUserNotFoundTest() {
-        Long userId = 1L;
+        String email = "test@email";
         String profilePicturePath = "http://newprofilepicture.com.ua";
 
-        when(userRepo.updateUserProfilePictureByUserId(1L, profilePicturePath))
+        when(userRepo.updateUserProfilePictureByEmail(email, profilePicturePath))
             .thenReturn(0);
 
         assertThrows(
             NotFoundException.class,
-            () -> userService.updateUserProfilePicture(userId, profilePicturePath));
+            () -> userService.updateUserProfilePicture(email, profilePicturePath));
     }
 
     @Test
@@ -1138,6 +1522,41 @@ class UserServiceImplTest {
         assertThrows(
             NotFoundException.class,
             () -> userService.updateUserName(userId, userName));
+    }
+
+    @Test
+    void updateUserNameByEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        String userName = "userName";
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.of(user));
+        when(userRepo.updateUserName(userId, userName))
+            .thenReturn(1);
+
+        userService.updateUserName(email, userName);
+
+        verify(userRepo).findByEmail(email);
+        verify(userRepo).updateUserName(userId, userName);
+    }
+
+    @Test
+    void updateUserNameByEmailWhenUserNotFoundTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String email = user.getEmail();
+        String userName = "userName";
+
+        when(userRepo.findByEmail(email))
+            .thenReturn(Optional.empty());
+        when(userRepo.updateUserName(userId, userName))
+            .thenReturn(0);
+
+        assertThrows(
+            NotFoundException.class,
+            () -> userService.updateUserName(email, userName));
     }
 
     @Test
@@ -1177,6 +1596,53 @@ class UserServiceImplTest {
         String actualExceptionMessage = notFoundException.getMessage();
 
         assertEquals(expectedExceptionMessage, actualExceptionMessage);
+        verify(userRepo).findGreenCityUserProfilesByUserIds(userIds);
+        verify(userLocationRepo, never()).findAllUsersCities(anyLong());
+    }
+
+    @Test
+    void findGreenCityUserProfilesByEmailsTest() {
+        List<String> emails = List.of("email1", "email2");
+        List<Long> userIds = List.of(1L, 2L);
+        var greenCityProfiles = userIds.stream()
+            .map(ModelUtils::getGreenCityUserProfileDtoResponse)
+            .toList();
+
+        when(userRepo.getUserIdsByEmails(emails)).thenReturn(userIds);
+        when(userRepo.findGreenCityUserProfilesByUserIds(userIds))
+            .thenReturn(greenCityProfiles);
+        when(userLocationRepo.findAllUsersCities(anyLong()))
+            .thenReturn(Optional.of(new UserLocation()));
+
+        List<GreenCityUserProfileDtoResponse> actualResult = userService.findGreenCityUserProfilesByEmails(emails);
+
+        assertEquals(greenCityProfiles, actualResult);
+        verify(userRepo).getUserIdsByEmails(emails);
+        verify(userRepo).findGreenCityUserProfilesByUserIds(userIds);
+        verify(userLocationRepo, times(userIds.size())).findAllUsersCities(anyLong());
+    }
+
+    @Test
+    void findGreenCityUserProfilesByEmailsWhenUsersNotFoundTest() {
+        List<String> emails = List.of("email1", "email2", "email3");
+        List<Long> userIds = List.of(1L, 2L, 3L);
+        var greenCityProfiles = userIds.stream()
+            .map(ModelUtils::getGreenCityUserProfileDtoResponse)
+            .limit(2)
+            .toList();
+        String expectedExceptionMessage = ErrorMessage.USERS_NOT_FOUND_BY_IDS + "3";
+
+        when(userRepo.getUserIdsByEmails(emails)).thenReturn(userIds);
+        when(userRepo.findGreenCityUserProfilesByUserIds(userIds))
+            .thenReturn(greenCityProfiles);
+
+        NotFoundException notFoundException = assertThrows(
+            NotFoundException.class,
+            () -> userService.findGreenCityUserProfilesByEmails(emails));
+        String actualExceptionMessage = notFoundException.getMessage();
+
+        assertEquals(expectedExceptionMessage, actualExceptionMessage);
+        verify(userRepo).getUserIdsByEmails(emails);
         verify(userRepo).findGreenCityUserProfilesByUserIds(userIds);
         verify(userLocationRepo, never()).findAllUsersCities(anyLong());
     }

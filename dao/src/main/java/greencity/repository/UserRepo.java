@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
+import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserLocationStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -261,7 +262,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                     '_', '\\_'),
                                     '#', '\\#'), '%')
                       )
-                  )
                   OR LOWER(u.user_credo) LIKE LOWER(
                       CONCAT('%',
                              REPLACE(REPLACE(REPLACE(
@@ -291,6 +291,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                                    '#', '\\#'), '%')
                                                         )
                           )
+                      )
                   )
             """)
 
@@ -645,20 +646,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Tuple findUsersFriendByUserIdAndFriendId(Long userId, Long friendId);
 
     /**
-     * Method finds chatId of two users.
-     *
-     * @param userId   {@link Long} current user's id.
-     * @param friendId {@link Long} friend`s id.
-     * @return {@link Long}.
-     */
-    @Query(nativeQuery = true, value = "SELECT crp.room_id FROM chat_rooms r "
-        + "INNER JOIN chat_rooms_participants crp on r.id = crp.room_id "
-        + "WHERE r.type = 'PRIVATE' AND crp.participant_id in (:userId,:friendId) "
-        + "GROUP BY crp.room_id "
-        + "HAVING COUNT(crp) = 2 LIMIT 1;")
-    Long findIdOfPrivateChatOfUsers(Long userId, Long friendId);
-
-    /**
      * Method for getting all users who made request for joining the event.
      *
      * @param eventId - id of the event
@@ -793,14 +780,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     int updateUserName(Long userId, String userName);
 
     /**
-     * Updates the profile picture path of a user by their id.
+     * Updates the profile picture path of a user by email.
      *
-     * @param userId             the id of the user
+     * @param email              the email of the user
      * @param profilePicturePath the new profile picture path
      */
     @Modifying
-    @Query("UPDATE User u SET u.profilePicturePath =:profilePicturePath WHERE u.id =:userId")
-    int updateUserProfilePictureByUserId(@Param("userId") Long userId,
+    @Query("UPDATE User u SET u.profilePicturePath =:profilePicturePath WHERE u.email =:email")
+    int updateUserProfilePictureByEmail(@Param("email") String email,
         @Param("profilePicturePath") String profilePicturePath);
 
     /**
@@ -821,11 +808,25 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query("""
             SELECT
-            new greencity.dto.user.GreenCityUserProfileDtoResponse(u.id, u.profilePicturePath, u.userCredo, u.rating)
+            new greencity.dto.user.GreenCityUserProfileDtoResponse(u.id, u.email, u.profilePicturePath, u.userCredo,
+                     u.rating)
             FROM User u
             WHERE u.id IN :userIds
         """)
     List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
+
+    /**
+     * Method to find list of user ids by emails.
+     *
+     * @param emails emails of users for whom to fetch the data
+     * @return list of user ids
+     */
+    @Query("""
+            SELECT u.id
+            FROM User u
+            WHERE u.email IN :emails
+        """)
+    List<Long> getUserIdsByEmails(List<String> emails);
 
     /**
      * Find {@link User} by email.
@@ -849,4 +850,17 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<UserFriendDto> findUserFriendsWithMutualCountAndChatId(
         @Param("userId") Long userId,
         @Param("greencity_users") List<Long> userIds);
+
+    /**
+     * Method to find list of user ids by emails.
+     *
+     * @param emails emails of users for whom to fetch the data
+     * @return list of {@link UserEmailDto}
+     */
+    @Query("""
+            SELECT new greencity.dto.user.UserEmailDto(u.id, u.email)
+            FROM User u
+            WHERE u.email IN :emails
+        """)
+    List<UserEmailDto> findUserIdsByEmails(@Param("emails") List<String> emails);
 }
