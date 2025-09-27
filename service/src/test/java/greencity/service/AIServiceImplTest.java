@@ -36,6 +36,7 @@ import greencity.entity.User;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.EcoNewsCreationException;
+import greencity.exception.exceptions.EcoNewsCreationUserMissingException;
 import greencity.exception.exceptions.JsonResponseParseException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.OpenAIRequestException;
@@ -339,7 +340,7 @@ class AIServiceImplTest {
         when(userService.findNotDeactivatedByEmail(OpenAIConstants.AI_USER_EMAIL))
             .thenThrow(new WrongEmailException());
 
-        assertThrows(WrongEmailException.class, () -> aiService.generateAndSaveEcoNews(language));
+        assertThrows(EcoNewsCreationUserMissingException.class, () -> aiService.generateAndSaveEcoNews(language));
     }
 
     @Test

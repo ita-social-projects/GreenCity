@@ -21,7 +21,6 @@ import greencity.dto.user.UserCityDto;
 import greencity.dto.user.GreenCityUserInfoDto;
 import greencity.dto.user.UserDeactivationReasonDto;
 import greencity.dto.user.UserFilterDto;
-import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;

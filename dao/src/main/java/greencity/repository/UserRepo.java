@@ -841,6 +841,13 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     boolean existsByEmail(String email);
 
+    @Query(
+        nativeQuery = true,
+        name = "User.findListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser")
+    List<UserFriendDto> findUserFriendsWithMutualCountAndChatId(
+        @Param("userId") Long userId,
+        @Param("greencity_users") List<Long> userIds);
+
     /**
      * Method to find green city user info by emails.
      *

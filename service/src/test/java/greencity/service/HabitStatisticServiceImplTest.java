@@ -290,9 +290,7 @@ class HabitStatisticServiceImplTest {
             new HabitStatusCount(HabitAssignStatus.EXPIRED, 3L),
             new HabitStatusCount(HabitAssignStatus.INPROGRESS, 8L));
 
-        List<Long> activatedUserIds = List.of(1L, 2L, 3L, 7L, 9L, 10L);
-        when(userService.findAllActivatedUserIds(null)).thenReturn(activatedUserIds);
-        when(habitAssignRepo.countHabitAssignsByStatus(activatedUserIds)).thenReturn(habitStatusCounts);
+        when(habitAssignRepo.countHabitAssignsByStatus()).thenReturn(habitStatusCounts);
 
         Map<String, Long> result = habitStatisticService.calculateHabitBehaviorStatistic();
 

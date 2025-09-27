@@ -1635,33 +1635,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findAllActivatedUserIdsWithIdsTest() {
-        List<Long> inputIds = List.of(1L, 2L, 3L);
-        List<Long> expectedIds = List.of(1L, 3L);
-
-        when(userRepo.findAllActivatedUserIdsFromList(inputIds)).thenReturn(expectedIds);
-
-        List<Long> actualIds = userService.findAllActivatedUserIds(inputIds);
-
-        assertEquals(expectedIds, actualIds);
-        verify(userRepo).findAllActivatedUserIdsFromList(inputIds);
-        verify(userRepo, never()).findAllActivatedUserIds();
-    }
-
-    @Test
-    void findAllActivatedUserIdsWithNullIdsTest() {
-        List<Long> expectedIds = List.of(1L, 2L, 3L);
-
-        when(userRepo.findAllActivatedUserIds()).thenReturn(expectedIds);
-
-        List<Long> actualIds = userService.findAllActivatedUserIds(null);
-
-        assertEquals(expectedIds, actualIds);
-        verify(userRepo).findAllActivatedUserIds();
-        verify(userRepo, never()).findAllActivatedUserIdsFromList(any());
-    }
-
-    @Test
     void countAllByStatusTest() {
         UserStatus status = ACTIVATED;
         long expectedCount = 5L;
@@ -1921,7 +1894,7 @@ class UserServiceImplTest {
             .reason("{en}Spam/Inappropriate Content{en}/{uk}Спам/Неприйнятний контент{uk}")
             .build();
 
-        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(List.of(reason));
+        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(Optional.of(reason));
         when(userRemoteClient.findUserLanguageByEmail(currentUser.getEmail())).thenReturn("en");
 
         List<String> actualReasons = userService.getDeactivationReasons(userId, currentUser);
@@ -1942,7 +1915,7 @@ class UserServiceImplTest {
             .reason("{en}Spam/Inappropriate Content{en}/{uk}Спам/Неприйнятний контент{uk}")
             .build();
 
-        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(List.of(reason));
+        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(Optional.of(reason));
         when(userRemoteClient.findUserLanguageByEmail(currentUser.getEmail())).thenReturn("uk");
 
         List<String> actualReasons = userService.getDeactivationReasons(userId, currentUser);
@@ -1959,7 +1932,7 @@ class UserServiceImplTest {
             .email("admin@email.com")
             .build();
 
-        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(Collections.emptyList());
+        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException = assertThrows(
             NotFoundException.class,
