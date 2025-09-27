@@ -77,7 +77,7 @@ import java.util.Set;
             + "WHERE EXTRACT(YEAR from date_of_registration) = EXTRACT(YEAR FROM CURRENT_DATE) "
             + "GROUP BY month",
         resultSetMapping = "monthsStatisticsMapping"),
-    @NamedNativeQuery(name = "User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
+    @NamedNativeQuery(name = "User.findListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
         query = """
                 WITH current_user_friends AS (
                     SELECT user_id

@@ -21,6 +21,7 @@ import greencity.dto.user.UserCityDto;
 import greencity.dto.user.GreenCityUserInfoDto;
 import greencity.dto.user.UserDeactivationReasonDto;
 import greencity.dto.user.UserFilterDto;
+import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserRoleDto;
@@ -416,6 +417,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserLocationDto findUserLocationDtoByUserId(Long userId) {
         return findUserLocation(userId, UserLocationDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserLocationDto findUserLocationDtoByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return findUserLocation(user.getId(), UserLocationDto.class);
     }
 
     /**

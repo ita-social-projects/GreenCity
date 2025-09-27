@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
 import greencity.dto.user.GreenCityUserInfoDto;

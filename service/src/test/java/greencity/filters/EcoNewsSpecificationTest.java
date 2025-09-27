@@ -2,10 +2,19 @@ package greencity.filters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import greencity.dto.econews.EcoNewsViewDto;
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNews_;
+import greencity.entity.Tag;
+import greencity.entity.Tag_;
 import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
 
@@ -379,6 +388,21 @@ class EcoNewsSpecificationTest {
         verify(criteriaBuilderMock).and(andCreationDatePredicate, andTagPredicate);
         verify(criteriaBuilderMock).and(andTagPredicate, andBooleanPredicate);
         verify(criteriaQueryMock).orderBy(List.of(dislikesOrderAsc));
+    }
+
+    @Test
+    void toPredicateAuthorEmpty() {
+        List<SearchCriteria> emptyTagsList = List.of(SearchCriteria.builder()
+            .key(EcoNews_.AUTHOR)
+            .type(EcoNews_.AUTHOR)
+            .value("")
+            .build());
+        EcoNewsSpecification specificationForEmpty = new EcoNewsSpecification(emptyTagsList);
+        when(criteriaBuilderMock.conjunction()).thenReturn(emptyPredicate);
+        when(criteriaBuilderMock.and(emptyPredicate, emptyPredicate)).thenReturn(emptyPredicate);
+        Predicate actual = specificationForEmpty.toPredicate(ecoNewsRootMock, criteriaQueryMock, criteriaBuilderMock);
+        assertEquals(emptyPredicate, actual);
+        verify(criteriaBuilderMock).and(emptyPredicate, emptyPredicate);
     }
 
     @Test

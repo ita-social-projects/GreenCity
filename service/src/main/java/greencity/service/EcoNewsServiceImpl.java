@@ -1,5 +1,6 @@
 package greencity.service;
 
+import static greencity.utils.SpecificationUtils.setValueIfNotEmpty;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.client.UserRemoteClient;
@@ -41,6 +42,7 @@ import greencity.repository.RatingPointsRepo;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.filters.EcoNewsSearchSpecification;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
@@ -63,6 +65,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -257,7 +260,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, Boolean isFavorite, Long userId) {
-        return getSearchNewsDtoPageableDto(ecoNewsRepo.find(pageable, searchQuery, isFavorite, userId));
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        setValueIfNotEmpty(criteriaList, "text", searchQuery);
+        setValueIfNotEmpty(criteriaList, "isFavorite", isFavorite);
+        Specification<EcoNews> specification = new EcoNewsSearchSpecification(criteriaList, userId);
+        return getSearchNewsDtoPageableDto(ecoNewsRepo.findAll(specification, pageable));
     }
 
     private PageableDto<SearchNewsDto> getSearchNewsDtoPageableDto(Page<EcoNews> page) {
@@ -549,16 +556,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return criteriaList;
     }
 
-    private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (StringUtils.isNotEmpty(value)) {
-            searchCriteria.add(SearchCriteria.builder()
-                .key(key)
-                .type(key)
-                .value(value)
-                .build());
-        }
-    }
-
     private List<EcoNewsDto> mapEcoNewsListToEcoNewsDtoList(List<EcoNews> ecoNewsList) {
         return ecoNewsList.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
@@ -733,7 +730,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
             if (econewsAuthor != null) {
                 userNotificationService.removeActionUserFromNotification(
-                    modelMapper.map(econewsAuthor, UserVO.class), userVO, ecoNews.getId(), NotificationType.EVENT_LIKE);
+                    modelMapper.map(econewsAuthor, UserVO.class), userVO, ecoNews.getId(),
+                    NotificationType.ECONEWS_LIKE);
             }
             return true;
         }
