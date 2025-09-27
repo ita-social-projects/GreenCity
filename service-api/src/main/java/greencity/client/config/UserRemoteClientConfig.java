@@ -158,6 +158,6 @@ public class UserRemoteClientConfig {
             }
         }
 
-        return builder.build().toUri();
+        return builder.build(true).toUri();
     }
 }
