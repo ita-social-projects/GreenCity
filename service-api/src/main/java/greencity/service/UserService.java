@@ -303,6 +303,14 @@ public interface UserService {
     void updateUserName(String email, String userName);
 
     /**
+     * Method for updating user's email.
+     *
+     * @param oldEmail - user's old email.
+     * @param newEmail - new user's email.
+     */
+    void updateUserEmail(String oldEmail, String newEmail);
+
+    /**
      * Method to find list of {@link GreenCityUserProfileDtoResponse} containing
      * information about user.
      *

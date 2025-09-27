@@ -523,6 +523,21 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public void updateUserEmail(String oldEmail, String newEmail) {
+        User user = userRepo.findByEmail(oldEmail)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + oldEmail));
+        boolean userWithNewEmailExists = userRepo.existsByEmail(newEmail);
+        if (userWithNewEmailExists) {
+            throw new UserAlreadyExistsException(HttpStatus.CONFLICT,
+                ErrorMessage.USER_ALREADY_REGISTERED_WITH_THIS_EMAIL.formatted(newEmail));
+        }
+        userRepo.updateUserEmail(user.getId(), newEmail);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds) {
         var greenCityProfiles = userRepo.findGreenCityUserProfilesByUserIds(userIds);
 

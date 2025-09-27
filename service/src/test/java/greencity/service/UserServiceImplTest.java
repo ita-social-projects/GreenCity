@@ -1404,6 +1404,65 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUserEmailTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String oldEmail = user.getEmail();
+        String newEmail = "test@email";
+
+        when(userRepo.findByEmail(oldEmail))
+            .thenReturn(Optional.of(user));
+        when(userRepo.existsByEmail(newEmail))
+            .thenReturn(false);
+
+        userService.updateUserEmail(oldEmail, newEmail);
+
+        verify(userRepo).findByEmail(oldEmail);
+        verify(userRepo).existsByEmail(newEmail);
+        verify(userRepo).updateUserEmail(userId, newEmail);
+    }
+
+    @Test
+    void updateUserEmailWhenUserNotFoundTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String oldEmail = user.getEmail();
+        String newEmail = "test@email";
+
+        when(userRepo.findByEmail(oldEmail))
+            .thenReturn(Optional.empty());
+
+        assertThrows(
+            NotFoundException.class,
+            () -> userService.updateUserEmail(oldEmail, newEmail));
+
+        verify(userRepo).findByEmail(oldEmail);
+        verify(userRepo, never()).existsByEmail(newEmail);
+        verify(userRepo, never()).updateUserEmail(userId, newEmail);
+    }
+
+    @Test
+    void updateUserEmailWhenNewEmailAlreadyExistsTest() {
+        User user = ModelUtils.getUser();
+        Long userId = user.getId();
+        String oldEmail = user.getEmail();
+        String newEmail = "test@email";
+
+        when(userRepo.findByEmail(oldEmail))
+            .thenReturn(Optional.of(user));
+        when(userRepo.existsByEmail(newEmail))
+            .thenReturn(true);
+
+        assertThrows(
+            UserAlreadyExistsException.class,
+            () -> userService.updateUserEmail(oldEmail, newEmail));
+
+        verify(userRepo).findByEmail(oldEmail);
+        verify(userRepo).existsByEmail(newEmail);
+        verify(userRepo, never()).updateUserEmail(userId, newEmail);
+    }
+
+    @Test
     void findGreenCityUserProfilesByUserIdsTest() {
         List<Long> userIds = List.of(1L, 2L);
         var greenCityProfiles = userIds.stream()

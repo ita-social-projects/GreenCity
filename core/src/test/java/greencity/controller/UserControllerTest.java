@@ -222,6 +222,25 @@ class UserControllerTest {
     }
 
     @Test
+    void updateUserEmailTest() throws Exception {
+        String oldEmail = "test@email";
+        String newEmail = "test2@email";
+        String url = UriComponentsBuilder.fromPath(userLink + "/user/email")
+            .queryParam("oldEmail", oldEmail)
+            .queryParam("newEmail", newEmail)
+            .buildAndExpand()
+            .toUriString();
+
+        doNothing().when(userService).updateUserEmail(oldEmail, newEmail);
+
+        mockMvc.perform(patch(url))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        verify(userService).updateUserEmail(oldEmail, newEmail);
+    }
+
+    @Test
     @SneakyThrows
     void findGreenCityUserProfilesByUserIdsTest() {
         List<Long> userIds = List.of(1L, 2L, 3L);

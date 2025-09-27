@@ -446,6 +446,30 @@ public class UserController {
     }
 
     /**
+     * For external services usage. Method for updating user's email.
+     *
+     * @param oldEmail - user's old email.
+     * @param newEmail - user's new email.
+     */
+    @Operation(summary = "Updates user's email", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @PatchMapping("/user/email")
+    public ResponseEntity<Void> updateUserEmail(@RequestParam String oldEmail, @RequestParam String newEmail) {
+        userService.updateUserEmail(oldEmail, newEmail);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * Method to find list of {@link GreenCityUserProfileDtoResponse} containing
      * information about user.
      *
