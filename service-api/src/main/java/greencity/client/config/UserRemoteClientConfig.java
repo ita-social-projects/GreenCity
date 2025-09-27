@@ -35,8 +35,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class UserRemoteClientConfig {
-    private static final String EMAIL_QUERY_PARAM = "email=";
-    private static final Pattern EMAIL_PARAM_PATTERN = Pattern.compile("(^|&)(email=)([^&]*)");
+    private static final String EMAIL_PARAM_REGEX = "([?&][^&]*[eE]mail[^=&]*=[^&]+)";
     private static final String PLUS_SIGN_IN_EMAIL = "+";
     private static final String ENCODED_PLUS_SIGN = "%2B";
 
@@ -117,12 +116,14 @@ public class UserRemoteClientConfig {
         }
     }
 
-    public ExchangeFilterFunction encodePlusInQuery() {
+    private ExchangeFilterFunction encodePlusInQuery() {
         return ExchangeFilterFunction.ofRequestProcessor(request -> {
             URI original = request.url();
+            String originalQuery = original.getRawQuery();
 
-            if (original.getRawQuery() != null && original.getRawQuery().contains(EMAIL_QUERY_PARAM)) {
-                String originalQuery = original.getRawQuery();
+            if (originalQuery != null
+                && originalQuery.contains(PLUS_SIGN_IN_EMAIL)
+                && originalQuery.matches(EMAIL_PARAM_REGEX)) {
                 String encodedQuery = encodeEmailParameter(originalQuery);
 
                 if (encodedQuery.equals(originalQuery)) {
@@ -144,7 +145,8 @@ public class UserRemoteClientConfig {
     }
 
     private static String encodeEmailParameter(String query) {
-        Matcher matcher = EMAIL_PARAM_PATTERN.matcher(query);
+        Pattern pattern = Pattern.compile(EMAIL_PARAM_REGEX);
+        Matcher matcher = pattern.matcher(query);
         StringBuilder encodedQuery = new StringBuilder();
 
         while (matcher.find()) {
