@@ -1742,20 +1742,6 @@ public class ModelUtils {
             .build();
     }
 
-    private static User createUserRoleUser() {
-        return User.builder()
-            .id(2L)
-            .build();
-    }
-
-    private static UserVO createUserVORoleUser() {
-        return UserVO.builder()
-            .id(2L)
-            .role(Role.ROLE_USER)
-            .email("test2@mail.com")
-            .build();
-    }
-
     private static User createUser() {
         return User.builder()
             .id(1L)
@@ -2839,18 +2825,6 @@ public class ModelUtils {
         return UserFriendDto.builder()
             .id(1L)
             .name("name")
-            .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
-                "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
-            .rating(10.0)
-            .mutualFriends(3L)
-            .profilePicturePath("path-to-picture")
-            .build();
-    }
-
-    public static UserFriendDto getUserFriendDtoListFromUserPage() {
-        return UserFriendDto.builder()
-            .id(1L)
-            .name(TestConst.NAME)
             .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                 "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
             .rating(10.0)

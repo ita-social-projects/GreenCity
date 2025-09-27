@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.converters.FloatArrayConverter;
-import greencity.client.UserRemoteClient;
 import greencity.constant.OpenAIConstants;
 import greencity.dto.habit.DurationHabitDto;
 import greencity.dto.habit.ShortHabitDto;
@@ -59,7 +58,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 @ExtendWith(MockitoExtension.class)
 class AIServiceImplTest {

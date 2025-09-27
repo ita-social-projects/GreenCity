@@ -659,23 +659,18 @@ public class UserServiceImpl implements UserService {
         UserVO currentUserDto = users.currentUserDto();
         User targetUser = users.targetUser();
 
-        switch (status) {
-            case DEACTIVATED -> {
-                String reason = createDeactivationReason(currentUserDto);
-                saveDeactivationReason(targetUser, reason);
-                sendDeactivationNotification(targetUser, reason);
-            }
-            case ACTIVATED -> {
-                String lang = userRemoteClient.findUserLanguageByEmail(targetUser.getEmail());
-                UserActivationDto notification = UserActivationDto.builder()
-                    .email(targetUser.getEmail())
-                    .name(targetUser.getName())
-                    .lang(lang)
-                    .build();
-                userRemoteClient.sendMessageOfActivation(notification);
-            }
-            default -> {
-            }
+        if (status == UserStatus.DEACTIVATED) {
+            String reason = createDeactivationReason(currentUserDto);
+            saveDeactivationReason(targetUser, reason);
+            sendDeactivationNotification(targetUser, reason);
+        } else if (status == UserStatus.ACTIVATED) {
+            String lang = userRemoteClient.findUserLanguageByEmail(targetUser.getEmail());
+            UserActivationDto notification = UserActivationDto.builder()
+                .email(targetUser.getEmail())
+                .name(targetUser.getName())
+                .lang(lang)
+                .build();
+            userRemoteClient.sendMessageOfActivation(notification);
         }
 
         targetUser.setStatus(status);
