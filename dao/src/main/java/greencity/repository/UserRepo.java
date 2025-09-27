@@ -779,12 +779,12 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method for updating user's email.
      *
-     * @param userId   - {@link Long} of user's id.
-     * @param email    - new user's email.
+     * @param userId - {@link Long} of user's id.
+     * @param email  - new user's email.
      */
     @Modifying
     @Query("UPDATE User SET email = :email WHERE id = :userId")
-    int updateUserEmail(Long userId, String email);
+    void updateUserEmail(Long userId, String email);
 
     /**
      * Updates the profile picture path of a user by email.
