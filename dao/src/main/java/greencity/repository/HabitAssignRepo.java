@@ -398,24 +398,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     Page<HabitAssign> findAllOfCurrentUser(Long userId, Long currentUserId, Pageable pageable);
 
     /**
-     * Returns a list of HabitAssign objects that match the given user IDs and habit
-     * ID, provided that the status of HabitAssign is either 'INPROGRESS' or
-     * 'ACQUIRED'.
-     *
-     * @param userIds list of user IDs for which to find HabitAssign records
-     * @param habitId the ID of the habit for which to find HabitAssign records
-     * @return list of HabitAssign objects that meet the specified conditions
-     */
-    @Query("""
-            SELECT ha
-            FROM HabitAssign ha
-            WHERE ha.user.id IN :userIds
-            AND ha.habit.id = :habitId
-            AND (ha.status = 'INPROGRESS' OR ha.status = 'ACQUIRED')
-        """)
-    List<HabitAssign> findByUserIdsAndHabitId(List<Long> userIds, Long habitId);
-
-    /**
      * Returns a list of HabitAssign objects that have last day of primary duration
      * to send notification to user.
      *
@@ -439,8 +421,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query("""
             SELECT new greencity.dto.habitstatistic.HabitStatusCount(ha.status, COUNT(ha))
             FROM HabitAssign ha
-            WHERE ha.user.id IN :activatedUserIds
+            WHERE ha.user.status = 'ACTIVATED'
             GROUP BY ha.status
         """)
-    List<HabitStatusCount> countHabitAssignsByStatus(@Param("activatedUserIds") List<Long> activatedUserIds);
+    List<HabitStatusCount> countHabitAssignsByStatus();
 }

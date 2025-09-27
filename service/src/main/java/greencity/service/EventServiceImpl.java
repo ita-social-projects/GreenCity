@@ -427,7 +427,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_FAVORITES);
         }
 
-        event.setFollowers(event.getAttenders()
+        event.setFollowers(event.getFollowers()
             .stream()
             .filter(user -> !user.getId().equals(currentUser.getId()))
             .collect(Collectors.toSet()));

@@ -17,6 +17,7 @@ public class UserSpecification implements MySpecification<User> {
         Predicate allPredicate = criteriaBuilder.conjunction();
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             if (searchCriteria.getType().equals("query")) {
+                String originalKey = searchCriteria.getKey();
                 searchCriteria.setKey("id");
                 Predicate idPredicate = getNumericPredicate(root, criteriaBuilder, searchCriteria);
 
@@ -26,6 +27,7 @@ public class UserSpecification implements MySpecification<User> {
                 searchCriteria.setKey("email");
                 Predicate emailPredicate = getStringPredicate(root, criteriaBuilder, searchCriteria);
 
+                searchCriteria.setKey(originalKey);
                 Predicate idOrNamePredicate = criteriaBuilder.or(idPredicate, namePredicate);
                 Predicate idOrNameOrEmailPredicate = criteriaBuilder.or(idOrNamePredicate, emailPredicate);
                 allPredicate = criteriaBuilder.and(allPredicate, idOrNameOrEmailPredicate);

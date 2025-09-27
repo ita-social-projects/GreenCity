@@ -50,6 +50,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -284,9 +285,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public Long getAmountOfPublishedNews(String authorEmail) {
-        User author = userRepo.findByEmail(authorEmail)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + authorEmail));
-        return ecoNewsRepo.countByAuthorId(author.getId());
+        Optional<User> author = userRepo.findByEmail(authorEmail);
+        Long authorId = author.map(User::getId).orElse(null);
+        return getAmountOfPublishedNews(authorId);
     }
 
     private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,

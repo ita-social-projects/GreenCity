@@ -12,6 +12,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.security.jwt.JwtTool;
 import io.netty.channel.ChannelOption;
 import java.net.URI;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +35,11 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class UserRemoteClientConfig {
+    private static final String EMAIL_QUERY_PARAM = "email=";
+    private static final Pattern EMAIL_PARAM_PATTERN = Pattern.compile("(^|&)(email=)([^&]*)");
+    private static final String PLUS_SIGN_IN_EMAIL = "+";
+    private static final String ENCODED_PLUS_SIGN = "%2B";
+
     @Value("${greencityuser.server.address}")
     private String greenCityUserBaseUrl;
 
@@ -114,22 +121,44 @@ public class UserRemoteClientConfig {
         return ExchangeFilterFunction.ofRequestProcessor(request -> {
             URI original = request.url();
 
-            if (original.getRawQuery() != null && original.getRawQuery().contains("+")) {
-                String strictlyEscapedQuery = original.getRawQuery().replace("+", "%2B");
+            if (original.getRawQuery() != null && original.getRawQuery().contains(EMAIL_QUERY_PARAM)) {
+                String originalQuery = original.getRawQuery();
+                String encodedQuery = encodeEmailParameter(originalQuery);
 
-                URI newUri = UriComponentsBuilder.fromUri(original)
-                    .replaceQuery(strictlyEscapedQuery)
-                    .build(true)
-                    .toUri();
+                if (encodedQuery.equals(originalQuery)) {
+                    URI newUri = UriComponentsBuilder.fromUri(original)
+                        .replaceQuery(encodedQuery)
+                        .build(true)
+                        .toUri();
 
-                ClientRequest mutated = ClientRequest.from(request)
-                    .url(newUri)
-                    .build();
+                    ClientRequest mutated = ClientRequest.from(request)
+                        .url(newUri)
+                        .build();
 
-                return Mono.just(mutated);
+                    return Mono.just(mutated);
+                }
             }
 
             return Mono.just(request);
         });
+    }
+
+    private static String encodeEmailParameter(String query) {
+        Matcher matcher = EMAIL_PARAM_PATTERN.matcher(query);
+        StringBuilder encodedQuery = new StringBuilder();
+
+        while (matcher.find()) {
+            String queryBeforeEmailParam = matcher.group(1);
+            String emailParamKey = matcher.group(2);
+            String emailParamValue = matcher.group(3);
+
+            String encodedValue = emailParamValue.replace(PLUS_SIGN_IN_EMAIL, ENCODED_PLUS_SIGN);
+
+            matcher.appendReplacement(encodedQuery,
+                Matcher.quoteReplacement(queryBeforeEmailParam + emailParamKey + encodedValue));
+        }
+
+        matcher.appendTail(encodedQuery);
+        return encodedQuery.toString();
     }
 }

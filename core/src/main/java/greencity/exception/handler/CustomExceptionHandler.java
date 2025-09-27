@@ -51,6 +51,7 @@ import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoToDoListItemsException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.exception.exceptions.UserStatusUpdateException;
 import greencity.exception.exceptions.UserToDoListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
@@ -802,6 +803,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
+    /**
+     * Method intercepts exception {@link EcoNewsRelevanceCalculationException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
     @ExceptionHandler(EcoNewsRelevanceCalculationException.class)
     public final ResponseEntity<Object> handleEcoNewsRelevanceCalculationException(
         EcoNewsRelevanceCalculationException ex,
@@ -810,6 +819,23 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         exceptionResponse.setMessage(ex.getMessage());
 
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Method intercepts exception {@link UserStatusUpdateException}.
+     *
+     * @param ex      Exception that should be intercepted.
+     * @param request Contains details about the occurred exception.
+     * @return {@code ResponseEntity} which contains the HTTP status and body with
+     *         the exception message.
+     */
+    @ExceptionHandler(UserStatusUpdateException.class)
+    public final ResponseEntity<Object> handleUserStatusUpdateException(UserStatusUpdateException ex,
+        WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        exceptionResponse.setMessage(ex.getMessage());
+        log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 }

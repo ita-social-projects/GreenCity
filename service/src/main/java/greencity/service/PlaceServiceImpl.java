@@ -128,7 +128,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PlaceVO save(PlaceAddDto dto, String email) {
         UserVO user = userService.findNotDeactivatedByEmail(email);
-        if (user.getStatus().equals(UserStatus.BLOCKED)) {
+        if (user.getStatus() == UserStatus.BLOCKED) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         log.info(LogMessage.IN_SAVE, dto.getName(), email);

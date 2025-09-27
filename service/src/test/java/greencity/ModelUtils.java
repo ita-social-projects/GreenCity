@@ -3294,7 +3294,7 @@ public class ModelUtils {
             .finishDate(ZonedDateTime.now().plusDays(2L))
             .onlineLink("https://someevents.com")
             .coordinates(AddressDto.builder()
-                .latitude(50.1234)
+                .longitude(50.1234)
                 .latitude(30.1234)
                 .build())
             .build();
@@ -3652,7 +3652,7 @@ public class ModelUtils {
     public static GreenCityUserProfileDtoResponse getGreenCityUserProfileDtoResponse(Long userId) {
         return new GreenCityUserProfileDtoResponse(
             userId,
-            "test@email",
+            TestConst.EMAIL,
             TestConst.PICTURE_PATH,
             "user credo",
             0.);

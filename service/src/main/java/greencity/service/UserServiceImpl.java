@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -569,11 +570,13 @@ public class UserServiceImpl implements UserService {
             .filter(Objects::nonNull)
             .forEach(user -> {
                 GreenCityUserInfoDto userInfo = usersInfo.get(user.getEmail());
-                user.setId(userInfo.userId());
-                user.setProfilePicturePath(userInfo.profilePicturePath());
-                user.setUserCredo(userInfo.userCredo());
-                user.setStatus(userInfo.status());
-                user.setRating(userInfo.rating());
+                if (userInfo != null) {
+                    user.setId(userInfo.userId());
+                    user.setProfilePicturePath(userInfo.profilePicturePath());
+                    user.setUserCredo(userInfo.userCredo());
+                    user.setStatus(userInfo.status());
+                    user.setRating(userInfo.rating());
+                }
             });
     }
 
@@ -610,11 +613,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<Long> findAllActivatedUserIds(List<Long> ids) {
-        if (ids != null) {
-            return userRepo.findAllActivatedUserIdsFromList(ids);
-        } else {
-            return userRepo.findAllActivatedUserIds();
-        }
+        return userRepo.findAllActivatedUserIdsFromList(ids);
     }
 
     /**
@@ -690,17 +689,16 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<String> getDeactivationReasons(Long id, UserVO currentUser) {
-        List<UserDeactivationReason> userReasons = userDeactivationRepo.getLastDeactivationReasons(id);
-        if (userReasons.isEmpty()) {
+        Optional<UserDeactivationReason> deactivationReason = userDeactivationRepo.getLastDeactivationReason(id);
+        if (deactivationReason.isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_DEACTIVATION_REASON_IS_EMPTY);
         }
 
-        UserDeactivationReason lastReason = userReasons.getFirst();
         String userLang = userRemoteClient.findUserLanguageByEmail(currentUser.getEmail());
         if (userLang.equals("uk")) {
             userLang = "uk";
         }
-        return filterReasons(userLang, lastReason.getReason());
+        return filterReasons(userLang, deactivationReason.get().getReason());
     }
 
     /**
@@ -782,7 +780,10 @@ public class UserServiceImpl implements UserService {
         int totalPages = userManagementVOs.getTotalPages();
         int startPage = Math.max(0, currentPage - 3);
         int endPage = Math.min(currentPage + 3, totalPages - 1);
-        List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toList());
+        List<Integer> pageNumbers = IntStream
+            .rangeClosed(startPage, endPage)
+            .boxed()
+            .toList();
 
         return new PageInfoDto(currentPage, totalPages, pageNumbers);
     }

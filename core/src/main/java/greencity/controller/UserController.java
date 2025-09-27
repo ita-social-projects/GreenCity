@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -512,12 +511,12 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND, content = @Content),
     })
     @PutMapping("/status/{userId}")
-    public ResponseEntity<HttpStatus> changeUserStatus(
+    public ResponseEntity<Void> changeUserStatus(
         @Parameter(hidden = true) @CurrentUser UserVO currentUser,
         @PathVariable Long userId,
         @RequestParam UserStatus status) {
         userService.updateUserStatusById(currentUser, userId, status);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -549,7 +548,6 @@ public class UserController {
      * @return {@link UserStatus}
      */
     @GetMapping("/status")
-    @ResponseBody
     public ResponseEntity<UserStatus> getUserStatus(@RequestParam String email) {
         return ResponseEntity.ok(userService.getUserStatusByEmail(email));
     }

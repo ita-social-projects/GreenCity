@@ -241,8 +241,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateHabitBehaviorStatistic() {
-        List<Long> activatedUserIds = userService.findAllActivatedUserIds(null);
-        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus(activatedUserIds);
+        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus();
         Map<HabitAssignStatus, Long> counts = habitStatusCounts.stream()
             .collect(Collectors.toMap(
                 HabitStatusCount::status,

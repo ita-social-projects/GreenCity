@@ -16,7 +16,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class ManagementUserStatisticsServiceImpl implements ManagementUserStatisticsService {
-    private final UserService userService;
     private UserRepo userRepo;
     private UserRemoteClient userRemoteClient;
 
@@ -50,12 +49,10 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserLocationStatisticDto> getUserLocationsDistribution(String groupBy) {
-        List<Long> activatedUserIds = userService.findAllActivatedUserIds(null);
         return switch (groupBy) {
-            case "city" -> userRepo.getUserLocationsDistributionByCity(activatedUserIds);
-            case "region" -> userRepo.getUserLocationsDistributionByRegion(activatedUserIds);
-            case "country" -> userRepo.getUserLocationsDistributionByCountry(activatedUserIds);
-            default -> userRepo.getUserLocationsDistributionByCity(activatedUserIds);
+            case "region" -> userRepo.getUserLocationsDistributionByRegion();
+            case "country" -> userRepo.getUserLocationsDistributionByCountry();
+            default -> userRepo.getUserLocationsDistributionByCity();
         };
     }
 

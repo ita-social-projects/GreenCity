@@ -1921,13 +1921,13 @@ class UserServiceImplTest {
             .reason("{en}Spam/Inappropriate Content{en}/{uk}Спам/Неприйнятний контент{uk}")
             .build();
 
-        when(userDeactivationRepo.getLastDeactivationReasons(userId)).thenReturn(List.of(reason));
+        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(List.of(reason));
         when(userRemoteClient.findUserLanguageByEmail(currentUser.getEmail())).thenReturn("en");
 
         List<String> actualReasons = userService.getDeactivationReasons(userId, currentUser);
 
         assertEquals(List.of("Spam", "Inappropriate Content"), actualReasons);
-        verify(userDeactivationRepo).getLastDeactivationReasons(userId);
+        verify(userDeactivationRepo).getLastDeactivationReason(userId);
         verify(userRemoteClient).findUserLanguageByEmail(currentUser.getEmail());
     }
 
@@ -1942,13 +1942,13 @@ class UserServiceImplTest {
             .reason("{en}Spam/Inappropriate Content{en}/{uk}Спам/Неприйнятний контент{uk}")
             .build();
 
-        when(userDeactivationRepo.getLastDeactivationReasons(userId)).thenReturn(List.of(reason));
+        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(List.of(reason));
         when(userRemoteClient.findUserLanguageByEmail(currentUser.getEmail())).thenReturn("uk");
 
         List<String> actualReasons = userService.getDeactivationReasons(userId, currentUser);
 
         assertEquals(List.of("Спам", "Неприйнятний контент"), actualReasons);
-        verify(userDeactivationRepo).getLastDeactivationReasons(userId);
+        verify(userDeactivationRepo).getLastDeactivationReason(userId);
         verify(userRemoteClient).findUserLanguageByEmail(currentUser.getEmail());
     }
 
@@ -1959,14 +1959,14 @@ class UserServiceImplTest {
             .email("admin@email.com")
             .build();
 
-        when(userDeactivationRepo.getLastDeactivationReasons(userId)).thenReturn(Collections.emptyList());
+        when(userDeactivationRepo.getLastDeactivationReason(userId)).thenReturn(Collections.emptyList());
 
         NotFoundException notFoundException = assertThrows(
             NotFoundException.class,
             () -> userService.getDeactivationReasons(userId, currentUser));
 
         assertEquals(ErrorMessage.USER_DEACTIVATION_REASON_IS_EMPTY, notFoundException.getMessage());
-        verify(userDeactivationRepo).getLastDeactivationReasons(userId);
+        verify(userDeactivationRepo).getLastDeactivationReason(userId);
     }
 
     @Test

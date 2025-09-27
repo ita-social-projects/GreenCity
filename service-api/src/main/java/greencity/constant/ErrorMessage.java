@@ -254,4 +254,5 @@ public class ErrorMessage {
     public static final String USER_CANNOT_DEACTIVATE_YOURSELF = "You cannot deactivate yourself if you are not a USER";
     public static final String ADMIN_CANNOT_DEACTIVATE_OTHER_ADMIN = "ADMIN cannot deactivate other ADMIN users";
     public static final String USER_DEACTIVATION_REASON_IS_EMPTY = "The User deactivation reasons list is empty";
+    public static final String AI_USER_NOT_FOUND = "AI-generated user not found";
 }

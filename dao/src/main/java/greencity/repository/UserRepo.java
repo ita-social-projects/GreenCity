@@ -661,7 +661,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Retrieves the distribution of users by city.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the city name
      *         and the count of users in that city.
      */
@@ -670,16 +669,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.cityEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.cityEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCity(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCity();
 
     /**
      * Retrieves the distribution of users by region.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the region name
      *         and the count of users in that region.
      */
@@ -688,16 +685,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.regionEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.regionEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion();
 
     /**
      * Retrieves the distribution of users by country.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the country
      *         name and the count of users in that country.
      */
@@ -706,11 +701,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.countryEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.countryEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry();
 
     /**
      * Get all user friends{@link User}.
@@ -874,20 +868,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         WHERE u.status = 'ACTIVATED' AND u.id IN :ids
         """)
     List<Long> findAllActivatedUserIdsFromList(@Param("ids") List<Long> ids);
-
-    /**
-     * Retrieves the list of IDs of users who have the {@code UserStatus} set to
-     * {@code ACTIVATED}.
-     *
-     * @return a list of {@code Long} values representing the IDs of all activated
-     *         users
-     */
-    @Query("""
-        SELECT u.id
-        FROM User u
-        WHERE u.status = 'ACTIVATED'
-        """)
-    List<Long> findAllActivatedUserIds();
 
     /**
      * Counts all users by user {@link UserStatus}.

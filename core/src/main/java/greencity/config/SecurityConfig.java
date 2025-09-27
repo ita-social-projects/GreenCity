@@ -304,7 +304,6 @@ public class SecurityConfig {
                     "/ai/**",
                     EXPORT_SETTINGS_LINKS,
                     LOGS_LINKS,
-                    "/ai/forecast",
                     USERS + "/activatedUsersAmount")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,

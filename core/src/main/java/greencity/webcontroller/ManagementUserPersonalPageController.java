@@ -91,10 +91,9 @@ public class ManagementUserPersonalPageController {
      * @return View template path {@link String}.
      */
     @PostMapping(value = "/updateUserStatus")
-    public String updateUserStatus(@PathVariable Long id, @RequestParam(name = "userStatus") String userStatus,
+    public String updateUserStatus(@PathVariable Long id, @RequestParam(name = "userStatus") UserStatus userStatus,
         @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
-        UserStatus status = UserStatus.valueOf(userStatus.toUpperCase());
-        userService.updateUserStatusById(currentUser, id, status);
+        userService.updateUserStatusById(currentUser, id, userStatus);
         return "redirect:/management/users/{id}";
     }
 
