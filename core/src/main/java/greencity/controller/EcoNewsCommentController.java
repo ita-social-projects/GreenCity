@@ -128,7 +128,7 @@ public class EcoNewsCommentController {
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long parentCommentId,
-        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(commentService.getAllActiveReplies(pageable, parentCommentId, userId));
@@ -276,7 +276,7 @@ public class EcoNewsCommentController {
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveComments(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long ecoNewsId,
-        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(commentService.getAllActiveComments(pageable, userId, ecoNewsId, ArticleType.ECO_NEWS));
     }
@@ -299,7 +299,7 @@ public class EcoNewsCommentController {
     })
     @GetMapping("/comments/{id}")
     public ResponseEntity<CommentDto> getCommentById(@PathVariable Long id,
-        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(commentService.getCommentById(ArticleType.ECO_NEWS, id, userId));
     }
