@@ -1,10 +1,6 @@
 package greencity.mapping;
 
 import greencity.exception.exceptions.NotSavedException;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.file.Files;
-import javax.imageio.ImageIO;
 import greencity.service.MultipartFileImpl;
 import org.apache.commons.io.IOUtils;
 import org.apache.tomcat.util.http.fileupload.FileItem;
@@ -13,7 +9,11 @@ import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import static org.apache.tomcat.util.codec.binary.Base64.decodeBase64;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.Base64;
 
 /**
  * Class that is used by {@link ModelMapper} to map Base64 encoded image into
@@ -21,6 +21,8 @@ import static org.apache.tomcat.util.codec.binary.Base64.decodeBase64;
  */
 @Component
 public class MultipartBase64ImageMapper extends AbstractConverter<String, MultipartFile> {
+    private static final Base64.Decoder decoder = Base64.getDecoder();
+
     /**
      * Method for converting Base64 encoded image into MultipartFile.
      *
@@ -31,9 +33,9 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
     public MultipartFile convert(String image) {
         String imageToConvert = image.substring(image.indexOf(',') + 1);
         File tempFile = new File("tempImage.jpg");
-        byte[] imageByte = decodeBase64(imageToConvert);
-        ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
         try {
+            byte[] imageByte = decoder.decode(imageToConvert);
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
             BufferedImage bufferedImage = ImageIO.read(bis);
             ImageIO.write(bufferedImage, "png", tempFile);
             FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
@@ -45,7 +47,7 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
                 return new MultipartFileImpl("mainFile", tempFile.getName(),
                     Files.probeContentType(tempFile.toPath()), Files.readAllBytes(tempFile.toPath()));
             }
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             throw new NotSavedException("Cannot convert to BASE64 image");
         }
     }

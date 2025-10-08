@@ -240,7 +240,7 @@ class EventCommentControllerTest {
 
         mockMvc
             .perform(
-                get(EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/active?statuses=EDITED,ORIGINAL",
+                get(EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/active/?statuses=EDITED,ORIGINAL",
                     parentCommentId)
                     .principal(principal)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -255,7 +255,7 @@ class EventCommentControllerTest {
     void findAllRepliesWithNotValidIdBadRequestTest() {
         String notValidId = "id";
         mockMvc
-            .perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/active", notValidId))
+            .perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/active/", notValidId))
             .andExpect(status().isBadRequest());
     }
 

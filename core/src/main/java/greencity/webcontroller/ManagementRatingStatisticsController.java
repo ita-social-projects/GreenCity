@@ -79,7 +79,7 @@ public class ManagementRatingStatisticsController {
      *
      * @author Dovganyuk Taras
      */
-    @PostMapping(value = "/exportFiltered", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/exportFiltered/", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public void exportFilteredToExcel(HttpServletResponse response,
         RatingStatisticsViewDto ratingStatisticsViewDto)
         throws IOException {

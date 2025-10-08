@@ -29,8 +29,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +53,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ManagementPlacesControllerTest {
 
     private MockMvc mockMvc;
@@ -94,7 +91,7 @@ class ManagementPlacesControllerTest {
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
-        this.mockMvc.perform(get("/management/places")
+        this.mockMvc.perform(get("/management/places/")
             .param("page", "0")
             .param("size", "1"))
             .andExpect(view().name("core/management_places"))

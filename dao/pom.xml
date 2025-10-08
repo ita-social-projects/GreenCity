@@ -13,20 +13,12 @@
     <artifactId>dao</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>dao</name>
-    <properties>
-        <junit-jupiter.version>5.10.1</junit-jupiter.version>
-        <postgresql.version>42.6.1</postgresql.version>
-        <testcontainers.version>1.19.1</testcontainers.version>
-        <h2.version>2.2.224</h2.version>
-        <hibernate.jpamodelgen.version>6.4.1.Final</hibernate.jpamodelgen.version>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>greencity</groupId>
             <artifactId>service-api</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -35,20 +27,11 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-maven-plugin</artifactId>
-            <version>${liquibase.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>liquibase-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
