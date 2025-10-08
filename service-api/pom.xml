@@ -114,7 +114,6 @@
         <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-hystrix</artifactId>
-            <version>${feign-hystrix.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

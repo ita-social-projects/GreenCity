@@ -210,10 +210,6 @@
             <artifactId>ldm-spring-boot-starter</artifactId>
             <version>${ldm.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.liquibase</groupId>-->
-<!--            <artifactId>liquibase-core</artifactId>-->
-<!--        </dependency>-->
     </dependencies>
 
     <build>

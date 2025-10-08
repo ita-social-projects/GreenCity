@@ -37,9 +37,6 @@
         <!-- templating -->
         <thymeleaf.spring6.version>3.1.2.RELEASE</thymeleaf.spring6.version>
         <thymeleaf.extras.version>3.0.4.RELEASE</thymeleaf.extras.version>
-
-        <!-- cloud -->
-        <feign-hystrix.version>13.1</feign-hystrix.version>
         <!-- /spring -->
 
         <!-- http -->
