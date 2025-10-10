@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,6 +34,10 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class UserRemoteClientConfig {
+    private static final String EMAIL_QUERY_PARAMETER = "email";
+    private static final String PLUS_SYMBOL = "+";
+    private static final String ENCODED_PLUS_SYMBOL = "%2B";
+
     @Value("${greencityuser.server.address}")
     private String greenCityUserBaseUrl;
 
@@ -110,26 +115,49 @@ public class UserRemoteClientConfig {
         }
     }
 
-    public ExchangeFilterFunction encodePlusInQuery() {
+    private ExchangeFilterFunction encodePlusInQuery() {
         return ExchangeFilterFunction.ofRequestProcessor(request -> {
             URI original = request.url();
+            String originalQuery = original.getRawQuery();
 
-            if (original.getRawQuery() != null && original.getRawQuery().contains("+")) {
-                String strictlyEscapedQuery = original.getRawQuery().replace("+", "%2B");
+            if (originalQuery != null
+                && originalQuery.contains(PLUS_SYMBOL)
+                && originalQuery.toLowerCase().contains(EMAIL_QUERY_PARAMETER)) {
+                URI encodedUri = encodeEmailParameter(original);
 
-                URI newUri = UriComponentsBuilder.fromUri(original)
-                    .replaceQuery(strictlyEscapedQuery)
-                    .build(true)
-                    .toUri();
+                if (!encodedUri.equals(original)) {
+                    ClientRequest mutated = ClientRequest.from(request)
+                        .url(encodedUri)
+                        .build();
 
-                ClientRequest mutated = ClientRequest.from(request)
-                    .url(newUri)
-                    .build();
-
-                return Mono.just(mutated);
+                    return Mono.just(mutated);
+                }
             }
 
             return Mono.just(request);
         });
+    }
+
+    private static URI encodeEmailParameter(URI uri) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+        MultiValueMap<String, String> queryParams = builder.build().getQueryParams();
+        builder.replaceQuery(null);
+
+        for (var entry : queryParams.entrySet()) {
+            String paramKey = entry.getKey();
+
+            if (paramKey.toLowerCase().contains(EMAIL_QUERY_PARAMETER)) {
+                for (String value : entry.getValue()) {
+                    String encodedValue = value.replace(PLUS_SYMBOL, ENCODED_PLUS_SYMBOL);
+                    builder.queryParam(paramKey, encodedValue);
+                }
+            } else {
+                for (String value : entry.getValue()) {
+                    builder.queryParam(paramKey, value);
+                }
+            }
+        }
+
+        return builder.build(true).toUri();
     }
 }

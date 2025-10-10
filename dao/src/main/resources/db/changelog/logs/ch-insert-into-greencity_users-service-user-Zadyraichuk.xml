@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add-service-user-Zadyraichuk" author="Rostyslav Zadyraichuk">
+        <insert tableName="greencity_users">
+            <column name="name" >Service</column>
+            <column name="email">service@greencity.ua</column>
+            <column name="language_id">2</column>
+            <column name="user_status">ACTIVATED</column>
+        </insert>
+
+        <rollback>
+            <delete tableName="greencity_users">
+                <where>email = 'service@greencity.ua'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

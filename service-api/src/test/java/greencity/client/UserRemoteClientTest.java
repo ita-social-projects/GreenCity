@@ -11,19 +11,18 @@ import greencity.dto.emailpreference.EmailPreferenceDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
+import greencity.dto.user.UserActivationDto;
+import greencity.dto.user.UserDeactivationReasonDto;
 import greencity.dto.user.UserEmailPreferencesStatisticDto;
 import greencity.dto.user.UserRegistrationStatisticDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserRoleStatisticDto;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.DateGranularity;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
-import greencity.enums.UserStatus;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.service.UserService;
 import lombok.SneakyThrows;
@@ -90,32 +89,6 @@ class UserRemoteClientTest {
 
     @Test
     @SneakyThrows
-    void findNotDeactivatedByEmailTest() {
-        String email = "email@email.com";
-        UserVO userVO = ModelUtils.getUserVO();
-        String userVOJson = toJson(userVO);
-        String expectedRequestPath = "/user/findNotDeactivatedByEmail?email=" + email;
-        String expectedRequestMethod = HttpMethod.GET.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(userVOJson)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        Optional<UserVO> actualResult = userRemoteClient.findNotDeactivatedByEmail(email);
-        assertTrue(actualResult.isPresent());
-        UserVO actualUserVO = actualResult.get();
-        assertEquals(userVO, actualUserVO);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertNotNull(recordedRequest.getRequestUrl());
-        assertNotNull(recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
-        assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
-    }
-
-    @Test
-    @SneakyThrows
     void findByEmailTest() {
         String email = "email@email.com";
         UserVO userVO = ModelUtils.getUserVO();
@@ -138,32 +111,6 @@ class UserRemoteClientTest {
         assertNotNull(recordedRequest.getRequestUrl());
         assertNotNull(recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
         assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
-    }
-
-    @Test
-    @SneakyThrows
-    void updateUserStatusTest() {
-        UserStatusDto userStatusDto = ModelUtils.getUserStatusDto();
-        UserStatusDto updatedStatusDto = ModelUtils.getUserStatusDto();
-        String userStatusDtoJson = toJson(userStatusDto);
-        String updatedStatusDtoJson = toJson(updatedStatusDto);
-        String expectedRequestPath = "/user/status";
-        String expectedRequestMethod = HttpMethod.PATCH.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(updatedStatusDtoJson)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        Optional<UserStatusDto> actualResult = userRemoteClient.updateUserStatus(userStatusDto);
-
-        assertTrue(actualResult.isPresent());
-        UserStatusDto actualStatusDto = actualResult.get();
-        assertEquals(updatedStatusDto, actualStatusDto);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertEquals(userStatusDtoJson, recordedRequest.getBody().readUtf8());
     }
 
     @Test
@@ -220,29 +167,6 @@ class UserRemoteClientTest {
 
     @Test
     @SneakyThrows
-    void getUserStatusesDistributionTest() {
-        List<UserStatusStatisticDto> statusStats = List.of(
-            new UserStatusStatisticDto(UserStatus.ACTIVATED, 10L),
-            new UserStatusStatisticDto(UserStatus.CREATED, 5L));
-        String statusStatsJson = toJson(statusStats);
-        String expectedRequestPath = "/user/statuses-distribution";
-        String expectedRequestMethod = HttpMethod.GET.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(statusStatsJson)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        List<UserStatusStatisticDto> actualResult = userRemoteClient.getUserStatusesDistribution();
-
-        assertEquals(statusStats, actualResult);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-    }
-
-    @Test
-    @SneakyThrows
     void getUserEmailPreferencesDistributionTest() {
         List<UserEmailPreferencesStatisticDto> emailPrefsStats = List.of(
             new UserEmailPreferencesStatisticDto(EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY, 10L));
@@ -257,26 +181,6 @@ class UserRemoteClientTest {
         List<UserEmailPreferencesStatisticDto> actualResult = userRemoteClient.getUserEmailPreferencesDistribution();
 
         assertEquals(emailPrefsStats, actualResult);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-    }
-
-    @Test
-    @SneakyThrows
-    void countActiveUsersTest() {
-        Long activeUsersCount = 100L;
-        String expectedRequestPath = "/user/count-active-users";
-        String expectedRequestMethod = HttpMethod.GET.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(activeUsersCount.toString())
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        Long actualResult = userRemoteClient.countActiveUsers();
-
-        assertEquals(activeUsersCount, actualResult);
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(expectedRequestMethod, recordedRequest.getMethod());
@@ -387,79 +291,6 @@ class UserRemoteClientTest {
         assertEquals(startDate.toString(), recordedRequest.getRequestUrl().queryParameter("start-date"));
         assertEquals(endDate.toString(), recordedRequest.getRequestUrl().queryParameter("end-date"));
         assertEquals(granularity.name(), recordedRequest.getRequestUrl().queryParameter("granularity"));
-    }
-
-    @Test
-    @SneakyThrows
-    void getActivatedUsersIdsTest() {
-        List<Long> ids = List.of(1L, 2L, 3L);
-        List<Long> activatedIds = List.of(1L, 3L);
-        String activatedIdsJson = toJson(activatedIds);
-        String expectedRequestPath =
-            "/user/activated-ids?ids=" + String.join("&ids=", ids.stream().map(String::valueOf).toArray(String[]::new));
-        String expectedRequestMethod = HttpMethod.GET.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(activatedIdsJson)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        List<Long> actualResult = userRemoteClient.getActivatedUsersIds(ids);
-
-        assertEquals(activatedIds, actualResult);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertNotNull(recordedRequest.getRequestUrl());
-        assertNotNull(recordedRequest.getRequestUrl().queryParameter("ids"));
-    }
-
-    @Test
-    @SneakyThrows
-    void getActivatedUsersIdsWithNullListTest() {
-        List<Long> activatedIds = List.of(1L, 2L, 3L);
-        String activatedIdsJson = toJson(activatedIds);
-        String expectedRequestPath = "/user/activated-ids";
-        String expectedRequestMethod = HttpMethod.GET.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(activatedIdsJson)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        List<Long> actualResult = userRemoteClient.getActivatedUsersIds(null);
-
-        assertEquals(activatedIds, actualResult);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-    }
-
-    @Test
-    @SneakyThrows
-    void findNotDeactivatedByEmailAdvancedTest() {
-        String email = "email@email.com";
-        UserVOAdvancedDto userVOAdvanced = ModelUtils.getUserVOAdvancedDto();
-        String userVOAdvancedJson = toJson(userVOAdvanced);
-        String expectedRequestPath = "/user/findNotDeactivatedByEmailAdvanced?email=" + email;
-        String expectedRequestMethod = HttpMethod.GET.name();
-
-        mockWebServer.enqueue(new MockResponse()
-            .setBody(userVOAdvancedJson)
-            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
-
-        Optional<UserVOAdvancedDto> actualResult = userRemoteClient.findNotDeactivatedByEmailAdvanced(email);
-
-        assertTrue(actualResult.isPresent());
-        UserVOAdvancedDto actualUserVOAdvanced = actualResult.get();
-        assertEquals(userVOAdvanced, actualUserVOAdvanced);
-
-        RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertEquals(expectedRequestMethod, recordedRequest.getMethod());
-        assertEquals(expectedRequestPath, recordedRequest.getPath());
-        assertNotNull(recordedRequest.getRequestUrl());
-        assertNotNull(recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
-        assertEquals(email, recordedRequest.getRequestUrl().queryParameter(emailQueryParam));
     }
 
     @Test
@@ -762,6 +593,134 @@ class UserRemoteClientTest {
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertEquals(HttpMethod.GET.name(), recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
+    void uploadAllFilesTest() {
+        String expectedRequestPath = "/files";
+        List<MultipartFile> payload = List.of(new MockMultipartFile("name", "content".getBytes()));
+        List<String> expected = List.of("name");
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(toJson(expected))
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        List<String> actual = userRemoteClient.uploadAllFiles(payload);
+
+        assertEquals(expected, actual);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(HttpMethod.POST.name(), recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
+    void uploadFileTest() {
+        String expectedRequestPath = "/files/single";
+        MultipartFile payload = new MockMultipartFile("name", "content".getBytes());
+        String expected = "name";
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(expected)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        String actual = userRemoteClient.uploadFile(payload);
+
+        assertEquals(expected, actual);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(HttpMethod.POST.name(), recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteAllFilesTest() {
+        String expectedRequestPath = "/files";
+        List<String> paths = List.of("name");
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(toJson(paths))
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        userRemoteClient.deleteAllFiles(paths);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(HttpMethod.DELETE.name(), recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteFileTest() {
+        String path = "name";
+        String expectedRequestPath = "/files/single?path=" + path;
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(path)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        userRemoteClient.deleteFile(path);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(HttpMethod.DELETE.name(), recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
+    void findUserLanguageByEmailTest() {
+        String email = "email@email.com";
+        String expectedRequestPath = "/user/greencity/lang?email=" + email;
+        String expected = "en";
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(expected)
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        String actual = userRemoteClient.findUserLanguageByEmail(email);
+
+        assertEquals(expected, actual);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(HttpMethod.GET.name(), recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
+    void sendReasonOfDeactivationTest() {
+        UserDeactivationReasonDto notification = ModelUtils.getUserDeactivationReasonDto();
+        String expectedRequestPath = "/email/sendReasonOfDeactivation";
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(toJson(notification))
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        userRemoteClient.sendReasonOfDeactivation(notification);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(HttpMethod.POST.name(), recordedRequest.getMethod());
+        assertEquals(expectedRequestPath, recordedRequest.getPath());
+    }
+
+    @Test
+    @SneakyThrows
+    void sendMessageOfActivationTest() {
+        UserActivationDto notification = ModelUtils.getUserActivationDto();
+        String expectedRequestPath = "/email/sendMessageOfActivation";
+
+        mockWebServer.enqueue(new MockResponse()
+            .setBody(toJson(notification))
+            .addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+        userRemoteClient.sendMessageOfActivation(notification);
+
+        RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertEquals(HttpMethod.POST.name(), recordedRequest.getMethod());
         assertEquals(expectedRequestPath, recordedRequest.getPath());
     }
 

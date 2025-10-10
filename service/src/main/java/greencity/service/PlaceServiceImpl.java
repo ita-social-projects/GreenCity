@@ -134,7 +134,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public PlaceVO save(PlaceAddDto dto, String email) {
         UserVO user = userService.findNotDeactivatedByEmail(email);
-        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
+        if (user.getStatus() == UserStatus.BLOCKED) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         log.info(LogMessage.IN_SAVE, dto.getName(), email);
@@ -563,7 +563,7 @@ public class PlaceServiceImpl implements PlaceService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         UserVO userVO = modelMapper.map(user, UserVO.class);
 
-        if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
+        if (userVO.getStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);

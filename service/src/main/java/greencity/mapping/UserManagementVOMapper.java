@@ -1,34 +1,39 @@
 package greencity.mapping;
 
+import greencity.client.UserRemoteClient;
+import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.exception.exceptions.NotFoundException;
 import org.modelmapper.AbstractConverter;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserManagementVOMapper extends AbstractConverter<User, UserManagementVO> {
-    private final ModelMapper modelMapper;
+    private final UserRemoteClient userRemoteClient;
 
     @Lazy
-    public UserManagementVOMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
+    public UserManagementVOMapper(UserRemoteClient userRemoteClient) {
+        this.userRemoteClient = userRemoteClient;
     }
 
     @Override
     protected UserManagementVO convert(User user) {
-        UserVO userVO = modelMapper.map(user, UserVO.class);
+        String email = user.getEmail();
+        UserVO userVO = userRemoteClient.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
         return UserManagementVO.builder()
             .id(user.getId())
             .name(user.getName())
-            .email(userVO.getEmail())
+            .email(email)
             .userCredo(user.getUserCredo())
             .role(userVO.getRole())
-            .userStatus(userVO.getUserStatus())
+            .status(user.getStatus())
+            .rating(user.getRating())
             .build();
     }
 

@@ -1,32 +1,26 @@
 package greencity.client;
 
-import static greencity.ModelUtils.getEntity;
 import static greencity.TestConst.ACCESS_TOKEN;
 import static greencity.TestConst.GREEN_CITY_USER_ADDRESS;
 import static greencity.TestConst.GREEN_CITY_UBS_ADDRESS;
 import static greencity.TestConst.SYSTEM_EMAIL;
 import static greencity.TestConst.TOKEN;
-import static greencity.TestConst.UPDATE_STATUS_URL;
-import static greencity.TestConst.USER_ID;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
-import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserManagementCreateDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserManagementVO;
-import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
-import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
@@ -37,7 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import greencity.security.jwt.JwtTool;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,9 +40,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -253,18 +244,6 @@ class RestClientTest {
     }
 
     @Test
-    void updateStatusTest() {
-        String url = GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER + UPDATE_STATUS_URL;
-        HttpEntity<UserStatusDto> entity = getEntity();
-
-        when(userService.findById(USER_ID)).thenReturn(ModelUtils.getUserVO());
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        restClient.updateStatus(USER_ID, UserStatus.ACTIVATED);
-        verify(restTemplate).exchange(url, HttpMethod.PATCH, entity, Object.class);
-        verify(jwtTool).createAccessToken(anyString(), any(Role.class));
-    }
-
-    @Test
     void findAll() {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, ACCESS_TOKEN);
@@ -285,70 +264,20 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, ACCESS_TOKEN);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        UserManagementDto userManagementDto = new UserManagementDto();
-        UserManagementDto[] userManagementDtos = new UserManagementDto[] {userManagementDto};
+        UserManagementVO userManagementDto = new UserManagementVO();
+        UserManagementVO[] userManagementDtos = new UserManagementVO[] {userManagementDto};
         UserVO userVO = ModelUtils.getUserVO();
 
         when(userService.findById(1L)).thenReturn(userVO);
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER + RestTemplateLinks.FRIENDS + RestTemplateLinks.EMAIL + userVO.getEmail(),
-            HttpMethod.GET, entity, UserManagementDto[].class))
+            HttpMethod.GET, entity, UserManagementVO[].class))
             .thenReturn(ResponseEntity.ok(userManagementDtos));
         restClient.findUserFriendsByUserId(1L);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER + RestTemplateLinks.FRIENDS
-            + RestTemplateLinks.EMAIL + userVO.getEmail(), HttpMethod.GET, entity, UserManagementDto[].class);
-    }
-
-    @Test
-    void findNotDeactivatedByEmail() {
-        String email = "test@gmail.com";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        UserVO userVO = ModelUtils.getUserVO();
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER_FIND_NOT_DEACTIVATED_BY_EMAIL + RestTemplateLinks.EMAIL
-            + email, HttpMethod.GET, entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
-
-        assertEquals(Optional.of(userVO), restClient.findNotDeactivatedByEmail(email));
-    }
-
-    @Test
-    void findNotDeactivatedByEmailFromCookies() {
-        String email = "test@gmail.com";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, "Bearer testToken");
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        UserVO userVO = ModelUtils.getUserVO();
-        Cookie[] cookies = new Cookie[] {new Cookie("accessToken", "testToken")};
-        when(httpServletRequest.getCookies()).thenReturn(cookies);
-        when(httpServletRequest.getRequestURI()).thenReturn("/management");
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER_FIND_NOT_DEACTIVATED_BY_EMAIL + RestTemplateLinks.EMAIL
-            + email, HttpMethod.GET, entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
-
-        assertEquals(Optional.of(userVO), restClient.findNotDeactivatedByEmail(email));
-    }
-
-    @Test
-    void getDeactivationReason() {
-        HttpHeaders headers = new HttpHeaders();
-        String[] test = new String[] {"test", "test"};
-        List<String> listString = Arrays.asList(test);
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_REASONS
-            + RestTemplateLinks.ID + 1L
-            + RestTemplateLinks.ADMIN_LANG + "en", HttpMethod.GET, entity, String[].class))
-            .thenReturn(ResponseEntity.ok(test));
-
-        assertEquals(listString, restClient.getDeactivationReason(1L, "en"));
+            + RestTemplateLinks.EMAIL + userVO.getEmail(), HttpMethod.GET, entity, UserManagementVO[].class);
     }
 
     @Test
@@ -369,71 +298,12 @@ class RestClientTest {
     }
 
     @Test
-    void deactivateUser() {
-        List<String> test = List.of("test", "test");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<List<String>> entity = new HttpEntity<>(test, headers);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_DEACTIVATE
-            + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(object));
-
-        restClient.deactivateUser(1L, test);
-
-        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_DEACTIVATE
-            + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class);
-    }
-
-    @Test
-    void setActivatedStatus() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_ACTIVATE
-            + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(object));
-
-        restClient.setActivatedStatus(1L);
-
-        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_ACTIVATE
-            + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class);
-    }
-
-    @Test
-    void deactivateAllUsers() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        Long[] longs = new Long[] {1L, 2L};
-        List<Long> listId = Arrays.asList(longs);
-        Gson gson = new Gson();
-        String json = gson.toJson(listId);
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-
-        restClient.deactivateAllUsers(listId);
-
-        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER_DEACTIVATE_ALL
-            + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
-
-        verify(jwtTool).createAccessToken(anyString(), any(Role.class));
-
-    }
-
-    @Test
     void managementRegisterUser() {
-        UserManagementDto userManagementDto = new UserManagementDto();
+        UserManagementCreateDto userManagementDto = new UserManagementCreateDto();
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, ACCESS_TOKEN);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
+        HttpEntity<UserManagementCreateDto> entity = new HttpEntity<>(userManagementDto, headers);
 
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
@@ -503,82 +373,17 @@ class RestClientTest {
         headers.set(AUTHORIZATION, ACCESS_TOKEN);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
-        UserManagementDto user = new UserManagementDto();
+        UserManagementVO user = new UserManagementVO();
 
         when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
         when(userService.findById(userVO.getId())).thenReturn(userVO);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.EMAIL + userVO.getEmail(),
-            HttpMethod.GET, entity, new ParameterizedTypeReference<UserManagementDto>() {
+            HttpMethod.GET, entity, new ParameterizedTypeReference<UserManagementVO>() {
             }))
             .thenReturn(ResponseEntity.ok(user));
 
         assertEquals(user, restClient.findUserForManagement(userVO.getId()));
-    }
-
-    @Test
-    void findUsersForManagement() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
-        List<UserManagementDto> users = Collections.singletonList(new UserManagementDto());
-        PageableAdvancedDto<UserManagementDto> pageableAdvancedDto =
-            new PageableAdvancedDto<>(users, 2, 0, 3, 0, true, true, true, true);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER_FIND_USERS_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize() + "&sort=id,ASC", HttpMethod.GET, entity,
-            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
-            })).thenReturn(ResponseEntity.ok(pageableAdvancedDto));
-
-        assertEquals(pageableAdvancedDto, restClient.findUsersForManagement(pageable));
-    }
-
-    @Test
-    void searchTest() {
-        Pageable pageable = PageRequest.of(0, 20, Sort.unsorted());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(AUTHORIZATION, ACCESS_TOKEN);
-        UserManagementViewDto userViewDto =
-            UserManagementViewDto.builder()
-                .id("1L")
-                .name("vivo")
-                .email("test@ukr.net")
-                .userCredo("Hello")
-                .role("1")
-                .userStatus("1")
-                .build();
-        List<UserManagementVO> userManagementVOS = Collections.singletonList(new UserManagementVO());
-        PageableAdvancedDto<UserManagementVO> userAdvancedDto =
-            new PageableAdvancedDto<>(userManagementVOS, 20, 0, 0, 0,
-                true, true, true, true);
-        HttpEntity<UserManagementViewDto> entity = new HttpEntity<>(userViewDto, headers);
-
-        when(jwtTool.createAccessToken(anyString(), any(Role.class))).thenReturn(TOKEN);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize()
-            + RestTemplateLinks.SORT, HttpMethod.POST, entity,
-            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
-            })).thenReturn(ResponseEntity.ok(userAdvancedDto));
-
-        assertEquals(userAdvancedDto, restClient.search(pageable, userViewDto));
-    }
-
-    @Test
-    void scheduleDeleteDeactivatedUsers() {
-        HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
-
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
-            HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(object));
-        restClient.scheduleDeleteDeactivatedUsers();
-
-        verify(restTemplate, times(1)).exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
-            HttpMethod.POST, entity, Object.class);
     }
 
     @Test

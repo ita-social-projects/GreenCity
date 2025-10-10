@@ -60,15 +60,13 @@ import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserFilterDtoResponse;
+import greencity.dto.user.UserManagementCreateDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.CreateGreenCityUserDto;
-import greencity.entity.Comment;
 import greencity.entity.User;
-import greencity.enums.ArticleType;
-import greencity.enums.CommentStatus;
 import greencity.enums.EventStatus;
 import greencity.enums.EventType;
 import greencity.enums.Role;
@@ -189,18 +187,6 @@ public class ModelUtils {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
 
-    public static Comment getEcoNewsComment() {
-        return Comment.builder()
-            .id(1L)
-            .text("text")
-            .createdDate(LocalDateTime.now())
-            .modifiedDate(LocalDateTime.now())
-            .status(CommentStatus.ORIGINAL)
-            .user(getUser())
-            .articleType(ArticleType.ECO_NEWS)
-            .build();
-    }
-
     public static Principal getPrincipal() {
         return () -> "test@gmail.com";
     }
@@ -238,7 +224,16 @@ public class ModelUtils {
             .email("user@gmail.com")
             .userCredo("Credo")
             .role(Role.ROLE_ADMIN)
-            .userStatus(UserStatus.ACTIVATED)
+            .status(UserStatus.ACTIVATED)
+            .build();
+    }
+
+    public static UserManagementCreateDto getUserManagementCreateDto() {
+        return UserManagementCreateDto.builder()
+            .id(1L)
+            .name("Username")
+            .email("user@gmail.com")
+            .role(Role.ROLE_ADMIN)
             .build();
     }
 
@@ -578,7 +573,7 @@ public class ModelUtils {
             .id(1L)
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
-            .userStatus(ACTIVATED)
+            .status(ACTIVATED)
             .role(Role.ROLE_USER).build());
     }
 

@@ -33,8 +33,6 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
         String email = user.getEmail();
         UserVOAdvancedDto userVOAdvancedDto = userRemoteClient.findByEmailAdvanced(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
-        userVOAdvancedDto.setId(user.getId());
-        userVOAdvancedDto.setUserCredo(user.getUserCredo());
 
         userVOAdvancedDto.setUserAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
             .stream().map(userAchievement -> UserAchievementVO.builder()
@@ -55,15 +53,20 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
                 .build())
             .toList() : new ArrayList<>());
 
-        userVOAdvancedDto.setUserFriends(user.getUserFriends() != null ? user.getUserFriends()
-            .stream().map(user1 -> UserVO.builder()
-                .id(user1.getId())
-                .name(user1.getName())
-                .build())
-            .toList() : null);
+        userVOAdvancedDto.setUserFriends(user.getUserFriends() != null
+            ? user.getUserFriends().stream()
+                .map(user1 -> (UserVO) UserVO.builder()
+                    .id(user1.getId())
+                    .name(user1.getName())
+                    .build())
+                .toList()
+            : null);
 
+        userVOAdvancedDto.setId(user.getId());
+        userVOAdvancedDto.setUserCredo(user.getUserCredo());
         userVOAdvancedDto.setRating(user.getRating());
         userVOAdvancedDto.setUserCredo(user.getUserCredo());
+        userVOAdvancedDto.setStatus(user.getStatus());
         userVOAdvancedDto.setProfilePicturePath(user.getProfilePicturePath());
 
         UserLocation userLocation = user.getUserLocation();
