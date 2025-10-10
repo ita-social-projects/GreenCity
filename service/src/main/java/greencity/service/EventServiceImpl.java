@@ -78,6 +78,7 @@ import greencity.entity.event.EventImages;
 import greencity.entity.event.Event_;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.EventStatus;
 import greencity.enums.EventType;
 import greencity.enums.NotificationType;
 import greencity.enums.Role;
@@ -1498,9 +1499,15 @@ public class EventServiceImpl implements EventService {
     private List<SearchCriteria> createEventSearchCriteria(FilterEventDto filter) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
         setValueIfNotEmpty(criteriaList, "eventTime", filter.getTime());
-        setValueIfNotEmpty(criteriaList, "cities", filter.getCities().toArray());
-        setValueIfNotEmpty(criteriaList, "statuses", filter.getStatuses().toArray());
-        setValueIfNotEmpty(criteriaList, Event_.TAGS, filter.getTags().toArray());
+        if (filter.getCities() != null) {
+            setValueIfNotEmpty(criteriaList, "cities", filter.getCities().toArray(new String[0]));
+        }
+        if (filter.getStatuses() != null) {
+            setValueIfNotEmpty(criteriaList, "statuses", filter.getStatuses().toArray(new EventStatus[0]));
+        }
+        if (filter.getTags() != null) {
+            setValueIfNotEmpty(criteriaList, Event_.TAGS, filter.getTags().toArray(new String[0]));
+        }
         setValueIfNotEmpty(criteriaList, Event_.TITLE, filter.getTitle());
         setValueIfNotEmpty(criteriaList, "dateRange", new ZonedDateTime[] {filter.getFrom(), filter.getTo()});
         return criteriaList;
