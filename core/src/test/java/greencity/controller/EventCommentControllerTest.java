@@ -288,13 +288,14 @@ class EventCommentControllerTest {
     void getCountOfActiveRepliesTest() {
         Long parentCommentId = 1L;
         int repliesAmount = 10;
-        String expectedResponse = "<Integer>10</Integer>";
+        String expectedResponse = "10";
         when(commentService.countAllActiveReplies(parentCommentId)).thenReturn(repliesAmount);
 
         mockMvc
-            .perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/count", parentCommentId))
+            .perform(get(EVENT_COMMENTS_CONTROLLER_LINK + "/{parentCommentId}/replies/count", parentCommentId)
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().xml(expectedResponse));
+            .andExpect(content().json(expectedResponse));
 
         verify(commentService).countAllActiveReplies(parentCommentId);
     }
