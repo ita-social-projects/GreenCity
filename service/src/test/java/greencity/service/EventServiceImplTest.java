@@ -1184,6 +1184,9 @@ class EventServiceImplTest {
     void getEventsForUnauthorizedUserTest() {
         Pageable pageable = PageRequest.of(0, 6);
         FilterEventDto filterEventDto = getFilterEventDto();
+        filterEventDto.setCities(null);
+        filterEventDto.setStatuses(null);
+        filterEventDto.setTags(null);
         Page<Event> eventsPage = mock(Page.class);
         Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
         TupleElement<?>[] elements = getTupleElements();

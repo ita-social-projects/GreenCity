@@ -98,7 +98,7 @@ public class EventCommentController {
     })
     @GetMapping("/comments/{commentId}")
     public ResponseEntity<CommentDto> getCommentById(@PathVariable Long commentId,
-        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity.ok()
             .body(commentService.getCommentById(ArticleType.EVENT, commentId, userId));
     }
@@ -141,7 +141,7 @@ public class EventCommentController {
     public ResponseEntity<PageableDto<CommentDto>> getAllActiveComments(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long eventId,
-        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity.ok()
             .body(commentService.getAllActiveComments(pageable, userId, eventId, ArticleType.EVENT));
     }
@@ -218,7 +218,7 @@ public class EventCommentController {
     public ResponseEntity<PageableDto<CommentDto>> findAllActiveReplies(
         @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long parentCommentId,
-        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity.ok()
             .body(commentService.getAllActiveReplies(pageable, parentCommentId, userId));
     }
