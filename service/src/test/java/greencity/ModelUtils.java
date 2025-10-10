@@ -249,6 +249,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static greencity.TestConst.ROLE_ADMIN;
 import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.TestConst.TEST_QUERY;
 import static greencity.constant.EventTupleConstant.cityEn;
@@ -3229,6 +3230,7 @@ public class ModelUtils {
     public static UserFilterDto getUserFilterDto() {
         return UserFilterDto.builder()
             .query(TEST_QUERY)
+            .role(ROLE_ADMIN)
             .status(STATUS_ACTIVATED)
             .build();
     }

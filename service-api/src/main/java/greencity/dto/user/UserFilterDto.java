@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserFilterDto {
     private String query;
+    private String role;
     private String status;
 }
