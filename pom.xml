@@ -29,35 +29,33 @@
         <maven.compiler.release>21</maven.compiler.release>
 
         <!-- spring -->
-        <org.springframework.social.version>2.0.3.RELEASE</org.springframework.social.version>
-        <socialcore.version>1.1.6.RELEASE</socialcore.version>
         <springdoc.openapi.starter.webmvc.ui.version>2.8.13</springdoc.openapi.starter.webmvc.ui.version>
         <spring.cloud.version>2025.0.0</spring.cloud.version>
 
         <!-- templating -->
-        <thymeleaf.spring6.version>3.1.2.RELEASE</thymeleaf.spring6.version>
+        <thymeleaf.spring6.version>3.1.3.RELEASE</thymeleaf.spring6.version>
         <thymeleaf.extras.version>3.0.4.RELEASE</thymeleaf.extras.version>
         <!-- /spring -->
 
         <!-- http -->
         <!-- client -->
-        <jsoup.version>1.18.1</jsoup.version>
-        <apache.http.client.version>5.3-alpha1</apache.http.client.version>
+        <jsoup.version>1.21.2</jsoup.version>
+        <apache.http.client.version>5.5.1</apache.http.client.version>
 
         <!-- server -->
-        <jakarta.servlet.api.version>6.0.0</jakarta.servlet.api.version>
-        <tomcat.version>11.0.10</tomcat.version>
+        <jakarta.servlet.api.version>6.1.0</jakarta.servlet.api.version>
+        <tomcat.version>11.0.12</tomcat.version>
         <!-- /http -->
 
         <!-- commons -->
-        <commons.collections4.version>4.4</commons.collections4.version>
-        <commons.lang3.version>3.18.0</commons.lang3.version>
-        <commons.io.version>2.15.0</commons.io.version>
+        <commons.collections4.version>4.5.0</commons.collections4.version>
+        <commons.lang3.version>3.19.0</commons.lang3.version>
+        <commons.io.version>2.20.0</commons.io.version>
         <commons.dbcp2.version>2.13.0</commons.dbcp2.version>
 
         <!-- DB -->
         <liquibase.version>5.0.1</liquibase.version>
-        <postgresql.version>42.6.1</postgresql.version>
+        <postgresql.version>42.7.8</postgresql.version>
 
         <!-- JWT -->
         <jjwt.version>0.12.3</jjwt.version>
@@ -66,49 +64,48 @@
         <modelmapper.version>3.2.5</modelmapper.version>
 
         <!-- logging -->
-        <slf4j.api.version>2.0.11</slf4j.api.version>
+        <slf4j.api.version>2.0.17</slf4j.api.version>
 
         <!-- git -->
-        <org.eclipse.jgit.version>7.1.0.202411261347-r</org.eclipse.jgit.version>
+        <org.eclipse.jgit.version>7.4.0.202509020913-r</org.eclipse.jgit.version>
 
         <!-- google services -->
         <google.maps.services.version>2.2.0</google.maps.services.version>
-        <google.maps.version>2.2.0</google.maps.version>
         <google.cloud.storage.version>2.58.1</google.cloud.storage.version>
 
         <!-- azure services -->
-        <azure.storage.blob.version>12.25.0</azure.storage.blob.version>
+        <azure.storage.blob.version>12.31.3</azure.storage.blob.version>
 
         <!-- spreadsheets (excel, etc.) -->
-        <apache.poi.version>5.4.0</apache.poi.version>
+        <apache.poi.version>5.4.1</apache.poi.version>
 
         <!-- vector geometry -->
-        <jts.core.version>1.19.0</jts.core.version>
+        <jts.core.version>1.20.0</jts.core.version>
 
         <!-- env vars -->
-        <io.github.cdimascio.dotenv.version>3.1.0</io.github.cdimascio.dotenv.version>
+        <io.github.cdimascio.dotenv.version>3.2.0</io.github.cdimascio.dotenv.version>
 
         <!-- JNA (native libs access from java -->
-        <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
+        <net.java.dev.jna.version>5.18.1</net.java.dev.jna.version>
 
         <!-- starters -->
         <ldm.version>0.0.5</ldm.version>
 
         <!-- testing -->
-        <test.containers.version>1.19.3</test.containers.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
         <json.path.version>2.9.0</json.path.version>
-        <h2.version>2.2.224</h2.version>
+        <h2.version>2.4.240</h2.version>
         <mockwebserver.version>4.12.0</mockwebserver.version>
 
         <!-- annotation processors -->
         <lombok.version>1.18.42</lombok.version>
-        <hibernate.jpamodelgen.version>6.6.31.Final</hibernate.jpamodelgen.version>
+        <hibernate.jpamodelgen.version>6.6.32.Final</hibernate.jpamodelgen.version>
 
         <!-- plugins -->
-        <azure.webapp.maven.plugin.version>2.12.0</azure.webapp.maven.plugin.version>
+        <azure.webapp.maven.plugin.version>2.14.1</azure.webapp.maven.plugin.version>
         <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
         <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
-        <formatter.maven.plugin.version>2.23.0</formatter.maven.plugin.version>
+        <formatter.maven.plugin.version>2.29.0</formatter.maven.plugin.version>
         <jacoco.maven.plugin.version>0.8.13</jacoco.maven.plugin.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>

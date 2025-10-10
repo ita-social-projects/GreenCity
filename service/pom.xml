@@ -82,7 +82,7 @@
         <dependency>
             <groupId>com.google.maps</groupId>
             <artifactId>google-maps-services</artifactId>
-            <version>${google.maps.version}</version>
+            <version>${google.maps.services.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>io.opencensus</groupId>
