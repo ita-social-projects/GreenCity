@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public PageableDetailedDto<UserManagementVO> getAllUsersByCriteria(UserFilterDto request, Pageable pageable) {
-        var userFilterDto = createUserFilterDto(request.getQuery(), request.getStatus());
+        var userFilterDto = createUserFilterDto(request.getQuery(), request.getRole(), request.getStatus());
         pageable = applyDefaultSorting(pageable);
 
         Page<User> users = userRepo.findAll(buildSpecification(userFilterDto), pageable);
@@ -729,11 +729,14 @@ public class UserServiceImpl implements UserService {
         return userRepo.countAllByStatus(UserStatus.ACTIVATED);
     }
 
-    private UserFilterDto createUserFilterDto(String criteria, String status) {
+    private UserFilterDto createUserFilterDto(String criteria, String role, String status) {
         if (status != null) {
             status = status.equals("all") ? null : status;
         }
-        return new UserFilterDto(criteria, status);
+        if (role != null) {
+            role = role.equals("all") ? null : role;
+        }
+        return new UserFilterDto(criteria, role, status);
     }
 
     private boolean shouldSkipLocationUpdate(User user, UserProfileDtoRequest userProfileDtoRequest) {
