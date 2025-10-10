@@ -1,5 +1,8 @@
-package greencity.config;
+package greencity.client.config;
 
+import static greencity.client.config.RemoteClientUtils.EMAIL_QUERY_PARAMETER;
+import static greencity.client.config.RemoteClientUtils.PLUS_SYMBOL;
+import static greencity.client.config.RemoteClientUtils.encodeEmailParameter;
 import java.net.URI;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,17 +11,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Configuration
 public class RestTemplateConfig {
-    private static final String EMAIL_QUERY_PARAMETER = "email";
-    private static final String PLUS_SYMBOL = "+";
-    private static final String ENCODED_PLUS_SYMBOL = "%2B";
-
     /**
      * Creates and configures a RestTemplate bean.
      *
@@ -76,28 +73,5 @@ public class RestTemplateConfig {
 
             return execution.execute(modifiedRequest, body);
         };
-    }
-
-    private static URI encodeEmailParameter(URI uri) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        MultiValueMap<String, String> queryParams = builder.build().getQueryParams();
-        builder.replaceQuery(null);
-
-        for (var entry : queryParams.entrySet()) {
-            String paramKey = entry.getKey();
-
-            if (paramKey.toLowerCase().contains(EMAIL_QUERY_PARAMETER)) {
-                for (String value : entry.getValue()) {
-                    String encodedValue = value.replace(PLUS_SYMBOL, ENCODED_PLUS_SYMBOL);
-                    builder.queryParam(paramKey, encodedValue);
-                }
-            } else {
-                for (String value : entry.getValue()) {
-                    builder.queryParam(paramKey, value);
-                }
-            }
-        }
-
-        return builder.build(true).toUri();
     }
 }
