@@ -1,5 +1,8 @@
 package greencity.client.config;
 
+import static greencity.client.config.RemoteClientUtils.EMAIL_QUERY_PARAMETER;
+import static greencity.client.config.RemoteClientUtils.PLUS_SYMBOL;
+import static greencity.client.config.RemoteClientUtils.encodeEmailParameter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
@@ -21,11 +24,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import java.time.Duration;
@@ -34,10 +35,6 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class UserRemoteClientConfig {
-    private static final String EMAIL_QUERY_PARAMETER = "email";
-    private static final String PLUS_SYMBOL = "+";
-    private static final String ENCODED_PLUS_SYMBOL = "%2B";
-
     @Value("${greencityuser.server.address}")
     private String greenCityUserBaseUrl;
 
@@ -136,28 +133,5 @@ public class UserRemoteClientConfig {
 
             return Mono.just(request);
         });
-    }
-
-    private static URI encodeEmailParameter(URI uri) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-        MultiValueMap<String, String> queryParams = builder.build().getQueryParams();
-        builder.replaceQuery(null);
-
-        for (var entry : queryParams.entrySet()) {
-            String paramKey = entry.getKey();
-
-            if (paramKey.toLowerCase().contains(EMAIL_QUERY_PARAMETER)) {
-                for (String value : entry.getValue()) {
-                    String encodedValue = value.replace(PLUS_SYMBOL, ENCODED_PLUS_SYMBOL);
-                    builder.queryParam(paramKey, encodedValue);
-                }
-            } else {
-                for (String value : entry.getValue()) {
-                    builder.queryParam(paramKey, value);
-                }
-            }
-        }
-
-        return builder.build(true).toUri();
     }
 }

@@ -85,7 +85,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.role}]]</label>
-                                                    <select class="form-control" name="role" required disabled>
+                                                    <select class="form-control" name="role" th:disabled>
                                                         <option value="" hidden>Select a role</option>
                                                         <option th:each="role : ${T(greencity.enums.Role).values()}"
                                                                 th:value="${role}"
