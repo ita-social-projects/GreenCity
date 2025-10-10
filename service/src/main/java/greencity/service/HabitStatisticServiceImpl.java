@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.client.UserRemoteClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
@@ -17,6 +16,7 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -50,8 +50,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitRepo habitRepo;
     private final DateService dateService;
     private final ModelMapper modelMapper;
-    private final UserRemoteClient userRemoteClient;
     private final UserRepo userRepo;
+    private final UserService userService;
 
     /**
      * {@inheritDoc}
@@ -221,11 +221,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateUserInterest() {
-        Long totalActiveUsers = userRemoteClient.countActiveUsers();
+        long totalActiveUsers = userService.countAllByStatus(UserStatus.ACTIVATED);
         List<Long> creatorsWithExistingHabits = habitRepo.countHabitCreators();
-        List<Long> creators = userRemoteClient.getActivatedUsersIds(creatorsWithExistingHabits);
+        List<Long> creators = userService.findAllActivatedUserIds(creatorsWithExistingHabits);
         List<Long> followersWithExistingHabits = habitRepo.countHabitFollowers();
-        List<Long> followers = userRemoteClient.getActivatedUsersIds(followersWithExistingHabits);
+        List<Long> followers = userService.findAllActivatedUserIds(followersWithExistingHabits);
         Set<Long> participatingUsers = new HashSet<>(followers);
         participatingUsers.addAll(creators);
 
@@ -241,8 +241,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateHabitBehaviorStatistic() {
-        List<Long> activatedUserIds = userRemoteClient.getActivatedUsersIds(null);
-        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus(activatedUserIds);
+        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus();
         Map<HabitAssignStatus, Long> counts = habitStatusCounts.stream()
             .collect(Collectors.toMap(
                 HabitStatusCount::status,

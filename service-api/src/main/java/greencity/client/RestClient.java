@@ -5,12 +5,11 @@ import greencity.constant.AppConstant;
 import greencity.dto.econews.InterestingEcoNewsDto;
 import greencity.dto.notification.UbsNotificationDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
+import greencity.dto.user.UserManagementCreateDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.Role;
@@ -20,8 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
@@ -32,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -44,7 +40,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.util.UriComponentsBuilder;
-import com.google.gson.Gson;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.enums.EmailNotification;
@@ -146,7 +141,7 @@ public class RestClient {
             });
         List<UserVO> users = exchange.getBody();
         if (users != null) {
-            userService.setInternalUserVOIds(users);
+            userService.fillGreenCityInfoInUsers(users);
         }
         return users;
     }
@@ -191,7 +186,7 @@ public class RestClient {
         UserVO user = restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();
         if (user != null) {
-            userService.setInternalUserVOIds(List.of(user));
+            userService.fillGreenCityInfoInUsers(List.of(user));
         }
         return user;
     }
@@ -208,54 +203,23 @@ public class RestClient {
     }
 
     /**
-     * Find {@link UserVO} for management by email.
+     * Find {@link UserManagementVO} for management by email.
      *
      * @param id a value of {@link Long}
-     * @return a dto of {@link UserManagementDto}.
+     * @return a dto of {@link UserManagementVO}.
      */
-    public UserManagementDto findUserForManagement(Long id) {
+    public UserManagementVO findUserForManagement(Long id) {
         UserVO user = userService.findById(id);
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        UserManagementDto dto = restTemplate.exchange(greenCityUserServerAddress
+        UserManagementVO dto = restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.EMAIL + user.getEmail(),
             HttpMethod.GET, entity,
-            new ParameterizedTypeReference<UserManagementDto>() {
+            new ParameterizedTypeReference<UserManagementVO>() {
             }).getBody();
         if (dto != null) {
-            dto.setId(user.getId());
-            dto.setUserCredo(user.getUserCredo());
+            userService.fillGreenCityInfoInUsers(List.of(dto));
         }
         return dto;
-    }
-
-    /**
-     * Find {@link UserVO}s for management by page.
-     *
-     * @param pageable a value with pageable configuration.
-     * @return a dto of {@link PageableAdvancedDto}.
-     */
-    public PageableAdvancedDto<UserManagementDto> findUsersForManagement(Pageable pageable) {
-        Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder();
-        if (!sort.isEmpty()) {
-            for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
-            }
-        }
-        HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        PageableAdvancedDto<UserManagementDto> usersPage = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_USERS_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
-                .getPageNumber()
-            + RestTemplateLinks.SIZE + pageable
-                .getPageSize()
-            + RestTemplateLinks.SORT + orderUrl,
-            HttpMethod.GET, entity,
-            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
-            }).getBody();
-        if (usersPage != null) {
-            userService.setInternalUserManagementDtoIds(usersPage.getPage());
-        }
-        return usersPage;
     }
 
     /**
@@ -278,7 +242,7 @@ public class RestClient {
             .name(userDto.getName())
             .email(userDto.getEmail())
             .role(userDto.getRole())
-            .userStatus(userDto.getUserStatus())
+            .status(userDto.getStatus())
             .build();
     }
 
@@ -300,24 +264,6 @@ public class RestClient {
     }
 
     /**
-     * Method for sending change status request.
-     *
-     * @param id     of user whose status is being changed
-     * @param status new status
-     *
-     * @author Anton Bondar
-     */
-    public void updateStatus(Long id, UserStatus status) {
-        String email = userService.findById(id).getEmail();
-        String url = greenCityUserServerAddress + RestTemplateLinks.USER + "/status/update";
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        UserStatusDto userStatusDto = new UserStatusDto(email, status);
-        HttpEntity<UserStatusDto> entity = new HttpEntity<>(userStatusDto, headers);
-        restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
-    }
-
-    /**
      * Method for getting all Users.
      *
      * @return {@link List} of {@link UserVO} instances.
@@ -329,7 +275,7 @@ public class RestClient {
         UserVO[] responseDtos = exchange.getBody();
         if (responseDtos != null) {
             List<UserVO> users = Arrays.asList(responseDtos);
-            userService.setInternalUserVOIds(users);
+            userService.fillGreenCityInfoInUsers(users);
             return users;
         }
         return List.of();
@@ -340,53 +286,19 @@ public class RestClient {
      *
      * @return {@link List} of {@link UserVO} instances.
      */
-    public List<UserManagementDto> findUserFriendsByUserId(Long id) {
+    public List<UserManagementVO> findUserFriendsByUserId(Long id) {
         String email = userService.findById(id).getEmail();
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        ResponseEntity<UserManagementDto[]> exchange = restTemplate.exchange(greenCityUserServerAddress
+        ResponseEntity<UserManagementVO[]> exchange = restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER + RestTemplateLinks.FRIENDS + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
-            entity, UserManagementDto[].class);
-        UserManagementDto[] responseDtos = exchange.getBody();
+            entity, UserManagementVO[].class);
+        UserManagementVO[] responseDtos = exchange.getBody();
         if (responseDtos != null) {
-            List<UserManagementDto> users = Arrays.asList(responseDtos);
-            userService.setInternalUserManagementDtoIds(users);
+            List<UserManagementVO> users = Arrays.asList(responseDtos);
+            userService.fillGreenCityInfoInUsers(users);
             return users;
         }
         return List.of();
-    }
-
-    /**
-     * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by email.
-     *
-     * @param email - {@link UserVO}'s email
-     * @return {@link UserVO}
-     */
-    public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        UserVO user = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_NOT_DEACTIVATED_BY_EMAIL + RestTemplateLinks.EMAIL
-            + email, HttpMethod.GET, entity, UserVO.class)
-            .getBody();
-        if (user != null) {
-            userService.setInternalUserVOIds(List.of(user));
-        }
-        return Optional.ofNullable(user);
-    }
-
-    /**
-     * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
-     * not be able to log in into the system.
-     *
-     * @param userId      - {@link UserVO}'s id
-     * @param userReasons {@link List} of {@link String}.
-     */
-    public void deactivateUser(Long userId, List<String> userReasons) {
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<List<String>> entity = new HttpEntity<>(userReasons, headers);
-        restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
-            + RestTemplateLinks.ID + userId, HttpMethod.PUT, entity, Object.class);
-        log.info("User with id {} has been deactivated", userId);
     }
 
     /**
@@ -405,61 +317,14 @@ public class RestClient {
     }
 
     /**
-     * Method for setting {@link UserVO}'s status to ACTIVATED.
-     *
-     * @param userId - {@link UserVO}'s id
-     */
-    public void setActivatedStatus(Long userId) {
-        HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_ACTIVATE
-            + RestTemplateLinks.ID + userId, HttpMethod.PUT, entity, Object.class);
-    }
-
-    /**
-     * Method for getting a {@link List} of {@link String} - reasons for
-     * deactivation of the current user.
-     *
-     * @param userId    {@link Long} - user's id.
-     * @param adminLang {@link String} - current administrator language.
-     * @return {@link List} of {@link String} - reasons for deactivation of the
-     *         current user.
-     */
-    public List<String> getDeactivationReason(Long userId, String adminLang) {
-        HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        String[] reasonDtos = restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_REASONS
-            + RestTemplateLinks.ID + userId
-            + RestTemplateLinks.ADMIN_LANG + adminLang, HttpMethod.GET, entity, String[].class).getBody();
-        assert reasonDtos != null;
-        return Arrays.asList(reasonDtos);
-    }
-
-    /**
-     * Method for setting to a list of {@link UserVO} status DEACTIVATED, so the
-     * users will not be able to log in into the system.
-     *
-     * @param listId {@link List} populated with ids of {@link UserVO} to be
-     *               deleted.
-     */
-    public ResponseEntity<Long[]> deactivateAllUsers(List<Long> listId) {
-        Gson gson = new Gson();
-        String json = gson.toJson(listId);
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-        return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_DEACTIVATE_ALL
-            + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
-    }
-
-    /**
      * Register new user from admin panel.
      *
      * @param userDto dto with updated fields.
      */
-    public void managementRegisterUser(UserManagementDto userDto) {
+    public void managementRegisterUser(UserManagementCreateDto userDto) {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userDto, headers);
+        HttpEntity<UserManagementCreateDto> entity = new HttpEntity<>(userDto, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class);
     }
@@ -500,16 +365,6 @@ public class RestClient {
     }
 
     /**
-     * Delete from the database users that have status 'DEACTIVATED' and last
-     * visited the site 2 years ago.
-     */
-    public void scheduleDeleteDeactivatedUsers() {
-        HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
-        restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
-            HttpMethod.POST, entity, Object.class);
-    }
-
-    /**
      * send SendHabitNotification to GreenCityUser.
      *
      * @param sendHabitNotification with information for sending email to each user
@@ -521,39 +376,6 @@ public class RestClient {
         HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
-    }
-
-    /**
-     * Method that allow you to search users by several values
-     * {@link UserManagementViewDto}.
-     *
-     * @param pageable    {@link Pageable}.
-     * @param userViewDto for search User.
-     * @return a dto of {@link PageableAdvancedDto}.
-     */
-    public PageableAdvancedDto<UserManagementVO> search(Pageable pageable, UserManagementViewDto userViewDto) {
-        Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder();
-        if (!sort.isEmpty()) {
-            for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
-            }
-        }
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UserManagementViewDto> entity = new HttpEntity<>(userViewDto, headers);
-        PageableAdvancedDto<UserManagementVO> usersPage = restTemplate.exchange(
-            greenCityUserServerAddress + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE
-                + pageable.getPageNumber()
-                + RestTemplateLinks.SIZE + pageable.getPageSize()
-                + RestTemplateLinks.SORT + orderUrl,
-            HttpMethod.POST, entity,
-            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
-            }).getBody();
-        if (usersPage != null) {
-            userService.setInternalUserManagementVOIds(usersPage.getPage());
-        }
-        return usersPage;
     }
 
     /**

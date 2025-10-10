@@ -3,6 +3,9 @@ package greencity.entity;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.event.Event;
+import greencity.enums.UserStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
@@ -193,6 +196,10 @@ public class User {
 
     @Column(name = "rating")
     private Double rating;
+
+    @Column(name = "user_status", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_location")

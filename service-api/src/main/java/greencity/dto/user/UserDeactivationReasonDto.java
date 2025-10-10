@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
-public class UserFilterDto {
-    private String query;
-    private String status;
+public class UserDeactivationReasonDto {
+    private String email;
+    private String name;
+    private String deactivationReason;
+    private String lang;
 }

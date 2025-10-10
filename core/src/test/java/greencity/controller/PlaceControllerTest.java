@@ -201,7 +201,7 @@ class PlaceControllerTest {
 
         UserVO user = UserVO.builder()
             .name("Orest")
-            .userStatus(UserStatus.ACTIVATED)
+            .status(UserStatus.ACTIVATED)
             .build();
 
         PlaceVO place = PlaceVO.builder()

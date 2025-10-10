@@ -3,16 +3,15 @@ package greencity.webcontroller;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserId;
 import greencity.client.RestClient;
-import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UpdateUserCredoDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
+import greencity.dto.user.UserManagementCreateDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -91,14 +90,14 @@ public class ManagementUserController {
     }
 
     /**
-     * Method that find {@link UserManagementDto} by given email.
+     * Method that find {@link UserManagementVO} by given email.
      *
      * @param id {@link Long} - user's id.
-     * @return {@link List} of {@link UserManagementDto} instance.
+     * @return {@link List} of {@link UserManagementVO} instance.
      */
     @GetMapping("/user/{id}")
     @ResponseBody
-    public UserManagementDto findManagementUserById(@PathVariable("id") Long id) {
+    public UserManagementVO findManagementUserById(@PathVariable("id") Long id) {
         return restClient.findUserForManagement(id);
     }
 
@@ -110,7 +109,7 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/register")
-    public String saveUser(@Valid UserManagementDto userDto) {
+    public String saveUser(@Valid UserManagementCreateDto userDto) {
         restClient.managementRegisterUser(userDto);
         return "redirect:/management/users";
     }
@@ -134,15 +133,15 @@ public class ManagementUserController {
     }
 
     /**
-     * Method that finds user's friends {@link UserManagementDto} by given id.
+     * Method that finds user's friends {@link UserManagementVO} by given id.
      *
      * @param id {@link Long} - user's id.
-     * @return {@link List} of {@link UserManagementDto} instances.
+     * @return {@link List} of {@link UserManagementVO} instances.
      * @author Markiyan Derevetskyi
      */
     @GetMapping("/{id}/friends")
     @ResponseBody
-    public List<UserManagementDto> findFriendsById(@PathVariable Long id) {
+    public List<UserManagementVO> findFriendsById(@PathVariable Long id) {
         return restClient.findUserFriendsByUserId(id);
     }
 
@@ -172,9 +171,10 @@ public class ManagementUserController {
      */
     @PatchMapping("/{id}/status")
     @ResponseBody
-    public void changeStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        UserStatus status = UserStatus.valueOf(body.get("userStatus"));
-        restClient.updateStatus(id, status);
+    public void changeStatus(@PathVariable Long id, @RequestBody Map<String, String> body,
+        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        UserStatus status = UserStatus.valueOf(body.get("userStatus").toUpperCase());
+        userService.updateUserStatusById(currentUser, id, status);
     }
 
     /**
@@ -188,8 +188,9 @@ public class ManagementUserController {
     @PostMapping("/deactivate")
     public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(
         @RequestParam("id") Long id,
+        @Parameter(hidden = true) @CurrentUser UserVO currentUser,
         @RequestBody @NotEmpty List<@Size(min = 9) String> userReasons) {
-        restClient.deactivateUser(id, userReasons);
+        userService.deactivateUserByIdWithReasons(currentUser, id, userReasons);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -213,16 +214,17 @@ public class ManagementUserController {
      */
     @PostMapping("/activate")
     public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(
-        @RequestParam("id") Long id) {
-        restClient.setActivatedStatus(id);
+        @RequestParam("id") Long id,
+        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        userService.updateUserStatusById(currentUser, id, UserStatus.ACTIVATED);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
      * Method for getting list of {@link String}.
      *
-     * @param id        {@link Long} - user's id.
-     * @param adminLang {@link String} - current administrator language.
+     * @param id          {@link Long} - user's id.
+     * @param currentUser - current user
      * @return {@link List} of {@link String} - reasons for deactivation of the
      *         current user.
      * @author Vlad Pikhotskyi
@@ -230,8 +232,8 @@ public class ManagementUserController {
     @GetMapping("/reasons")
     public ResponseEntity<List<String>> getReasonsOfDeactivation(
         @RequestParam("id") Long id,
-        @RequestParam("admin") String adminLang) {
-        return ResponseEntity.status(HttpStatus.OK).body(restClient.getDeactivationReason(id, adminLang));
+        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getDeactivationReasons(id, currentUser));
     }
 
     /**
@@ -245,25 +247,10 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir, Anton Bondar
      */
     @PostMapping("/deactivateAll")
-    public ResponseEntity<Long[]> deactivateAll(@RequestBody List<Long> listId) {
-        return restClient.deactivateAllUsers(listId);
-    }
-
-    /**
-     * Method accepts request to search users by several values.
-     *
-     * @param model       {@link Model}
-     * @param pageable    {@link Pageable}
-     * @param userViewDto {@link UserManagementViewDto} - stores values.
-     * @return path to html view.
-     */
-    @PostMapping("/search")
-    public String search(Model model, @Parameter(hidden = true) Pageable pageable, UserManagementViewDto userViewDto) {
-        PageableAdvancedDto<UserManagementVO> found = restClient.search(pageable, userViewDto);
-        model.addAttribute("users", found);
-        model.addAttribute("fields", userViewDto);
-        model.addAttribute("paging", pageable);
-        return "core/management_user";
+    public ResponseEntity<Long[]> deactivateAll(@RequestBody List<Long> listId,
+        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        Long[] result = userService.deactivateAllUsers(listId, currentUser).toArray(Long[]::new);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     /**

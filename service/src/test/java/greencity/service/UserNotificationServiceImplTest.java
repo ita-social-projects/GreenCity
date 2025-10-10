@@ -933,7 +933,7 @@ class UserNotificationServiceImplTest {
     void checkLastDayOfHabitPrimaryDurationToMessageShouldSendNotification() {
         Habit habit = getHabit().setHabitTranslations(List.of(getHabitTranslation()));
         User user = getUser().setId(2L);
-        UserVO userVO = spy(getUserVO().setId(2L));
+        UserVO userVO = spy((UserVO) getUserVO().setId(2L));
         HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS).setUser(user).setHabit(habit);
         LanguageDTO language = ModelUtils.getLanguageDTO();
         Notification notification = getNotification();

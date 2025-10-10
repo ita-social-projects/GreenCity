@@ -26,6 +26,4 @@ public class UserVOAdvancedDto extends UserVO {
     private List<UserAchievementVO> userAchievements = new ArrayList<>();
 
     private List<UserVO> userFriends = new ArrayList<>();
-
-    private Double rating;
 }

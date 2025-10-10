@@ -126,7 +126,7 @@ public interface EcoNewsService {
      * Method for getting amount of published news only for one user.
      *
      * @param authorEmail {@link String} author email.
-     * @return amount of published news by user id or all news.
+     * @return amount of published news by user email or all news.
      */
     Long getAmountOfPublishedNews(String authorEmail);
 

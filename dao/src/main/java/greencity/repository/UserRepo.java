@@ -3,10 +3,12 @@ package greencity.repository;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
-import greencity.dto.user.UserEmailDto;
+import greencity.dto.user.GreenCityUserInfoDto;
 import greencity.dto.user.UserLocationStatisticDto;
+import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import java.util.List;
 import java.util.Optional;
@@ -648,7 +650,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method for getting all users who made request for joining the event.
      *
-     * @param eventId - id of the event
+     * @param eventId  - id of the event
+     * @param pageable - pageable object
      *
      */
     @Query(nativeQuery = true, value = "SELECT greencity_users.* FROM greencity_users "
@@ -659,7 +662,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Retrieves the distribution of users by city.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the city name
      *         and the count of users in that city.
      */
@@ -668,16 +670,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.cityEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.cityEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCity(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCity();
 
     /**
      * Retrieves the distribution of users by region.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the region name
      *         and the count of users in that region.
      */
@@ -686,16 +686,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.regionEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.regionEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion();
 
     /**
      * Retrieves the distribution of users by country.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the country
      *         name and the count of users in that country.
      */
@@ -704,11 +702,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.countryEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.countryEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry();
 
     /**
      * Get all user friends{@link User}.
@@ -778,6 +775,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Modifying
     @Query("UPDATE User SET name =:userName WHERE id =:userId")
     int updateUserName(Long userId, String userName);
+
+    /**
+     * Method for updating user's email.
+     *
+     * @param userId - {@link Long} of user's id.
+     * @param email  - new user's email.
+     */
+    @Modifying
+    @Query("UPDATE User SET email = :email WHERE id = :userId")
+    void updateUserEmail(Long userId, String email);
 
     /**
      * Updates the profile picture path of a user by email.
@@ -852,15 +859,60 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         @Param("greencity_users") List<Long> userIds);
 
     /**
-     * Method to find list of user ids by emails.
+     * Method to find green city user info by emails.
      *
      * @param emails emails of users for whom to fetch the data
-     * @return list of {@link UserEmailDto}
+     * @return list of {@link GreenCityUserInfoDto}
      */
     @Query("""
-            SELECT new greencity.dto.user.UserEmailDto(u.id, u.email)
+            SELECT new greencity.dto.user.GreenCityUserInfoDto(u.id, u.email, u.profilePicturePath, u.userCredo,
+                     u.status, u.rating)
             FROM User u
             WHERE u.email IN :emails
         """)
-    List<UserEmailDto> findUserIdsByEmails(@Param("emails") List<String> emails);
+    List<GreenCityUserInfoDto> findGreenCityUserInfoDtosByEmails(@Param("emails") List<String> emails);
+
+    /**
+     * Retrieves the list of IDs of users from the given list who have the
+     * {@code UserStatus} set to {@code ACTIVATED}. This method is typically used to
+     * filter active users for further processing or analysis.
+     *
+     * @return a list of {@code Long} values representing the IDs of all activated
+     *         users
+     */
+    @Query("""
+        SELECT u.id
+        FROM User u
+        WHERE u.status = 'ACTIVATED' AND u.id IN :ids
+        """)
+    List<Long> findAllActivatedUserIdsFromList(@Param("ids") List<Long> ids);
+
+    /**
+     * Counts all users by user {@link UserStatus}.
+     *
+     * @return amount of user with given {@link UserStatus}.
+     */
+    long countAllByStatus(UserStatus userStatus);
+
+    /**
+     * Retrieves the distribution of user statuses across all users.
+     *
+     * @return A list of UserStatusStatisticDto objects containing the status and
+     *         the count of users with that status.
+     */
+    @Query("""
+        SELECT new greencity.dto.user.UserStatusStatisticDto(u.status, COUNT(u.id))
+        FROM User u
+        GROUP BY u.status
+        """)
+    List<UserStatusStatisticDto> getUserStatusesDistribution();
+
+    /**
+     * Find not 'DEACTIVATED' {@link User} by email.
+     *
+     * @param email - {@link User}'s email
+     * @return found {@link User}
+     */
+    @Query("FROM User WHERE email=:email AND status = 'ACTIVATED'")
+    Optional<User> findNotDeactivatedByEmail(String email);
 }

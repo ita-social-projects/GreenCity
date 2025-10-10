@@ -38,5 +38,5 @@ public class UserManagementDto {
     private Role role;
 
     @NotNull
-    private UserStatus userStatus;
+    private UserStatus status;
 }

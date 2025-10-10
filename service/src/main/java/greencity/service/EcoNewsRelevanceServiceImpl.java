@@ -4,6 +4,7 @@ import static greencity.constant.ErrorMessage.INVALID_RELEVANCE_POOLS;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_STRENGTH;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_WEIGHTS;
 import greencity.dto.econews.EcoNewsVO;
+import greencity.entity.EcoNews_;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.utils.RelevanceWeightUtils;
@@ -33,6 +34,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -102,7 +104,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         String title,
         String author,
         UserVO user) {
-        String tagsString = String.join(",", tags);
+        String tagsString = tags == null ? "" : String.join(",", tags);
         RelevantEcoNewsCacheKey key = new RelevantEcoNewsCacheKey(
             user.getId(),
             tagsString,
@@ -120,7 +122,12 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                 .author(author)
                 .tags(tagsString)
                 .build();
-            Page<EcoNews> findResultPage = ecoNewsRepo.findAll(ecoNewsService.getSpecification(filter), pageable);
+            Pageable pageableForFindAll = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, EcoNews_.CREATION_DATE));
+            Page<EcoNews> findResultPage = ecoNewsRepo.findAll(ecoNewsService.getSpecification(filter),
+                pageableForFindAll);
             findResult = findResultPage.getContent();
             totalEcoNewsCount = findResultPage.getTotalElements();
         } else {
