@@ -91,7 +91,7 @@ class ManagementPlacesControllerTest {
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
-        this.mockMvc.perform(get("/management/places/")
+        this.mockMvc.perform(get("/management/places")
             .param("page", "0")
             .param("size", "1"))
             .andExpect(view().name("core/management_places"))
@@ -137,7 +137,7 @@ class ManagementPlacesControllerTest {
             (json)
                 .getBytes());
 
-        this.mockMvc.perform(multipart("/management/places/")
+        this.mockMvc.perform(multipart("/management/places")
             .file(addPlaceDto)
             .principal(principal)
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
@@ -174,7 +174,7 @@ class ManagementPlacesControllerTest {
             MediaType.IMAGE_JPEG_VALUE,
             "image-content".getBytes(StandardCharsets.UTF_8));
 
-        this.mockMvc.perform(multipart(HttpMethod.PUT, "/management/places/")
+        this.mockMvc.perform(multipart(HttpMethod.PUT, "/management/places")
             .file(placeUpdateDtoPart)
             .file(imagePart)
             .principal(principal)
@@ -223,7 +223,7 @@ class ManagementPlacesControllerTest {
                 }
             """;
 
-        mockMvc.perform(multipart("/management/places/")
+        mockMvc.perform(multipart("/management/places")
             .file(new MockMultipartFile(
                 "placeUpdateDto",
                 "placeUpdateDto.json",
@@ -237,7 +237,7 @@ class ManagementPlacesControllerTest {
 
     @Test
     void delete() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/management/places/?id=1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/management/places?id=1"))
             .andExpect(status().isOk());
 
         verify(placeService).deleteById(1L);

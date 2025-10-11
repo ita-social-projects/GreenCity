@@ -90,7 +90,7 @@ class ManagementRatingStatisticsControllerTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         List<RatingStatisticsDto> list = Collections.singletonList(new RatingStatisticsDto());
         when(ratingStatisticsService.getFilteredRatingStatisticsForExcel(ratingStatisticsViewDto)).thenReturn(list);
-        this.mockMvc.perform(post(managementRatingStatisticsLink + "/exportFiltered/")
+        this.mockMvc.perform(post(managementRatingStatisticsLink + "/exportFiltered")
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .header("Content-Disposition",
                 "attachment; filename=user_rating_statistics" + dateFormat.format(new Date()) + ".xlsx")

@@ -133,7 +133,7 @@ public class CustomToDoListItemController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
-    @PatchMapping("/{userId}/custom-to-do-list-items/")
+    @PatchMapping("/{userId}/custom-to-do-list-items")
     public ResponseEntity<CustomToDoListItemResponseDto> updateItemStatus(@PathVariable @ValidCurrentUserId Long userId,
         @RequestParam("itemId") Long itemId,
         @RequestParam("status") String itemStatus) {

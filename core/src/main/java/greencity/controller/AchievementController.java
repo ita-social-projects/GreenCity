@@ -155,7 +155,7 @@ public class AchievementController {
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
             content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
-    @GetMapping("/user-achievements/")
+    @GetMapping("/user-achievements")
     public ResponseEntity<List<UserAchievementVO>> findAllUserAchievementsByEmail(@RequestParam String email) {
         return ResponseEntity.ok().body(achievementService.findAllUserAchievementsByEmail(email));
     }

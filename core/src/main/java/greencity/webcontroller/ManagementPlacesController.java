@@ -54,7 +54,7 @@ public class ManagementPlacesController {
      * @return View template path {@link String}.
      * @author Olena Petryshak
      */
-    @GetMapping("/")
+    @GetMapping()
     public String getAllPlaces(@RequestParam(required = false, name = "query") String query, Model model,
         @Parameter(hidden = true) Pageable pageable,
         FilterAdminPlaceDto filterAdminPlaceDto) {
@@ -95,7 +95,7 @@ public class ManagementPlacesController {
      * @param userId      {@link Long} current user id
      * @return {@link GenericResponseDto}
      */
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, path = "/")
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public GenericResponseDto savePlace(
         @RequestPart("addPlaceDto") @Valid AddPlaceDto addPlaceDto,
@@ -114,7 +114,7 @@ public class ManagementPlacesController {
      * @param placeUpdateDto of {@link PlaceUpdateDto}
      * @return {@link GenericResponseDto}
      */
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/")
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public GenericResponseDto updatePlace(
         @RequestPart("placeUpdateDto") @Valid PlaceUpdateDto placeUpdateDto,
@@ -134,7 +134,7 @@ public class ManagementPlacesController {
      * @param id {@link PlaceVO} id.
      * @return {@link ResponseEntity}.
      */
-    @DeleteMapping("/")
+    @DeleteMapping
     public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
         placeService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body(id);

@@ -100,7 +100,7 @@ class CustomToDoListItemControllerTest {
 
     @Test
     void updateItemStatus() throws Exception {
-        this.mockMvc.perform(patch(customLink + "/{userId}/custom-to-do-list-items/?itemId=1&status=DONE", 1)
+        this.mockMvc.perform(patch(customLink + "/{userId}/custom-to-do-list-items?itemId=1&status=DONE", 1)
             .principal(principal))
             .andExpect(status().isOk());
         verify(customToDoListItemService).updateItemStatus(1L, 1L, "DONE");
