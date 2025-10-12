@@ -4,6 +4,7 @@ import static greencity.client.config.RemoteClientUtils.EMAIL_QUERY_PARAMETER;
 import static greencity.client.config.RemoteClientUtils.PLUS_SYMBOL;
 import static greencity.client.config.RemoteClientUtils.encodeEmailParameter;
 import java.net.URI;
+import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -61,6 +62,11 @@ public class RestTemplateConfig {
                         @Override
                         public URI getURI() {
                             return encodedUri;
+                        }
+
+                        @Override
+                        public Map<String, Object> getAttributes() {
+                            return request.getAttributes();
                         }
 
                         @Override
