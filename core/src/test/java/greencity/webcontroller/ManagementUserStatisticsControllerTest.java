@@ -115,10 +115,10 @@ class ManagementUserStatisticsControllerTest {
     @SneakyThrows
     void getUserRolesDistributionReturnsNoContentWhenNoData() {
         when(managementUserStatisticsService.getUserRolesDistribution())
-                .thenReturn(Collections.emptyList());
+            .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/management/user/statistics/roles"))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -139,10 +139,10 @@ class ManagementUserStatisticsControllerTest {
     @SneakyThrows
     void getUserStatusesDistributionReturnsNoContentWhenNoData() {
         when(managementUserStatisticsService.getUserStatusesDistribution())
-                .thenReturn(Collections.emptyList());
+            .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/management/user/statistics/statuses"))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -162,13 +162,13 @@ class ManagementUserStatisticsControllerTest {
 
     @Test
     @SneakyThrows
-    void getUserLocationDistributionReturnsNoContentWhenNoData()  {
+    void getUserLocationDistributionReturnsNoContentWhenNoData() {
         when(managementUserStatisticsService.getUserLocationsDistribution(anyString()))
-                .thenReturn(Collections.emptyList());
+            .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/management/user/statistics/locations")
-                        .param("groupBy", "city"))
-                .andExpect(status().isNoContent());
+            .param("groupBy", "city"))
+            .andExpect(status().isNoContent());
     }
 
     @Test
@@ -189,12 +189,12 @@ class ManagementUserStatisticsControllerTest {
 
     @Test
     @SneakyThrows
-    void getUserPreferencesDistributionReturnsNoContentWhenNoData()  {
+    void getUserPreferencesDistributionReturnsNoContentWhenNoData() {
         when(managementUserStatisticsService.getUserEmailPreferencesDistribution())
-                .thenReturn(Collections.emptyList());
+            .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/management/user/statistics/preferences"))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
     }
 
     @Test

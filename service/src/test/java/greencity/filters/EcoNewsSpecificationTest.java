@@ -321,7 +321,7 @@ class EcoNewsSpecificationTest {
 
         when(criteriaBuilderMock.like(ecoNewsRootMock.get(EcoNews_.TITLE),
             "%" + criteriaList.getFirst().getValue() + "%"))
-                .thenReturn(andTitlePredicate);
+            .thenReturn(andTitlePredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andTitlePredicate)).thenReturn(andTitlePredicate);
 
@@ -331,7 +331,7 @@ class EcoNewsSpecificationTest {
 
         when(criteriaBuilderMock
             .like(ecoNewsRootMock.get(EcoNews_.AUTHOR).get("name"), "%" + criteriaList.get(1).getValue() + "%"))
-                .thenReturn(andAuthorPredicate);
+            .thenReturn(andAuthorPredicate);
 
         when(criteriaBuilderMock.and(andTitlePredicate, andAuthorPredicate)).thenReturn(andAuthorPredicate);
 
@@ -344,7 +344,8 @@ class EcoNewsSpecificationTest {
 
         when(ecoNewsRootMock.get(EcoNews_.CREATION_DATE)).thenReturn(pathEcoNewsCreationDateMock);
 
-        when(criteriaBuilderMock.between(any(), any(ZonedDateTime.class), any(ZonedDateTime.class))).thenReturn(andCreationDatePredicate);
+        when(criteriaBuilderMock.between(any(), any(ZonedDateTime.class), any(ZonedDateTime.class)))
+            .thenReturn(andCreationDatePredicate);
 
         when(criteriaBuilderMock.and(andTextPredicate, andCreationDatePredicate)).thenReturn(andCreationDatePredicate);
 
@@ -356,7 +357,7 @@ class EcoNewsSpecificationTest {
 
         when(criteriaBuilderMock
             .like(pathTagTranslationNameMock.as(String.class), "%" + criteriaList.get(4).getValue() + "%"))
-                .thenReturn(andTagPredicate);
+            .thenReturn(andTagPredicate);
 
         when(criteriaBuilderMock.and(List.of(andTagPredicate).toArray(new Predicate[0]))).thenReturn(andTagPredicate);
 

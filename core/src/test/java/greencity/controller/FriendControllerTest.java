@@ -222,13 +222,12 @@ class FriendControllerTest {
 
     @Test
     void getUserAsFriendDtoNotFoundExceptionTest() throws Exception {
-        when(friendService.getUserAsFriend(anyLong(),anyLong())).thenThrow(NotFoundException.class);
+        when(friendService.getUserAsFriend(anyLong(), anyLong())).thenThrow(NotFoundException.class);
 
         mockMvc.perform(get(FRIEND_LINK + "/user-data-as-friend/{friendId}", 1L)
-                .principal(principal)
-            )
+            .principal(principal))
             .andExpect(status().isNotFound());
 
-        verify(friendService).getUserAsFriend(anyLong(),anyLong());
+        verify(friendService).getUserAsFriend(anyLong(), anyLong());
     }
 }

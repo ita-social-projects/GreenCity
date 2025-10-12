@@ -73,9 +73,9 @@ class ManagementAchievementStatisticsControllerTest {
         doThrow(new RuntimeException("JSON Processing Error")).when(faultyMapper).writeValueAsString(statisticsDtos);
 
         mockMvc.perform(get(url))
-                .andExpect(status().isOk())
-                .andExpect(view().name("core/management_achievement_statistics"))
-                .andExpect(model().attributeExists("statisticalData"));
+            .andExpect(status().isOk())
+            .andExpect(view().name("core/management_achievement_statistics"))
+            .andExpect(model().attributeExists("statisticalData"));
 
         verify(achievementStatisticsService, times(1)).statisticsUsersWithAchievements();
     }
@@ -85,7 +85,7 @@ class ManagementAchievementStatisticsControllerTest {
         when(achievementStatisticsService.statisticsUsersWithAchievementsCategory()).thenReturn(statisticsDtos);
 
         mockMvc.perform(get(url + "/by-category"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(achievementStatisticsService, times(1)).statisticsUsersWithAchievementsCategory();
     }
@@ -95,7 +95,7 @@ class ManagementAchievementStatisticsControllerTest {
         when(achievementStatisticsService.statisticsUsersActivity()).thenReturn(statisticsDtos);
 
         mockMvc.perform(get(url + "/by-activity"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(achievementStatisticsService, times(1)).statisticsUsersActivity();
     }
