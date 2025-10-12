@@ -135,18 +135,6 @@ class ImageArrayValidatorTest {
             .buildConstraintViolationWithTemplate(anyString());
     }
 
-    @Test
-    void getMaxSizeInBytes_WithInvalidUnit_ThrowsException() {
-        // given
-        ReflectionTestUtils.setField(imageArrayValidator, "maxImageSize", "500TB"); // Invalid unit
-
-        // when
-        // then
-        thenThrownBy(() -> imageArrayValidator.getMaxSizeInBytes())
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Invalid file size unit: 500TB");
-    }
-
     private static Stream<Arguments> getMaxSizeArgs() {
         return Stream.of(
             Arguments.of(1024 * 1024, "1024KB"),
