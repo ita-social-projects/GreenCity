@@ -138,7 +138,7 @@ class AchievementControllerTest {
     @Test
     void findAllUserAchievementsByEmailTest() throws Exception {
         String email = "test@gmail";
-        mockMvc.perform(get(achievementLink + "/user-achievements/")
+        mockMvc.perform(get(achievementLink + "/user-achievements")
             .param("email", email)
             .principal(principal))
             .andExpect(status().isOk());

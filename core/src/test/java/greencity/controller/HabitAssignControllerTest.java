@@ -85,7 +85,7 @@ class HabitAssignControllerTest {
     void assign() throws Exception {
         when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
         mockMvc.perform(post(habitLink + "/{habitId}", 1L)
-                .principal(principal))
+            .principal(principal))
             .andExpect(status().isCreated());
         verify(habitAssignService).assignDefaultHabitForUser(1L, userVO);
     }
@@ -324,11 +324,11 @@ class HabitAssignControllerTest {
         when(userService.findNotDeactivatedByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(post(habitLink + "/{habitId}/invite", 1L)
-                        .param("friendsIds", "2", "3", "4")
-                        .principal(principal)
-                        .locale(Locale.forLanguageTag("uk-UA")))
-                .andExpect(status().isOk());
-        verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, List.of(2L,3L,4L), 1L,
+            .param("friendsIds", "2", "3", "4")
+            .principal(principal)
+            .locale(Locale.forLanguageTag("uk-UA")))
+            .andExpect(status().isOk());
+        verify(habitAssignService).inviteFriendForYourHabitWithEmailNotification(userVO, List.of(2L, 3L, 4L), 1L,
             Locale.forLanguageTag("uk-UA"));
     }
 

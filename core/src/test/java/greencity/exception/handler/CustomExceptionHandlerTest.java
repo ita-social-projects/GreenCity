@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -271,7 +270,7 @@ class CustomExceptionHandlerTest {
     void handleInsufficientLocationDataExceptionTest() {
         InsufficientLocationDataException actual = new InsufficientLocationDataException("Some string");
         ExceptionResponse exceptionResponse = new ExceptionResponse(objectMap);
-        Mockito.when(errorAttributes.getErrorAttributes(eq(webRequest),
+        when(errorAttributes.getErrorAttributes(eq(webRequest),
             any(ErrorAttributeOptions.class))).thenReturn(objectMap);
         assertEquals(customExceptionHandler.handleInsufficientLocationDataException(actual, webRequest),
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse));

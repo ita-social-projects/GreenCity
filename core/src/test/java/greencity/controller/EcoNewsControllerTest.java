@@ -427,18 +427,19 @@ class EcoNewsControllerTest {
     void getEcoNewsByIdV2Test() throws Exception {
         when(ecoNewsService.findDtoById(anyLong())).thenReturn(getEcoNewsGroupedTagsDto());
         mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/v2", 1L)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
     }
 
     @Test
     void getEcoNewsByIdV2NotFoundTest() throws Exception {
-        when(ecoNewsService.findDtoById(1L)).thenThrow(new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L));
+        when(ecoNewsService.findDtoById(1L))
+            .thenThrow(new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L));
         mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/v2", 1L)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test

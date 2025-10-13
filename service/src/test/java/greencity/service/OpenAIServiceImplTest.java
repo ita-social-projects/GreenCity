@@ -131,8 +131,7 @@ class OpenAIServiceImplTest {
 
         OpenAIRequestException ex = assertThrows(
             OpenAIRequestException.class,
-            () -> openAIService.makeRequest(language, "hello", OpenAIResponseFormat.TEXT)
-        );
+            () -> openAIService.makeRequest(language, "hello", OpenAIResponseFormat.TEXT));
 
         assertInstanceOf(RestClientException.class, ex.getCause());
         assertEquals(ERROR_NO_OPENAI_RESPONSE, ex.getMessage());
@@ -346,7 +345,7 @@ class OpenAIServiceImplTest {
         when(requestBodyUriSpec.body(nullable(Map.class))).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.body(any(ParameterizedTypeReference.class)))
-                .thenReturn(response);
+            .thenReturn(response);
     }
 
 }
