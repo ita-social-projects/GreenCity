@@ -49,7 +49,7 @@ class QuartzLoggingAspectTest {
     void logBeforeMethodExecutionTest() {
         when(joinPoint.getSignature()).thenReturn(signature);
         when(signature.getName()).thenReturn("testMethod");
-        when(joinPoint.getArgs()).thenReturn(new Object[]{"arg", 123});
+        when(joinPoint.getArgs()).thenReturn(new Object[] {"arg", 123});
 
         assertDoesNotThrow(() -> aspect.logBeforeMethodExecution(joinPoint));
     }
@@ -58,7 +58,7 @@ class QuartzLoggingAspectTest {
     void logCompletionDetailsTest() {
         when(joinPoint.getSignature()).thenReturn(signature);
         when(signature.getName()).thenReturn("testMethod");
-        when(joinPoint.getArgs()).thenReturn(new Object[]{"arg", 123});
+        when(joinPoint.getArgs()).thenReturn(new Object[] {"arg", 123});
 
         assertDoesNotThrow(() -> aspect.logCompletionDetails(joinPoint));
     }
@@ -76,7 +76,7 @@ class QuartzLoggingAspectTest {
     @Test
     void logAroundSchedulerWithValidSchedulerTest() throws Throwable {
         when(proceedingJoinPoint.getSignature()).thenReturn(signature);
-        when(proceedingJoinPoint.getArgs()).thenReturn(new Object[]{});
+        when(proceedingJoinPoint.getArgs()).thenReturn(new Object[] {});
         when(proceedingJoinPoint.proceed()).thenReturn(scheduler);
 
         when(scheduler.getTrigger(TriggerKey.triggerKey("ecoNewsGenerationTrigger"))).thenReturn(trigger);
@@ -92,7 +92,7 @@ class QuartzLoggingAspectTest {
     @Test
     void logAroundSchedulerWithNotSchedulerTest() throws Throwable {
         when(proceedingJoinPoint.getSignature()).thenReturn(signature);
-        when(proceedingJoinPoint.getArgs()).thenReturn(new Object[]{});
+        when(proceedingJoinPoint.getArgs()).thenReturn(new Object[] {});
         when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         aspect.logAroundScheduler(proceedingJoinPoint);
@@ -103,7 +103,7 @@ class QuartzLoggingAspectTest {
     @Test
     void logAroundSchedulerWhenExceptionTest() throws Throwable {
         when(proceedingJoinPoint.getSignature()).thenReturn(signature);
-        when(proceedingJoinPoint.getArgs()).thenReturn(new Object[]{});
+        when(proceedingJoinPoint.getArgs()).thenReturn(new Object[] {});
         when(proceedingJoinPoint.proceed()).thenThrow(new RuntimeException("Simulated failure"));
 
         RuntimeException exception = assertThrows(RuntimeException.class,

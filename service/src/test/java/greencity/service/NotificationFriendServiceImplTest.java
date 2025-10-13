@@ -38,8 +38,8 @@ class NotificationFriendServiceImplTest {
 
     @Test
     void getFriendRequestStatusReturnsPendingWhenStatusIsRequestTest() {
-        when(userRepo.getFriendRequestStatus(currentUserId, friendId)).
-            thenReturn(Optional.of(FriendTupleConstant.REQUEST_STATUS));
+        when(userRepo.getFriendRequestStatus(currentUserId, friendId))
+            .thenReturn(Optional.of(FriendTupleConstant.REQUEST_STATUS));
 
         InvitationStatus result = notificationFriendService.getFriendRequestStatus(currentUserId, friendId);
 

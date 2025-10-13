@@ -47,7 +47,7 @@ class CountEcoNewsTitleRelevanceAspectTest {
         when(oldNews.getTitle()).thenReturn("Old Title");
         when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
 
-        when(joinPoint.getArgs()).thenReturn(new Object[]{updateDto, null, null, ecoNewsId});
+        when(joinPoint.getArgs()).thenReturn(new Object[] {updateDto, null, null, ecoNewsId});
         when(joinPoint.proceed()).thenReturn("controllerResult");
 
         Object result = aspect.aroundUpdate(joinPoint);
@@ -63,7 +63,7 @@ class CountEcoNewsTitleRelevanceAspectTest {
         when(oldNews.getTitle()).thenReturn("Same Title");
         when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
 
-        when(joinPoint.getArgs()).thenReturn(new Object[]{updateDto, null, null, ecoNewsId});
+        when(joinPoint.getArgs()).thenReturn(new Object[] {updateDto, null, null, ecoNewsId});
         when(joinPoint.proceed()).thenReturn("controllerResult");
 
         Object result = aspect.aroundUpdate(joinPoint);
@@ -79,7 +79,7 @@ class CountEcoNewsTitleRelevanceAspectTest {
         when(oldNews.getTitle()).thenReturn("Old Title");
         when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
 
-        when(joinPoint.getArgs()).thenReturn(new Object[]{updateDto, null, null, ecoNewsId});
+        when(joinPoint.getArgs()).thenReturn(new Object[] {updateDto, null, null, ecoNewsId});
         when(joinPoint.proceed()).thenReturn("controllerResult");
 
         Object result = aspect.aroundUpdate(joinPoint);
@@ -95,7 +95,7 @@ class CountEcoNewsTitleRelevanceAspectTest {
         when(oldNews.getTitle()).thenReturn("Old Title");
         when(ecoNewsService.findById(ecoNewsId)).thenReturn(oldNews);
 
-        when(joinPoint.getArgs()).thenReturn(new Object[]{updateDto, null, null, ecoNewsId});
+        when(joinPoint.getArgs()).thenReturn(new Object[] {updateDto, null, null, ecoNewsId});
         RuntimeException boom = new RuntimeException("boom");
         when(joinPoint.proceed()).thenThrow(boom);
 

@@ -102,7 +102,7 @@ class HabitStatisticServiceImplTest {
     @Test
     void saveByHabitIdAndCorrectUserIdTest() {
         when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
-                1L, 1L)).thenReturn(Optional.empty());
+            1L, 1L)).thenReturn(Optional.empty());
         when(dateService.convertToDatasourceTimezone(addhs.getCreateDate())).thenReturn(zonedDateTime);
         when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
 
@@ -117,27 +117,27 @@ class HabitStatisticServiceImplTest {
     @Test
     void saveExceptionTest() {
         when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
-                1L, 1L)).thenReturn(Optional.of(new HabitStatistic()));
+            1L, 1L)).thenReturn(Optional.of(new HabitStatistic()));
         assertThrows(NotSavedException.class, () -> habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
     }
 
     @Test
     void saveExceptionWrongHabitAssignTest() {
         when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
-                1L, 1L)).thenReturn(Optional.empty());
+            1L, 1L)).thenReturn(Optional.empty());
         when(dateService.convertToDatasourceTimezone(addhs.getCreateDate())).thenReturn(zonedDateTime);
         when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
         when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
     }
 
     @Test
     void saveExceptionBadRequestTest() {
         when(habitStatisticRepo.findStatByDateAndHabitIdAndUserId(addhs.getCreateDate(),
-                1L, 1L)).thenReturn(Optional.empty());
+            1L, 1L)).thenReturn(Optional.empty());
         when(dateService.convertToDatasourceTimezone(addhs.getCreateDate()))
-                .thenReturn(zonedDateTime.plusDays(2));
+            .thenReturn(zonedDateTime.plusDays(2));
 
         assertThrows(BadRequestException.class, () -> habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
     }
@@ -221,9 +221,9 @@ class HabitStatisticServiceImplTest {
     @Test
     void getTodayStatisticsForAllHabitItemsTest() {
         when(habitStatisticRepo.getStatisticsForAllHabitItemsByDate(zonedDateTime, "en"))
-                .thenReturn(new ArrayList<>());
+            .thenReturn(new ArrayList<>());
         assertEquals(new ArrayList<HabitItemsAmountStatisticDto>(),
-                habitStatisticService.getTodayStatisticsForAllHabitItems("en"));
+            habitStatisticService.getTodayStatisticsForAllHabitItems("en"));
     }
 
     @Test

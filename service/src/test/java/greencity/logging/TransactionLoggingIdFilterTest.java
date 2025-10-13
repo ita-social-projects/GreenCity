@@ -68,7 +68,8 @@ class TransactionLoggingIdFilterTest {
     }
 
     @Test
-    void doFilterInternal_WhenEmptyTransactionIdHeader_GeneratesNewTransactionId() throws ServletException, IOException {
+    void doFilterInternal_WhenEmptyTransactionIdHeader_GeneratesNewTransactionId()
+        throws ServletException, IOException {
         when(request.getHeader(TRANSACTION_ID_HEADER)).thenReturn("");
 
         transactionIdFilter.doFilterInternal(request, response, filterChain);
@@ -105,9 +106,11 @@ class TransactionLoggingIdFilterTest {
         ServletException servletException = new ServletException("Test exception");
         doThrow(servletException).when(filterChain).doFilter(request, response);
 
-        assertThrows(ServletException.class, () -> transactionIdFilter.doFilterInternal(request, response, filterChain));
+        assertThrows(ServletException.class,
+            () -> transactionIdFilter.doFilterInternal(request, response, filterChain));
 
-        assertNull(MDC.get(MDC_TRANSACTION_ID_KEY), "MDC should be cleared in finally block even if ServletException occurs");
+        assertNull(MDC.get(MDC_TRANSACTION_ID_KEY),
+            "MDC should be cleared in finally block even if ServletException occurs");
     }
 
     @Test
@@ -118,7 +121,8 @@ class TransactionLoggingIdFilterTest {
 
         assertThrows(IOException.class, () -> transactionIdFilter.doFilterInternal(request, response, filterChain));
 
-        assertNull(MDC.get(MDC_TRANSACTION_ID_KEY), "MDC should be cleared in finally block even if IOException occurs");
+        assertNull(MDC.get(MDC_TRANSACTION_ID_KEY),
+            "MDC should be cleared in finally block even if IOException occurs");
     }
 
     @Test
@@ -127,8 +131,10 @@ class TransactionLoggingIdFilterTest {
         RuntimeException runtimeException = new RuntimeException("Test exception");
         doThrow(runtimeException).when(filterChain).doFilter(request, response);
 
-        assertThrows(RuntimeException.class, () -> transactionIdFilter.doFilterInternal(request, response, filterChain));
+        assertThrows(RuntimeException.class,
+            () -> transactionIdFilter.doFilterInternal(request, response, filterChain));
 
-        assertNull(MDC.get(MDC_TRANSACTION_ID_KEY), "MDC should be cleared in finally block even if RuntimeException occurs");
+        assertNull(MDC.get(MDC_TRANSACTION_ID_KEY),
+            "MDC should be cleared in finally block even if RuntimeException occurs");
     }
 }
