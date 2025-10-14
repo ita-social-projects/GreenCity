@@ -251,7 +251,7 @@ function orderByField(fieldName = null, sortOrder = null) {
     const fieldMapping = {
         'id': ['id-icon-asc', 'id-icon-desc'],
         'title': ['title-icon-asc', 'title-icon-desc'],
-        'nameUk': ['name-icon-asc', 'name-icon-desc'],
+        'name': ['name-icon-asc', 'name-icon-desc'],
         'achievementCategory.name': ['category-icon-asc', 'category-icon-desc'],
         'condition': ['condition-icon-asc', 'condition-icon-desc']
     };
