@@ -8,9 +8,11 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
+import greencity.util.SortingUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,21 +49,23 @@ public class ManagementAchievementController {
     @GetMapping
     public String getAllAchievement(
         @RequestParam(required = false, name = "query") String query,
-        @RequestParam(defaultValue = "id") String sortBy,
-        @RequestParam(defaultValue = "asc") String sortDir,
         Pageable pageable,
         Model model) {
-        Pageable actualPageable = achievementService.preparePageable(pageable, sortBy, sortDir);
         PageableAdvancedDto<AchievementVO> allAchievements = (query == null || query.isEmpty())
-            ? achievementService.findAll(actualPageable)
-            : achievementService.searchAchievementBy(actualPageable, query);
+            ? achievementService.findAll(pageable)
+            : achievementService.searchAchievementBy(pageable, query);
 
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAllForManagement());
         model.addAttribute("languages", languageService.getAllLanguages());
         model.addAttribute("query", query);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortDir", sortDir);
+
+        Sort sort = pageable.getSort();
+        String sortUrl = SortingUtil.buildSortingUrl(sort);
+        if (!sortUrl.isEmpty()) {
+            model.addAttribute("sortModel", sortUrl);
+        }
+        model.addAttribute("pageSize", pageable.getPageSize());
 
         return "core/management_achievement";
     }
