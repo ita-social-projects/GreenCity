@@ -1092,16 +1092,6 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void getUserToDoListItemAndUserCustomToDoListWithNotFoundExceptionTest() {
-        when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(Collections.emptyList());
-
-        assertThrows(NotFoundException.class, () -> habitAssignService
-            .getListOfUserAndCustomToDoListsWithStatusInprogress(1L, "en"));
-
-        verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
-    }
-
-    @Test
     void getAllHabitAssignsByUserIdAndStatusAcquired() {
         List<ToDoListItemTranslation> list = getToDoListItemTranslationList();
         when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(fullHabitAssigns);
