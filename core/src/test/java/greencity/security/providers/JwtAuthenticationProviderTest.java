@@ -68,15 +68,15 @@ class JwtAuthenticationProviderTest {
     void authenticateWithExpiredAccessToken() {
         when(jwtTool.getAccessTokenKey()).thenReturn("12312312312312312312312312312312312");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                """
-                    eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxcXFAZW1haWwuY29tIiwicm9sZSI6WyJST0xF\
-                    X0FETUlOIl0sImlhdCI6MTY1NDYzNjc2OSwiZXhwIjoxNjU0NjM2NzcwfQ.pnNNTOtgKp\
-                    ZBdfX2XXtXBscmAOFVuk1aLbU0hH3SwQ4\
-                    """,
-                null);
+            """
+                eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxcXFAZW1haWwuY29tIiwicm9sZSI6WyJST0xF\
+                X0FETUlOIl0sImlhdCI6MTY1NDYzNjc2OSwiZXhwIjoxNjU0NjM2NzcwfQ.pnNNTOtgKp\
+                ZBdfX2XXtXBscmAOFVuk1aLbU0hH3SwQ4\
+                """,
+            null);
         Assertions
-                .assertThrows(ExpiredJwtException.class,
-                        () -> jwtAuthenticationProvider.authenticate(authentication));
+            .assertThrows(ExpiredJwtException.class,
+                () -> jwtAuthenticationProvider.authenticate(authentication));
     }
 
     @Test

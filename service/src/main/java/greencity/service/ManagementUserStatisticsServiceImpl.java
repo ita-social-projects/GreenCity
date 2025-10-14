@@ -41,7 +41,7 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserStatusStatisticDto> getUserStatusesDistribution() {
-        return userRemoteClient.getUserStatusesDistribution();
+        return userRepo.getUserStatusesDistribution();
     }
 
     /**
@@ -49,12 +49,10 @@ public class ManagementUserStatisticsServiceImpl implements ManagementUserStatis
      */
     @Override
     public List<UserLocationStatisticDto> getUserLocationsDistribution(String groupBy) {
-        List<Long> activatedUserIds = userRemoteClient.getActivatedUsersIds(null);
         return switch (groupBy) {
-            case "city" -> userRepo.getUserLocationsDistributionByCity(activatedUserIds);
-            case "region" -> userRepo.getUserLocationsDistributionByRegion(activatedUserIds);
-            case "country" -> userRepo.getUserLocationsDistributionByCountry(activatedUserIds);
-            default -> userRepo.getUserLocationsDistributionByCity(activatedUserIds);
+            case "region" -> userRepo.getUserLocationsDistributionByRegion();
+            case "country" -> userRepo.getUserLocationsDistributionByCountry();
+            default -> userRepo.getUserLocationsDistributionByCity();
         };
     }
 

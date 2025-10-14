@@ -295,9 +295,12 @@ class EcoNewsServiceImplTest {
         List<SearchNewsDto> searchNewsDtos = Collections.singletonList(searchNewsDto);
         PageableDto<SearchNewsDto> actual = new PageableDto<>(searchNewsDtos, page.getTotalElements(),
             page.getPageable().getPageNumber(), page.getTotalPages());
-        when(ecoNewsRepo.find(pageable, "query", null, null)).thenReturn(page);
+
+        when(ecoNewsRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
         when(modelMapper.map(ecoNewsList, SearchNewsDto.class)).thenReturn(searchNewsDto);
-        PageableDto<SearchNewsDto> expected = ecoNewsService.search(pageable, "query", null, null);
+
+        PageableDto<SearchNewsDto> expected = ecoNewsService.search(pageable, "query",
+            null, null);
         assertEquals(expected.getTotalPages(), actual.getTotalPages());
     }
 
@@ -305,6 +308,15 @@ class EcoNewsServiceImplTest {
     void getAmountOfPublishedNewsTest() {
         when(ecoNewsRepo.countByAuthorId(1L)).thenReturn(10L);
         Long actual = ecoNewsService.getAmountOfPublishedNews(1L);
+        assertEquals(10L, actual);
+    }
+
+    @Test
+    void getAmountOfPublishedNewsExternalTest() {
+        User user = ModelUtils.getUser();
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(ecoNewsRepo.countByAuthorId(user.getId())).thenReturn(10L);
+        Long actual = ecoNewsService.getAmountOfPublishedNews(user.getEmail());
         assertEquals(10L, actual);
     }
 

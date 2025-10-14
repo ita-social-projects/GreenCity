@@ -16,7 +16,6 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
-import greencity.dto.user.UserEmailDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomToDoListItem;
@@ -769,15 +768,10 @@ public class HabitServiceImpl implements HabitService {
     private Page<UserFriendHabitInviteDto> findUserFriendsWithHabitInvitesMapped(
         Long userId, String name, Long habitId, Pageable pageable) {
         List<Tuple> tuples = habitInvitationRepo.findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
-
-        List<Long> userIds = tuples.stream()
-            .map(tuple -> tuple.get("id", Long.class))
-            .toList();
-        List<UserEmailDto> userEmailDtos = userRemoteClient.findUserEmailsByUserIds(userIds);
-        Map<Long, String> userIdToUserEmailMap = userEmailDtos.stream()
+        Map<Long, String> userIdToUserEmailMap = tuples.stream()
             .collect(Collectors.toMap(
-                UserEmailDto::userId,
-                UserEmailDto::userEmail));
+                tuple -> tuple.get("id", Long.class),
+                tuple -> tuple.get("email", String.class)));
 
         List<UserFriendHabitInviteDto> dtoList = tuples.stream()
             .map(tuple -> {

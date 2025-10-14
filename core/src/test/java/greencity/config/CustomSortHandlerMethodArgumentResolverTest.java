@@ -53,13 +53,12 @@ class CustomSortHandlerMethodArgumentResolverTest {
     @ParameterizedTest
     @MethodSource("invalidSortParametersProvider")
     void shouldThrowExceptionForInvalidSortParameters(String sortParam) {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{sortParam});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {sortParam});
         MethodParameter methodParameter = mock(MethodParameter.class);
 
         IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> resolver.resolveArgument(methodParameter, null, webRequest, null)
-        );
+            IllegalArgumentException.class,
+            () -> resolver.resolveArgument(methodParameter, null, webRequest, null));
 
         assertEquals(String.format(ErrorMessage.INVALID_SORT_FORMAT_EXCEPTION, sortParam), exception.getMessage());
     }
@@ -77,7 +76,7 @@ class CustomSortHandlerMethodArgumentResolverTest {
 
     @Test
     void shouldParseSingleSortParameterCorrectly() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name,asc"});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {"name,asc"});
 
         MethodParameter methodParameter = mock(MethodParameter.class);
 
@@ -88,7 +87,7 @@ class CustomSortHandlerMethodArgumentResolverTest {
 
     @Test
     void shouldParseDescendingSortParameterCorrectly() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name,desc"});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {"name,desc"});
 
         MethodParameter methodParameter = mock(MethodParameter.class);
 
@@ -99,7 +98,7 @@ class CustomSortHandlerMethodArgumentResolverTest {
 
     @Test
     void shouldParseSortWithMultipleParametersCorrectly() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name,asc", "age,desc"});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {"name,asc", "age,desc"});
 
         MethodParameter methodParameter = mock(MethodParameter.class);
 
@@ -110,7 +109,7 @@ class CustomSortHandlerMethodArgumentResolverTest {
 
     @Test
     void shouldReturnSortWithDefaultDirectionWhenNoDirectionProvided() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name"});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {"name"});
 
         MethodParameter methodParameter = mock(MethodParameter.class);
 
@@ -121,12 +120,12 @@ class CustomSortHandlerMethodArgumentResolverTest {
 
     @Test
     void shouldThrowExceptionForInvalidSortDirection() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"title,wrong"});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {"title,wrong"});
 
         MethodParameter methodParameter = mock(MethodParameter.class);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(methodParameter, null, webRequest, null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> resolver.resolveArgument(methodParameter, null, webRequest, null));
 
         String expectedMessagePart = "Invalid value 'wrong' for orders given";
         assertTrue(exception.getMessage().contains(expectedMessagePart));
@@ -135,7 +134,7 @@ class CustomSortHandlerMethodArgumentResolverTest {
     @Test
     @SuppressWarnings("unchecked")
     void shouldValidateSortableFieldsWithApiPageableAnnotation() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name,asc"});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {"name,asc"});
 
         MethodParameter methodParameter = mock(MethodParameter.class);
         ApiPageable apiPageable = mock(ApiPageable.class);
@@ -150,7 +149,7 @@ class CustomSortHandlerMethodArgumentResolverTest {
 
     @Test
     void shouldReturnDefaultSortWhenEmptySortParameterProvided() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{""});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {""});
 
         MethodParameter methodParameter = mock(MethodParameter.class);
 
@@ -162,7 +161,7 @@ class CustomSortHandlerMethodArgumentResolverTest {
     @Test
     @SuppressWarnings("unchecked")
     void shouldCallValidatorWhenSortIsProvidedAndApiPageablePresent() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name,asc"});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {"name,asc"});
         MethodParameter methodParameter = mock(MethodParameter.class);
         ApiPageable apiPageable = mock(ApiPageable.class);
 
@@ -192,7 +191,7 @@ class CustomSortHandlerMethodArgumentResolverTest {
 
     @Test
     void shouldNotCallValidatorWhenApiPageableIsNullEvenIfSortProvided() {
-        when(webRequest.getParameterValues("sort")).thenReturn(new String[]{"name,asc"});
+        when(webRequest.getParameterValues("sort")).thenReturn(new String[] {"name,asc"});
         MethodParameter methodParameter = mock(MethodParameter.class);
 
         when(methodParameter.getMethodAnnotation(ApiPageable.class)).thenReturn(null);

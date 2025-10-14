@@ -1,5 +1,8 @@
 package greencity.client.config;
 
+import static greencity.client.config.RemoteClientUtils.EMAIL_QUERY_PARAMETER;
+import static greencity.client.config.RemoteClientUtils.PLUS_SYMBOL;
+import static greencity.client.config.RemoteClientUtils.encodeEmailParameter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
@@ -11,6 +14,7 @@ import greencity.exception.exceptions.GreenCityUserServiceException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.security.jwt.JwtTool;
 import io.netty.channel.ChannelOption;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -51,6 +55,7 @@ public class UserRemoteClientConfig {
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .filter(authorizationHeaderFilter())
             .filter(handlingWebClientExceptions())
+            .filter(encodePlusInQuery())
             .clientConnector(
                 new ReactorClientHttpConnector(
                     HttpClient.create()
@@ -105,5 +110,28 @@ public class UserRemoteClientConfig {
         } catch (JsonProcessingException e) {
             throw new ErrorParsingException(e.getMessage());
         }
+    }
+
+    private ExchangeFilterFunction encodePlusInQuery() {
+        return ExchangeFilterFunction.ofRequestProcessor(request -> {
+            URI original = request.url();
+            String originalQuery = original.getRawQuery();
+
+            if (originalQuery != null
+                && originalQuery.contains(PLUS_SYMBOL)
+                && originalQuery.toLowerCase().contains(EMAIL_QUERY_PARAMETER)) {
+                URI encodedUri = encodeEmailParameter(original);
+
+                if (!encodedUri.equals(original)) {
+                    ClientRequest mutated = ClientRequest.from(request)
+                        .url(encodedUri)
+                        .build();
+
+                    return Mono.just(mutated);
+                }
+            }
+
+            return Mono.just(request);
+        });
     }
 }

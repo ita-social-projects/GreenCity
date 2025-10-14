@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.client.UserRemoteClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
@@ -15,13 +14,16 @@ import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
+import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
+import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -48,7 +50,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitRepo habitRepo;
     private final DateService dateService;
     private final ModelMapper modelMapper;
-    private final UserRemoteClient userRemoteClient;
+    private final UserRepo userRepo;
+    private final UserService userService;
 
     /**
      * {@inheritDoc}
@@ -181,8 +184,28 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * {@inheritDoc}
      */
     @Override
+    public Long getAmountOfHabitsInProgressByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return habitStatisticRepo.getAmountOfHabitsInProgressByUserId(user.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Long getAmountOfAcquiredHabitsByUserId(Long userId) {
         return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfAcquiredHabitsByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(user.getId());
     }
 
     /**
@@ -198,11 +221,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateUserInterest() {
-        Long totalActiveUsers = userRemoteClient.countActiveUsers();
+        long totalActiveUsers = userService.countAllByStatus(UserStatus.ACTIVATED);
         List<Long> creatorsWithExistingHabits = habitRepo.countHabitCreators();
-        List<Long> creators = userRemoteClient.getActivatedUsersIds(creatorsWithExistingHabits);
+        List<Long> creators = userService.findAllActivatedUserIds(creatorsWithExistingHabits);
         List<Long> followersWithExistingHabits = habitRepo.countHabitFollowers();
-        List<Long> followers = userRemoteClient.getActivatedUsersIds(followersWithExistingHabits);
+        List<Long> followers = userService.findAllActivatedUserIds(followersWithExistingHabits);
         Set<Long> participatingUsers = new HashSet<>(followers);
         participatingUsers.addAll(creators);
 
@@ -218,8 +241,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateHabitBehaviorStatistic() {
-        List<Long> activatedUserIds = userRemoteClient.getActivatedUsersIds(null);
-        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus(activatedUserIds);
+        List<HabitStatusCount> habitStatusCounts = habitAssignRepo.countHabitAssignsByStatus();
         Map<HabitAssignStatus, Long> counts = habitStatusCounts.stream()
             .collect(Collectors.toMap(
                 HabitStatusCount::status,

@@ -188,12 +188,28 @@ public interface EventService {
     Long getCountOfAttendedEventsByUserId(Long userId);
 
     /**
+     * Method for getting amount of attended events by user email.
+     *
+     * @param email {@link String} user email.
+     * @return {@link Long} amount of attended events.
+     */
+    Long getCountOfAttendedEventsByEmail(String email);
+
+    /**
      * Method for getting amount of organized events by user id.
      *
      * @param userId {@link Long} user id.
      * @return {@link Long} amount of organized events by user id.
      */
     Long getCountOfOrganizedEventsByUserId(Long userId);
+
+    /**
+     * Method for getting amount of organized events by user email.
+     *
+     * @param email {@link String} user email.
+     * @return {@link Long} amount of organized events.
+     */
+    Long getCountOfOrganizedEventsByEmail(String email);
 
     /**
      * Method to like or unlike {@link EventVO} specified by id.

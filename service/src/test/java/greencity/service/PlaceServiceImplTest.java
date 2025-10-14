@@ -139,7 +139,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
-            .userStatus(UserStatus.ACTIVATED)
+            .status(UserStatus.ACTIVATED)
             .languageVO(language)
             .build();
     private final UserVO userVOAdmin =
@@ -148,7 +148,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_ADMIN)
-            .userStatus(UserStatus.ACTIVATED)
+            .status(UserStatus.ACTIVATED)
             .languageVO(language)
             .build();
     Place genericEntity1 = Place.builder()
@@ -923,7 +923,7 @@ class PlaceServiceImplTest {
         PageImpl<Place> page = new PageImpl<>(places, pageRequest, places.size());
         SearchPlacesDto searchPlacesDto = getSearchPlacesDto();
 
-        when(placeRepo.find(pageRequest, "text", null, null)).thenReturn(page);
+        when(placeRepo.findAll(any(Specification.class), eq(pageRequest))).thenReturn(page);
         when(modelMapper.map(place, SearchPlacesDto.class)).thenReturn(searchPlacesDto);
 
         PageableDto<SearchPlacesDto> result = placeService.search(pageRequest, "text", null, null);

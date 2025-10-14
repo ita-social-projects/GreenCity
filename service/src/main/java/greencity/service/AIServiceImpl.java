@@ -1,5 +1,6 @@
 package greencity.service;
 
+import static greencity.constant.ErrorMessage.AI_USER_NOT_FOUND;
 import static greencity.constant.ErrorMessage.HABIT_NOT_FOUND;
 import static greencity.constant.OpenAIConstants.AI_USER_EMAIL;
 import static greencity.constant.OpenAIConstants.CLOSING_CURLY_BRACE;
@@ -43,7 +44,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.converters.FloatArrayConverter;
 import greencity.dto.habit.DurationHabitDto;
@@ -65,6 +65,7 @@ import greencity.exception.exceptions.JsonResponseParseException;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.OpenAIRequestException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.HabitAssignRepo;
@@ -94,13 +95,13 @@ public class AIServiceImpl implements AIService {
     private final EcoNewsRepo ecoNewsRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final TagsRepo tagsRepo;
-    private final UserRemoteClient userRemoteClient;
     private final HabitRepo habitRepo;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final FloatArrayConverter floatArrayConverter;
     private final LanguageService languageService;
     private final EcoNewsRelevanceRepo ecoNewsRelevanceRepo;
+    private final UserService userService;
 
     /**
      * Generates a personalized ecological habit forecast for a given user and
@@ -555,13 +556,15 @@ public class AIServiceImpl implements AIService {
         JsonNode jsonNode = parseJsonResponse(jsonResponse);
         Optional<UserVO> aiGeneratedUser = Optional.empty();
         try {
-            aiGeneratedUser = userRemoteClient.findNotDeactivatedByEmail(AI_USER_EMAIL);
+            aiGeneratedUser = Optional.ofNullable(userService.findNotDeactivatedByEmail(AI_USER_EMAIL));
+        } catch (WrongEmailException e) {
+            log.error(AI_USER_NOT_FOUND, e);
         } catch (WebClientRequestException | WebClientResponseException e) {
+            log.error(AI_USER_NOT_FOUND, e);
             log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
         }
         if (aiGeneratedUser.isEmpty()) {
-            log.error("AI-generated user not found, cannot create EcoNews");
-            throw new EcoNewsCreationUserMissingException("Required AI-generated user is missing");
+            throw new EcoNewsCreationUserMissingException(AI_USER_NOT_FOUND);
         }
         String title = jsonNode.get(FORMAT_TITLE_KEY).asText();
         String content = jsonNode.get(RESPONSE_JSON_CONTENT_KEY).asText();

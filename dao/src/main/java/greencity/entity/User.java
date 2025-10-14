@@ -3,6 +3,9 @@ package greencity.entity;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.event.Event;
+import greencity.enums.UserStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
@@ -63,7 +66,6 @@ import java.util.Set;
                     @ColumnResult(name = "longitude", type = Double.class),
                     @ColumnResult(name = "mutualFriends", type = Long.class),
                     @ColumnResult(name = "profilePicturePath", type = String.class),
-                    @ColumnResult(name = "chatId", type = Long.class),
                     @ColumnResult(name = "friendStatus", type = String.class),
                     @ColumnResult(name = "requesterId", type = Long.class)
                 })
@@ -75,7 +77,7 @@ import java.util.Set;
             + "WHERE EXTRACT(YEAR from date_of_registration) = EXTRACT(YEAR FROM CURRENT_DATE) "
             + "GROUP BY month",
         resultSetMapping = "monthsStatisticsMapping"),
-    @NamedNativeQuery(name = "User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
+    @NamedNativeQuery(name = "User.findListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
         query = """
                 WITH current_user_friends AS (
                     SELECT user_id
@@ -119,13 +121,6 @@ import java.util.Set;
                         )
                     ) AS mutualFriends,
                     u.profile_picture AS profilePicturePath,
-                    (
-                        SELECT p.room_id
-                        FROM chat_rooms_participants p
-                        WHERE p.participant_id IN (u.id, :userId)
-                        GROUP BY p.room_id
-                        HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1
-                    ) AS chatId,
                     (
                         SELECT uf2.status
                         FROM users_friends uf2
@@ -201,6 +196,10 @@ public class User {
 
     @Column(name = "rating")
     private Double rating;
+
+    @Column(name = "user_status", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_location")

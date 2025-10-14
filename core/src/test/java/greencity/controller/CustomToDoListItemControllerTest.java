@@ -69,6 +69,21 @@ class CustomToDoListItemControllerTest {
     }
 
     @Test
+    void getAllAvailableCustomToDoListItemsExternal() throws Exception {
+        String email = "email";
+        Long habitId = 1L;
+        this.mockMvc.perform(get(customLink)
+            .param("email", email)
+            .param("habitId", habitId.toString())
+            .principal(principal)).andExpect(status().isOk());
+        when(customToDoListItemService.findAllAvailableCustomToDoListItems(email, habitId))
+            .thenReturn(Collections.singletonList(dto));
+        verify(customToDoListItemService).findAllAvailableCustomToDoListItems(email, habitId);
+        assertEquals(dto,
+            customController.getAllAvailableCustomToDoListItems(email, habitId).getBody().get(0));
+    }
+
+    @Test
     void save() throws Exception {
         Long id = 1L;
         BulkSaveCustomToDoListItemDto bulkSaveCustomToDoListItemDto = new BulkSaveCustomToDoListItemDto();
@@ -85,7 +100,7 @@ class CustomToDoListItemControllerTest {
 
     @Test
     void updateItemStatus() throws Exception {
-        this.mockMvc.perform(patch(customLink + "/{userId}/custom-to-do-list-items/?itemId=1&status=DONE", 1)
+        this.mockMvc.perform(patch(customLink + "/{userId}/custom-to-do-list-items?itemId=1&status=DONE", 1)
             .principal(principal))
             .andExpect(status().isOk());
         verify(customToDoListItemService).updateItemStatus(1L, 1L, "DONE");

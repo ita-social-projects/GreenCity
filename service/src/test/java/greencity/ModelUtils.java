@@ -147,7 +147,6 @@ import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserToDoListItemAdvanceDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserToDoListItemVO;
-import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
@@ -209,7 +208,6 @@ import greencity.enums.ProfilePrivacyPolicy;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.enums.ToDoListItemStatus;
-import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import java.util.HashMap;
@@ -301,12 +299,7 @@ import static greencity.enums.UserStatus.BLOCKED;
 
 public class ModelUtils {
     public static User testUser = createUser();
-    public static User testUserRoleUser = createUserRoleUser();
     public static UserVO testUserVo = createUserVO();
-    public static UserVO userVORoleUser = createUserVORoleUser();
-    public static UserStatusDto testUserStatusDto = createUserStatusDto();
-    public static String testEmail = "test@mail.com";
-    public static String testEmail2 = "test2@mail.com";
     public static HabitAssign habitAssignInProgress = createHabitAssignInProgress();
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static String habitTranslationNameEn = "use shopper";
@@ -493,6 +486,7 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
+            .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .rating(10.)
             .profilePicturePath("image path")
@@ -582,7 +576,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
             .languageVO(getLanguageDTO())
-            .userStatus(ACTIVATED)
+            .status(ACTIVATED)
             .userLocation(
                 UserLocationDto.builder()
                     .latitude(1d)
@@ -634,7 +628,7 @@ public class ModelUtils {
             .id(1L)
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
-            .userStatus(ACTIVATED)
+            .status(ACTIVATED)
             .userCredo("user credo")
             .role(Role.ROLE_USER).build();
     }
@@ -646,7 +640,7 @@ public class ModelUtils {
             .email("namesurname1995@gmail.com")
             .role(Role.ROLE_USER)
             .userCredo("save the world")
-            .userStatus(ACTIVATED)
+            .status(ACTIVATED)
             .userLocation(
                 new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
                     "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
@@ -1466,24 +1460,6 @@ public class ModelUtils {
                 .build());
     }
 
-    public static List<HabitTranslation> getHabitTranslationList() {
-        return List.of(
-            HabitTranslation.builder()
-                .id(1L)
-                .name("Пийте воду")
-                .habitItem("Вода бутильована")
-                .description("Пийте не менше 8 склянок води щодня.")
-                .languageCode(getLanguage())
-                .build(),
-            HabitTranslation.builder()
-                .id(2L)
-                .name("Drink Water")
-                .habitItem("Water Bottle")
-                .description("Drink at least 8 glasses of water daily.")
-                .languageCode(getLanguage())
-                .build());
-    }
-
     public static HabitManagementDto getHabitManagementDtoWithoutImage() {
         return HabitManagementDto.builder().id(1L)
             .image(null)
@@ -1764,27 +1740,6 @@ public class ModelUtils {
         return HabitInvitation.builder()
             .id(1L)
             .status(InvitationStatus.ACCEPTED)
-            .build();
-    }
-
-    private static UserStatusDto createUserStatusDto() {
-        return UserStatusDto.builder()
-            .id(2L)
-            .userStatus(UserStatus.CREATED)
-            .build();
-    }
-
-    private static User createUserRoleUser() {
-        return User.builder()
-            .id(2L)
-            .build();
-    }
-
-    private static UserVO createUserVORoleUser() {
-        return UserVO.builder()
-            .id(2L)
-            .role(Role.ROLE_USER)
-            .email("test2@mail.com")
             .build();
     }
 
@@ -2396,13 +2351,6 @@ public class ModelUtils {
             .coordinates(AddressDto.builder().latitude(1.).longitude(1.).build()).build());
     }
 
-    public static List<EventDateLocationDto> getEventDateLocationDtoWithSameDateTime() {
-        ZonedDateTime sameDateTime = ZonedDateTime.now().plusDays(1);
-        return List.of(EventDateLocationDto.builder().startDate(sameDateTime)
-            .finishDate(sameDateTime)
-            .coordinates(AddressDto.builder().latitude(1.).longitude(1.).build()).build());
-    }
-
     public static List<UpdateEventDateLocationDto> getUpdateEventDateLocationDto() {
         return List
             .of(UpdateEventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
@@ -2883,20 +2831,6 @@ public class ModelUtils {
             .rating(10.0)
             .mutualFriends(3L)
             .profilePicturePath("path-to-picture")
-            .chatId(4L)
-            .build();
-    }
-
-    public static UserFriendDto getUserFriendDtoListFromUserPage() {
-        return UserFriendDto.builder()
-            .id(1L)
-            .name(TestConst.NAME)
-            .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
-                "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
-            .rating(10.0)
-            .mutualFriends(3L)
-            .profilePicturePath("path-to-picture")
-            .chatId(4L)
             .build();
     }
 
@@ -2908,10 +2842,6 @@ public class ModelUtils {
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .title("111")
             .build();
-    }
-
-    public static SearchNewsDto getSearchNews() {
-        return SearchNewsDto.builder().id(1L).title("title").tags(Collections.singletonList("tag")).build();
     }
 
     public static SearchEventsDto getSearchEvents() {
@@ -3243,7 +3173,6 @@ public class ModelUtils {
             .id(1L)
             .requesterId(1L)
             .friendStatus("FRIEND")
-            .chatId(1L)
             .build();
     }
 
@@ -3285,7 +3214,7 @@ public class ModelUtils {
             .id(1L)
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
-            .userStatus(ACTIVATED)
+            .status(ACTIVATED)
             .userCredo("user credo")
             .role(Role.ROLE_USER).build());
     }
@@ -3341,7 +3270,7 @@ public class ModelUtils {
             .finishDate(ZonedDateTime.now().plusDays(2L))
             .onlineLink("https://someevents.com")
             .coordinates(AddressDto.builder()
-                .latitude(50.1234)
+                .longitude(50.1234)
                 .latitude(30.1234)
                 .build())
             .build();
@@ -3440,15 +3369,6 @@ public class ModelUtils {
         placesSearchResult.geometry = new Geometry();
         placesSearchResult.geometry.location = new LatLng(1d, 1d);
         return List.of(placesSearchResult);
-    }
-
-    public static PlacesSearchResponse getPlacesSearchResponse() {
-        PlacesSearchResponse placesSearchResponse = new PlacesSearchResponse();
-        List<PlacesSearchResult> results = new ArrayList<>();
-        Collections.addAll(results, getPlacesSearchResultEn().toArray(new PlacesSearchResult[0]));
-        Collections.addAll(results, getPlacesSearchResultUk().toArray(new PlacesSearchResult[0]));
-        placesSearchResponse.results = results.toArray(new PlacesSearchResult[0]);
-        return placesSearchResponse;
     }
 
     public static PlacesSearchResponse getPlacesSearchResponseEn() {
@@ -3568,7 +3488,7 @@ public class ModelUtils {
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
             .languageVO(getLanguageDTO())
-            .userStatus(BLOCKED)
+            .status(BLOCKED)
             .userLocation(
                 UserLocationDto.builder()
                     .latitude(1d)
@@ -3587,7 +3507,7 @@ public class ModelUtils {
         advancedDto.setEmail(TestConst.EMAIL);
         advancedDto.setRole(Role.ROLE_USER);
         advancedDto.setUserCredo(TestConst.CREDO);
-        advancedDto.setUserStatus(ACTIVATED);
+        advancedDto.setStatus(ACTIVATED);
         advancedDto.setUserLocation(UserLocationDto.builder()
             .latitude(1d)
             .longitude(1d)
@@ -3663,7 +3583,7 @@ public class ModelUtils {
         advancedDto.setEmail(TestConst.EMAIL);
         advancedDto.setRole(Role.ROLE_USER);
         advancedDto.setUserCredo(TestConst.CREDO);
-        advancedDto.setUserStatus(ACTIVATED);
+        advancedDto.setStatus(ACTIVATED);
         advancedDto.setUserLocation(UserLocationDto.builder()
             .latitude(1d)
             .longitude(1d)
@@ -3708,6 +3628,7 @@ public class ModelUtils {
     public static GreenCityUserProfileDtoResponse getGreenCityUserProfileDtoResponse(Long userId) {
         return new GreenCityUserProfileDtoResponse(
             userId,
+            TestConst.EMAIL,
             TestConst.PICTURE_PATH,
             "user credo",
             0.);

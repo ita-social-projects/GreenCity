@@ -27,11 +27,9 @@ public class UserManagementUpdateDto {
     @NotBlank
     private String email;
 
-    private String userCredo;
-
     @NotNull
     private Role role;
 
     @NotNull
-    private UserStatus userStatus;
+    private UserStatus status;
 }

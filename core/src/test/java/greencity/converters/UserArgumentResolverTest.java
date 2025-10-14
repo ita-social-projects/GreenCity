@@ -43,7 +43,7 @@ class UserArgumentResolverTest {
     }
 
     @Test
-    void resolveArgumentShouldReturnUserVOWhenPrincipalExists(){
+    void resolveArgumentShouldReturnUserVOWhenPrincipalExists() {
         when(webRequest.getUserPrincipal()).thenReturn(principal);
         when(userService.findNotDeactivatedByEmail(EMAIL)).thenReturn(userVO);
         Object result = userArgumentResolver.resolveArgument(methodParameter, mavContainer, webRequest, null);
@@ -54,8 +54,8 @@ class UserArgumentResolverTest {
     @Test
     void resolveArgumentShouldThrowUnauthorizedExceptionWhenPrincipalIsNull() {
         when(webRequest.getUserPrincipal()).thenReturn(null);
-        assertThrows(UnauthorizedException.class, () ->
-            userArgumentResolver.resolveArgument(methodParameter, mavContainer, webRequest, null));
+        assertThrows(UnauthorizedException.class,
+            () -> userArgumentResolver.resolveArgument(methodParameter, mavContainer, webRequest, null));
     }
 
     @Test

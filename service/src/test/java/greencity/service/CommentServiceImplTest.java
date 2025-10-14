@@ -180,7 +180,7 @@ class CommentServiceImplTest {
         User user = getUser();
         UserVO userVO = getUserVO();
         User parentCommentCreator = getUser().setId(2L);
-        UserVO parentCommentCreatorVO = getUserVO().setId(2L);
+        UserVO parentCommentCreatorVO = (UserVO) getUserVO().setId(2L);
         Comment parentComment = getComment()
             .setUser(parentCommentCreator)
             .setArticleId(1L)
@@ -220,7 +220,7 @@ class CommentServiceImplTest {
         User user = getUser();
         UserVO userVO = getUserVO();
         User parentCommentCreator = getUser().setId(2L);
-        UserVO parentCommentCreatorVO = getUserVO().setId(2L);
+        UserVO parentCommentCreatorVO = (UserVO) getUserVO().setId(2L);
         Comment parentComment = getComment()
             .setUser(parentCommentCreator)
             .setArticleId(1L)

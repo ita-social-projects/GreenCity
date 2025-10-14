@@ -123,6 +123,14 @@ public interface EcoNewsService {
     Long getAmountOfPublishedNews(Long id);
 
     /**
+     * Method for getting amount of published news only for one user.
+     *
+     * @param authorEmail {@link String} author email.
+     * @return amount of published news by user email or all news.
+     */
+    Long getAmountOfPublishedNews(String authorEmail);
+
+    /**
      * Method for updating {@link EcoNewsVO} instance.
      *
      * @param ecoNewsDtoManagement - instance of {@link EcoNewsDtoManagement}.

@@ -290,6 +290,15 @@ class EcoNewsControllerTest {
     }
 
     @Test
+    void findAmountOfPublishedNewsExternal() throws Exception {
+        mockMvc.perform(get(ecoNewsLink + "/count/external")
+            .param("authorEmail", "test@email"))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).getAmountOfPublishedNews("test@email");
+    }
+
+    @Test
     void getContentAndSourceForEcoNewsById() throws Exception {
         mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/summary", 1L))
             .andExpect(status().isOk());
@@ -418,18 +427,19 @@ class EcoNewsControllerTest {
     void getEcoNewsByIdV2Test() throws Exception {
         when(ecoNewsService.findDtoById(anyLong())).thenReturn(getEcoNewsGroupedTagsDto());
         mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/v2", 1L)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
     }
 
     @Test
     void getEcoNewsByIdV2NotFoundTest() throws Exception {
-        when(ecoNewsService.findDtoById(1L)).thenThrow(new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L));
+        when(ecoNewsService.findDtoById(1L))
+            .thenThrow(new NotFoundException(ErrorMessage.ECO_NEW_NOT_FOUND_BY_ID + 1L));
         mockMvc.perform(get(ecoNewsLink + "/{ecoNewsId}/v2", 1L)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
