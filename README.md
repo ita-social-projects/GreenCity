@@ -62,6 +62,21 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 6. `Enviroment variables`:
 
+Required to set:
+```properties
+spring.cloud.azure.credential.client-id=${AZURE_CLIENT_ID}
+spring.cloud.azure.credential.client-secret=${AZURE_SECRET_ID}
+spring.cloud.azure.profile.tenant-id=${AZURE_TENANT_ID}
+spring.cloud.azure.keyvault.secret.property-sources[0].endpoint=${KEY_VAULT_ENDPOINT}
+```
+
+Recommended to change:
+```properties
+spring.datasource.url=${DATASOURCE_URL}
+spring.datasource.username=${DATASOURCE_USERNAME}
+spring.datasource.password=${DATASOURCE_PASSWORD}
+```
+
 ![env-vars](./docs-photos/env-example.png)
 
 7. Go to `dao` -> `src` -> `test` -> `resources` -> `sql`, find file `insert.sql`,
