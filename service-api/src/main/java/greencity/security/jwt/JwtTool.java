@@ -44,8 +44,8 @@ public class JwtTool {
      * Constructor.
      */
     public JwtTool(
-        @Value("${accessTokenValidTimeInMinutes}") Integer accessTokenValidTimeInMinutes,
-        @Value("${tokenKey}") String accessTokenKey,
+        @Value("${security.jwt.access-token.expiration-minutes}") Integer accessTokenValidTimeInMinutes,
+        @Value("${security.jwt.secret-key}") String accessTokenKey,
         @Lazy UserService userService) {
         this.accessTokenValidTimeInMinutes = accessTokenValidTimeInMinutes;
         this.accessTokenKey = accessTokenKey;
