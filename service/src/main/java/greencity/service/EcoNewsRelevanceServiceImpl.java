@@ -5,6 +5,7 @@ import static greencity.constant.ErrorMessage.INVALID_SCORES_STRENGTH;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_WEIGHTS;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.entity.EcoNews_;
+import greencity.entity.Tag;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.utils.RelevanceWeightUtils;
@@ -26,7 +27,9 @@ import greencity.mapping.PageableAdvancedDtoMapper;
 import jakarta.annotation.PostConstruct;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -261,22 +264,34 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             .collect(Collectors.toMap(relevance -> relevance.getEcoNews().getId(),
                 Function.identity()));
         List<EcoNewsWithRelevanceVectorsDto> newsWithVectors = news.stream()
-            .map(newsItem -> new EcoNewsWithRelevanceVectorsDto(
-                newsItem,
-                ecoNewsRelevanceMap.get(newsItem.getId()),
-                tags.ecoNewsTagsIndexes(),
-                userProfile,
-                relevanceScoresWeights))
+            .map(newsItem -> {
+                List<Long> tagIds = Optional.ofNullable(newsItem.getTags())
+                    .orElse(Collections.emptyList()).stream()
+                        .map(Tag::getId)
+                        .toList();
+                EcoNewsRelevance ecoNewsRelevance = ecoNewsRelevanceMap.get(newsItem.getId());
+                Float[] titleVector = null;
+                if (ecoNewsRelevance != null && !ecoNewsRelevance.getIsOutdated()) {
+                    titleVector = ecoNewsRelevance.getTitleVector();
+                }
+                return new EcoNewsWithRelevanceVectorsDto(
+                    newsItem.getId(),
+                    tagIds,
+                    titleVector,
+                    tags.ecoNewsTagsIndexes(),
+                    userProfile,
+                    relevanceScoresWeights);
+            })
             .toList();
         newsWithVectors.stream()
             .sorted(Comparator.comparingDouble(EcoNewsWithRelevanceVectorsDto::getRelevanceScore).reversed())
             .forEach(newsItem -> {
                 if (newsItem.getRelevanceScore() > relevanceScoresStrength[0]) {
-                    pools.relevantStrongNewsIds().add(newsItem.getEcoNews().getId());
+                    pools.relevantStrongNewsIds().add(newsItem.getEcoNewsId());
                 } else if (newsItem.getRelevanceScore() < relevanceScoresStrength[1]) {
-                    pools.nonRelevantNewsIds().add(newsItem.getEcoNews().getId());
+                    pools.nonRelevantNewsIds().add(newsItem.getEcoNewsId());
                 } else {
-                    pools.relevantWeakNewsIds().add(newsItem.getEcoNews().getId());
+                    pools.relevantWeakNewsIds().add(newsItem.getEcoNewsId());
                 }
             });
     }
