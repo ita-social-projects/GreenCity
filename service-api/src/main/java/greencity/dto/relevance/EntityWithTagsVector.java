@@ -19,10 +19,10 @@ public abstract class EntityWithTagsVector {
     /**
      * The vector is built from the given collection of tagIds and the given mapping
      * of tag ids to their indexes in the vector. The vector is initialized with all
-     * elements set to 0.0f and then tagIds from the given collection are set to 1.0f
-     * in the vector.
+     * elements set to 0.0f and then tagIds from the given collection are set to
+     * 1.0f in the vector.
      *
-     * @param tagIds        a collection of tagIds
+     * @param tagIds      a collection of tagIds
      * @param tagsIndexes a map that associates tag IDs with their respective
      *                    positions in the vector
      */

@@ -267,8 +267,8 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             .map(newsItem -> {
                 List<Long> tagIds = Optional.ofNullable(newsItem.getTags())
                     .orElse(Collections.emptyList()).stream()
-                        .map(Tag::getId)
-                        .toList();
+                    .map(Tag::getId)
+                    .toList();
                 EcoNewsRelevance ecoNewsRelevance = ecoNewsRelevanceMap.get(newsItem.getId());
                 Float[] titleVector = null;
                 if (ecoNewsRelevance != null && !ecoNewsRelevance.getIsOutdated()) {

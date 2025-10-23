@@ -24,10 +24,10 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
      * Computes the tags vector for the given ecoNews argument and assigns the title
      * vector if available.
      *
-     * @param ecoNewsId          the eco news id
+     * @param ecoNewsId            the eco news id
      * @param relevanceTitleVector the eco news title vector if present
-     * @param tagsIndexes      a map that associates tag IDs with their respective
-     *                         positions in the vector
+     * @param tagsIndexes          a map that associates tag IDs with their
+     *                             respective positions in the vector
      */
     public EcoNewsWithRelevanceVectorsDto(Long ecoNewsId,
         Collection<Long> tagIds,
@@ -45,8 +45,8 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
      * if either tags or title vector isn't present, news will be considered less
      * relevant).
      *
-     * @param ecoNewsId                the eco news entity
-     * @param relevanceTitleVector       the eco news title vector if present
+     * @param ecoNewsId              the eco news entity
+     * @param relevanceTitleVector   the eco news title vector if present
      * @param tagsIndexes            a map that associates tag IDs with their
      *                               respective positions in the vector
      * @param userProfile            the user preference profile
