@@ -117,7 +117,7 @@ public class CacheServiceImpl implements CacheService {
                         .map(Tag::getId)
                         .toList();
                     Float[] titleVector = null;
-                    if (!relevance.getIsOutdated()) {
+                    if (Boolean.FALSE.equals(relevance.getIsOutdated())) {
                         titleVector = relevance.getTitleVector();
                     }
                     return new EcoNewsWithRelevanceVectorsDto(ecoNews.getId(), tagIds, titleVector,
