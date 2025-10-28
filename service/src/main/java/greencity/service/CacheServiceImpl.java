@@ -2,6 +2,8 @@ package greencity.service;
 
 import static greencity.constant.ErrorMessage.INVALID_TAGS_WEIGHTS;
 import com.github.benmanes.caffeine.cache.Cache;
+import greencity.entity.EcoNews;
+import greencity.entity.Habit;
 import greencity.utils.RelevanceWeightUtils;
 import greencity.dto.cache.CachedRelevancePools;
 import greencity.dto.cache.CachedTagsWithCoherence;
@@ -27,11 +29,13 @@ import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -106,8 +110,19 @@ public class CacheServiceImpl implements CacheService {
 
             List<EcoNewsRelevance> lastLikedNews = ecoNewsRelevanceRepo.findLikedEcoNewsByUserId(userId);
             List<EcoNewsWithRelevanceVectorsDto> ecoNewsWithRelevance = lastLikedNews.stream()
-                .map(relevance -> new EcoNewsWithRelevanceVectorsDto(relevance.getEcoNews(), relevance,
-                    tags.ecoNewsTagsIndexes()))
+                .map(relevance -> {
+                    EcoNews ecoNews = relevance.getEcoNews();
+                    List<Long> tagIds = Optional.ofNullable(ecoNews.getTags())
+                        .orElse(Collections.emptyList()).stream()
+                        .map(Tag::getId)
+                        .toList();
+                    Float[] titleVector = null;
+                    if (Boolean.FALSE.equals(relevance.getIsOutdated())) {
+                        titleVector = relevance.getTitleVector();
+                    }
+                    return new EcoNewsWithRelevanceVectorsDto(ecoNews.getId(), tagIds, titleVector,
+                        tags.ecoNewsTagsIndexes());
+                })
                 .toList();
 
             Float[] averageTagsVector = mergeUserTagsVector(userId, ecoNewsWithRelevance, tags);
@@ -218,7 +233,14 @@ public class CacheServiceImpl implements CacheService {
         List<Float[]> habitAssignTagsVectors = lastActiveHabits.stream()
             .filter(habitAssign -> habitAssign.getHabit().getTags() != null
                 && !habitAssign.getHabit().getTags().isEmpty())
-            .map(habitAssign -> new HabitWithTagsVectorDto(habitAssign.getHabit(), getTagsCoherenceFromCache()))
+            .map(habitAssign -> {
+                Habit habit = habitAssign.getHabit();
+                List<Long> tagIds = Optional.of(habit.getTags())
+                    .orElse(Collections.emptySet()).stream()
+                    .map(Tag::getId)
+                    .toList();
+                return new HabitWithTagsVectorDto(habit.getId(), tagIds, getTagsCoherenceFromCache());
+            })
             .map(HabitWithTagsVectorDto::getTagsVector)
             .toList();
 
@@ -234,7 +256,13 @@ public class CacheServiceImpl implements CacheService {
         List<Event> lastLikedEvents = eventRepo.findLikedEventsByUserId(userId);
         List<Float[]> likedEventsTagsVectors = lastLikedEvents.stream()
             .filter(event -> event.getTags() != null && !event.getTags().isEmpty())
-            .map(event -> new EventWithTagsVectorDto(event, getTagsCoherenceFromCache()))
+            .map(event -> {
+                List<Long> tagIds = Optional.of(event.getTags())
+                    .orElse(Collections.emptyList()).stream()
+                    .map(Tag::getId)
+                    .toList();
+                return new EventWithTagsVectorDto(event.getId(), tagIds, getTagsCoherenceFromCache());
+            })
             .map(EventWithTagsVectorDto::getTagsVector)
             .toList();
 

@@ -1,14 +1,13 @@
 package greencity.dto.relevance;
 
 import greencity.dto.cache.CachedUserRelevanceProfile;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsRelevance;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import lombok.Getter;
 
 /**
- * An {@link EcoNews} wrapper class with vectors that represents its content. It
+ * An eco news wrapper class with vectors that represents its content. It
  * contains the news itself, tags vector and title vector if available. It also
  * may contain the relevance score which is used for sorting the news by
  * relevance.
@@ -17,27 +16,26 @@ import lombok.Getter;
  */
 @Getter
 public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
-    private final EcoNews ecoNews;
-    private Float[] titleVector;
+    private final Long ecoNewsId;
+    private final Float[] titleVector;
     private double relevanceScore;
 
     /**
      * Computes the tags vector for the given ecoNews argument and assigns the title
      * vector if available.
      *
-     * @param ecoNews          the eco news entity
-     * @param ecoNewsRelevance the eco news relevance entity if present
-     * @param tagsIndexes      a map that associates tag IDs with their respective
-     *                         positions in the vector
+     * @param ecoNewsId            the eco news id
+     * @param relevanceTitleVector the eco news title vector if present
+     * @param tagsIndexes          a map that associates tag IDs with their
+     *                             respective positions in the vector
      */
-    public EcoNewsWithRelevanceVectorsDto(EcoNews ecoNews,
-        EcoNewsRelevance ecoNewsRelevance,
+    public EcoNewsWithRelevanceVectorsDto(Long ecoNewsId,
+        Collection<Long> tagIds,
+        Float[] relevanceTitleVector,
         Map<Long, Integer> tagsIndexes) {
-        super(ecoNews.getTags(), tagsIndexes);
-        this.ecoNews = ecoNews;
-        if (ecoNewsRelevance != null && !ecoNewsRelevance.getIsOutdated()) {
-            this.titleVector = ecoNewsRelevance.getTitleVector();
-        }
+        super(tagIds, tagsIndexes);
+        this.ecoNewsId = ecoNewsId;
+        this.titleVector = relevanceTitleVector;
     }
 
     /**
@@ -47,19 +45,20 @@ public class EcoNewsWithRelevanceVectorsDto extends EntityWithTagsVector {
      * if either tags or title vector isn't present, news will be considered less
      * relevant).
      *
-     * @param ecoNews                the eco news entity
-     * @param ecoNewsRelevance       the eco news relevance entity if present
+     * @param ecoNewsId              the eco news entity
+     * @param relevanceTitleVector   the eco news title vector if present
      * @param tagsIndexes            a map that associates tag IDs with their
      *                               respective positions in the vector
      * @param userProfile            the user preference profile
      * @param relevanceScoresWeights the weights of tags and title relevance scores
      */
-    public EcoNewsWithRelevanceVectorsDto(EcoNews ecoNews,
-        EcoNewsRelevance ecoNewsRelevance,
+    public EcoNewsWithRelevanceVectorsDto(Long ecoNewsId,
+        Collection<Long> tagIds,
+        Float[] relevanceTitleVector,
         Map<Long, Integer> tagsIndexes,
         CachedUserRelevanceProfile userProfile,
         double[] relevanceScoresWeights) {
-        this(ecoNews, ecoNewsRelevance, tagsIndexes);
+        this(ecoNewsId, tagIds, relevanceTitleVector, tagsIndexes);
         boolean isTagsVectorInvalid = Arrays.stream(tagsVector).allMatch(value -> value == 0.0);
         boolean isTitleVectorInvalid = titleVector == null;
         double tagsRelevance = isTagsVectorInvalid
