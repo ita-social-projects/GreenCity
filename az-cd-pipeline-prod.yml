@@ -12,7 +12,7 @@ pr: none
 variables:
   agentOS: ubuntu-latest
   
-  azKeyVault: greencity-app
+  azKeyVault: greencity-values
   
   artifactName: drop
   coreRepoName: core
