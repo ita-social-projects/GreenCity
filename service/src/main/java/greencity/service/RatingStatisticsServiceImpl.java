@@ -1,10 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.ratingstatistics.RatingStatisticsDto;
-import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
-import greencity.dto.ratingstatistics.RatingStatisticsVO;
-import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
+import greencity.dto.ratingstatistics.*;
 import greencity.entity.RatingStatistics;
 import greencity.entity.RatingStatistics_;
 import greencity.filters.RatingStatisticsSpecification;
@@ -69,11 +66,21 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     @Override
-    public List<RatingStatisticsDto> getAllRatingStatistics() {
-        return ratingStatisticsRepo.findAll().stream()
-            .map(ratingStat -> modelMapper.map(ratingStat, RatingStatisticsDto.class))
-            .collect(Collectors.toList());
+    public List<RatingStatisticsExportDto> getAllRatingStatistics() {
+        return ratingStatisticsRepo.findAllForExport()
+                .stream()
+                .map(r -> RatingStatisticsExportDto.builder()
+                        .id(r.getId())
+                        .event(r.getRatingPoints().getName())
+                        .date(r.getCreateDate())
+                        .userId(r.getUser().getId())
+                        .userEmail(r.getUser().getEmail())
+                        .pointsChanged((float) r.getPointsChanged())
+                        .currentRating((float) r.getRating())
+                        .build())
+                .toList();
     }
+
 
     @Override
     public List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(
