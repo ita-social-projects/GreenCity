@@ -98,9 +98,6 @@ class ManagementRatingStatisticsControllerTest {
 //        verify(exportToFileService).exportTableDataToExcel(any());
 //    }
 
-
-
-
     @Test
     void exportFilteredToExcelTest() throws Exception {
         RatingStatisticsViewDto ratingStatisticsViewDto = new RatingStatisticsViewDto();

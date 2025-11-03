@@ -68,19 +68,18 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     @Override
     public List<RatingStatisticsExportDto> getAllRatingStatistics() {
         return ratingStatisticsRepo.findAllForExport()
-                .stream()
-                .map(r -> RatingStatisticsExportDto.builder()
-                        .id(r.getId())
-                        .event(r.getRatingPoints().getName())
-                        .date(r.getCreateDate())
-                        .userId(r.getUser().getId())
-                        .userEmail(r.getUser().getEmail())
-                        .pointsChanged((float) r.getPointsChanged())
-                        .currentRating((float) r.getRating())
-                        .build())
-                .toList();
+            .stream()
+            .map(r -> RatingStatisticsExportDto.builder()
+                .id(r.getId())
+                .event(r.getRatingPoints().getName())
+                .date(r.getCreateDate())
+                .userId(r.getUser().getId())
+                .userEmail(r.getUser().getEmail())
+                .pointsChanged((float) r.getPointsChanged())
+                .currentRating((float) r.getRating())
+                .build())
+            .toList();
     }
-
 
     @Override
     public List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(

@@ -72,16 +72,15 @@ public class ManagementRatingStatisticsController {
         List<RatingStatisticsExportDto> stats = ratingStatisticsService.getAllRatingStatistics();
 
         List<Map<String, String>> rows = stats.stream()
-                .map(s -> Map.of(
-                        "Id", String.valueOf(s.getId()),
-                        "Event", s.getEvent(),
-                        "Date", s.getDate().toString(),
-                        "UserId", String.valueOf(s.getUserId()),
-                        "User email", s.getUserEmail(),
-                        "Points changed", String.valueOf(s.getPointsChanged()),
-                        "Current rating", String.valueOf(s.getCurrentRating())
-                ))
-                .toList();
+            .map(s -> Map.of(
+                "Id", String.valueOf(s.getId()),
+                "Event", s.getEvent(),
+                "Date", s.getDate().toString(),
+                "UserId", String.valueOf(s.getUserId()),
+                "User email", s.getUserEmail(),
+                "Points changed", String.valueOf(s.getPointsChanged()),
+                "Current rating", String.valueOf(s.getCurrentRating())))
+            .toList();
 
         TableRowsDto table = new TableRowsDto("rating_statistics", rows);
 
@@ -90,7 +89,6 @@ public class ManagementRatingStatisticsController {
             response.flushBuffer();
         }
     }
-
 
     /**
      * Export filtered {@link RatingStatisticsVO} to Excel file.
