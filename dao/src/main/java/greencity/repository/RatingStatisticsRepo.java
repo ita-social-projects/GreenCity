@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 
 @Repository
 public interface RatingStatisticsRepo extends JpaRepository<RatingStatistics, Long>,
@@ -20,4 +21,11 @@ public interface RatingStatisticsRepo extends JpaRepository<RatingStatistics, Lo
     @Query(nativeQuery = true,
         value = "DELETE FROM rating_statistics WHERE create_date + interval '2 year' < current_date")
     void scheduledDeleteOlderThan();
+
+    @Query("""
+            select r from RatingStatistics r
+            join fetch r.user u
+            join fetch r.ratingPoints rp
+        """)
+    List<RatingStatistics> findAllForExport();
 }
