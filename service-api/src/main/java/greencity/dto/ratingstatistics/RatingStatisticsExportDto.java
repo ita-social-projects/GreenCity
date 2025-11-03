@@ -2,7 +2,6 @@ package greencity.dto.ratingstatistics;
 
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.ZonedDateTime;
 
 @Data
