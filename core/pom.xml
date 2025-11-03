@@ -14,23 +14,6 @@
     <version>1.0-SNAPSHOT</version>
     <name>core</name>
 
-    <properties>
-        <powermock.version>2.0.9</powermock.version>
-        <tngtech.version>1.13.1</tngtech.version>
-        <socialcore.version>1.1.6.RELEASE</socialcore.version>
-        <lombok.version>1.18.30</lombok.version>
-        <commons.io.version>2.15.0</commons.io.version>
-        <springdoc.version>2.3.0</springdoc.version>
-        <thymeleaf.spring6.version>3.1.2.RELEASE</thymeleaf.spring6.version>
-        <thymeleaf.extras.version>3.0.4.RELEASE</thymeleaf.extras.version>
-        <kotlin.stdlib.version>1.9.20</kotlin.stdlib.version>
-        <azure.webapp.maven.plugin.version>2.12.0</azure.webapp.maven.plugin.version>
-        <google.cloud.storage.version>2.29.1</google.cloud.storage.version>
-        <test.containers.version>1.19.3</test.containers.version>
-        <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
-        <ldm.version>0.0.5</ldm.version>
-    </properties>
-
     <repositories>
         <repository>
             <id>github</id>
@@ -39,13 +22,27 @@
         </repository>
     </repositories>
 
+    <properties>
+        <azure.spring.version>6.0.0</azure.spring.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>spring-cloud-azure-dependencies</artifactId>
+                <version>${azure.spring.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>greencity</groupId>
             <artifactId>service-api</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>greencity</groupId>
@@ -77,24 +74,12 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-maven-plugin</artifactId>
-            <version>${liquibase.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.2</version>
+            <version>${postgresql.version}</version>
             <scope>runtime</scope>
             <exclusions>
                 <exclusion>
@@ -106,7 +91,7 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.9.0</version>
+            <version>${json.path.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -117,6 +102,10 @@
                 <exclusion>
                     <groupId>com.jayway.jsonpath</groupId>
                     <artifactId>json-path</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -138,19 +127,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>${powermock.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.objenesis</groupId>
-                    <artifactId>objenesis</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
+            <version>${springdoc.openapi.starter.webmvc.ui.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -160,12 +137,6 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>${jjwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.tngtech.java</groupId>
-            <artifactId>junit-dataprovider</artifactId>
-            <version>${tngtech.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -189,11 +160,6 @@
                     <artifactId>error_prone_annotations</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.social</groupId>
-            <artifactId>spring-social-core</artifactId>
-            <version>${socialcore.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -227,7 +193,7 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${test.containers.version}</version>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -252,14 +218,25 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.18.1</version>
+            <version>${jsoup.version}</version>
         </dependency>
         <dependency>
             <groupId>com.softserve.ldm</groupId>
             <artifactId>ldm-spring-boot-starter</artifactId>
             <version>${ldm.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-keyvault-secrets</artifactId>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -289,10 +266,10 @@
                     </deployment>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
             </plugin>
         </plugins>
     </build>

@@ -369,18 +369,18 @@ class EcoNewsRelevanceServiceImplTest {
         try (MockedConstruction<EcoNewsWithRelevanceVectorsDto> mockedConstruction =
             mockConstruction(EcoNewsWithRelevanceVectorsDto.class,
                 (mock, context) -> {
-                    EcoNews newsItem = (EcoNews) context.arguments().get(0);
+                    Long newsItemId = (Long) context.arguments().get(0);
                     Double scoreToReturn;
 
-                    if (newsItem.getId() <= 204L) {
+                    if (newsItemId <= 204L) {
                         scoreToReturn = 0.9;
-                    } else if (newsItem.getId() <= 207L) {
+                    } else if (newsItemId <= 207L) {
                         scoreToReturn = 0.5;
                     } else {
                         scoreToReturn = 0.1;
                     }
                     when(mock.getRelevanceScore()).thenReturn(scoreToReturn);
-                    when(mock.getEcoNews()).thenReturn(newsItem);
+                    when(mock.getEcoNewsId()).thenReturn(newsItemId);
                 })) {
 
             when(ecoNewsRepo.findAllById(anyList()))

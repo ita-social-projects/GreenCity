@@ -2,11 +2,14 @@ package greencity.security.jwt;
 
 import static greencity.constant.AppConstant.ROLE;
 
+import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserClaims;
+import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NoJwtException;
+import greencity.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -37,6 +40,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 class JwtToolTest {
     @Mock
     HttpServletRequest request;
+    @Mock
+    UserService userService;
 
     @InjectMocks
     private JwtTool jwtTool;
@@ -198,33 +203,39 @@ class JwtToolTest {
 
     @Test
     void extractUserIdTest() {
-        Long expectedResult = 5L;
+        UserVO user = ModelUtils.getUserVO();
+        Long id = user.getId();
+        String email = user.getEmail();
         String jwt = Jwts.builder()
-            .claim(AppConstant.JWT_USER_ID_CLAIM, expectedResult)
+            .subject(email)
             .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
             .compact();
 
+        when(userService.findNotDeactivatedByEmail(email)).thenReturn(user);
+
         Long actualResult = jwtTool.extractUserId(jwt);
 
-        assertEquals(expectedResult, actualResult);
+        assertEquals(id, actualResult);
     }
 
     @Test
     void extractUserClaimsTest() {
-        Long userId = 7L;
-        String userEmail = "email@email.com";
+        UserVO user = ModelUtils.getUserVO();
+        String email = user.getEmail();
         List<Role> roles = List.of(Role.ROLE_USER, Role.ROLE_UBS_EMPLOYEE);
         String jwt = Jwts.builder()
-            .claim(AppConstant.JWT_USER_ID_CLAIM, userId)
+            .claim("userId", 999L)
             .claim(AppConstant.ROLE, roles)
-            .subject(userEmail)
+            .subject(email)
             .signWith(Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes()))
             .compact();
 
+        when(userService.findNotDeactivatedByEmail(email)).thenReturn(user);
+
         UserClaims actualResult = jwtTool.extractUserClaims(jwt);
 
-        assertEquals(userId, actualResult.userId());
-        assertEquals(userEmail, actualResult.userEmail());
+        assertEquals(user.getId(), actualResult.userId());
+        assertEquals(email, actualResult.userEmail());
         assertEquals(roles, actualResult.roles());
     }
 

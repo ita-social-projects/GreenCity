@@ -20,8 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -39,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class ManagementPlacesControllerTest {
 
     private MockMvc mockMvc;
@@ -122,7 +119,7 @@ class ManagementPlacesControllerTest {
             (json)
                 .getBytes());
 
-        this.mockMvc.perform(multipart("/management/places/")
+        this.mockMvc.perform(multipart("/management/places")
             .file(addPlaceDto)
             .principal(principal)
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
@@ -186,7 +183,7 @@ class ManagementPlacesControllerTest {
                 }
             """;
 
-        mockMvc.perform(multipart("/management/places/")
+        mockMvc.perform(multipart("/management/places")
             .file(new MockMultipartFile(
                 "placeUpdateDto",
                 "placeUpdateDto.json",
@@ -200,7 +197,7 @@ class ManagementPlacesControllerTest {
 
     @Test
     void delete() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/management/places/?id=1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/management/places?id=1"))
             .andExpect(status().isOk());
 
         verify(placeService).deleteById(1L);

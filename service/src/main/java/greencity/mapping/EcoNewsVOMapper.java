@@ -33,7 +33,7 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                 .id(author.getId())
                 .name(author.getName())
                 .email(authorVO.getEmail())
-                .userStatus(authorVO.getUserStatus())
+                .status(authorVO.getStatus())
                 .role(authorVO.getRole())
                 .build())
             .creationDate(ecoNews.getCreationDate())

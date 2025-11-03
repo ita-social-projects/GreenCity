@@ -30,16 +30,17 @@ class UserForListDtoMapperTest {
         UserVOAdvancedDto userVO = ModelUtils.getUserVOAdvancedDto();
 
         UserForListDto expected = UserForListDto.builder()
-            .id(userVO.getId())
-            .name(userVO.getName())
+            .id(user.getId())
+            .name(user.getName())
             .dateOfRegistration(userVO.getDateOfRegistration())
-            .email(userVO.getEmail())
-            .userStatus(userVO.getUserStatus())
+            .email(user.getEmail())
+            .userStatus(user.getStatus())
             .role(userVO.getRole())
             .userCredo(user.getUserCredo())
             .build();
 
-        when(userRemoteClient.findNotDeactivatedByIdAdvanced(user.getId())).thenReturn(Optional.of(userVO));
+        when(userRemoteClient.findByEmailAdvanced(user.getEmail()))
+            .thenReturn(Optional.of(userVO));
 
         assertEquals(expected, userForListDtoMapper.convert(user));
     }

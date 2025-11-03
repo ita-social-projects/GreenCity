@@ -10,7 +10,7 @@ import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.NotFoundException;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
@@ -30,10 +30,9 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
 
     @Override
     protected UserVOAdvancedDto convert(User user) {
-        Long id = user.getId();
-
-        UserVOAdvancedDto userVOAdvancedDto = userRemoteClient.findNotDeactivatedByIdAdvanced(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        String email = user.getEmail();
+        UserVOAdvancedDto userVOAdvancedDto = userRemoteClient.findByEmailAdvanced(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
         userVOAdvancedDto.setUserAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
             .stream().map(userAchievement -> UserAchievementVO.builder()
@@ -54,15 +53,20 @@ public class UserVOAdvancedDtoMapper extends AbstractConverter<User, UserVOAdvan
                 .build())
             .toList() : new ArrayList<>());
 
-        userVOAdvancedDto.setUserFriends(user.getUserFriends() != null ? user.getUserFriends()
-            .stream().map(user1 -> UserVO.builder()
-                .id(user1.getId())
-                .name(user1.getName())
-                .build())
-            .toList() : null);
+        userVOAdvancedDto.setUserFriends(user.getUserFriends() != null
+            ? user.getUserFriends().stream()
+                .map(user1 -> (UserVO) UserVO.builder()
+                    .id(user1.getId())
+                    .name(user1.getName())
+                    .build())
+                .toList()
+            : null);
 
+        userVOAdvancedDto.setId(user.getId());
+        userVOAdvancedDto.setUserCredo(user.getUserCredo());
         userVOAdvancedDto.setRating(user.getRating());
         userVOAdvancedDto.setUserCredo(user.getUserCredo());
+        userVOAdvancedDto.setStatus(user.getStatus());
         userVOAdvancedDto.setProfilePicturePath(user.getProfilePicturePath());
 
         UserLocation userLocation = user.getUserLocation();

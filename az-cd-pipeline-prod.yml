@@ -12,10 +12,7 @@ pr: none
 variables:
   agentOS: ubuntu-latest
   
-  azKeyVault: key-vault-greencity
-  jsonSecret: google-credentials
-  jsonFile: google-creds.json
-  jsonLocation: /site/wwwroot
+  azKeyVault: greencity-app
   
   artifactName: drop
   coreRepoName: core
@@ -32,18 +29,11 @@ stages:
     pool:
       vmImage: $(agentOS)
     steps:
-
     - task: AzureKeyVault@1
-      displayName: Get FTP credentials from Azure Key Vault
+      displayName: Get LOGGING-ITA-TOKEN from Azure Key Vault
       inputs:
         azureSubscription: '$(azureSub)'
         KeyVaultName: '$(azKeyVault)'
-        SecretsFilter: 'ftpHost, ftpUser, ftpPass'
-
-    - task: AzureKeyVault@1
-      inputs:
-        azureSubscription: '$(azureSub)'
-        KeyVaultName: 'greencity-app'
         SecretsFilter: 'LOGGING-ITA-TOKEN'
         RunAsPreJob: false
 

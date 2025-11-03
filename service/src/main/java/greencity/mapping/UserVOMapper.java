@@ -6,7 +6,7 @@ import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.UserLocation;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.NotFoundException;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
@@ -25,16 +25,22 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
 
     @Override
     protected UserVO convert(User user) {
-        Long id = user.getId();
-        UserVO userVO = userRemoteClient.findNotDeactivatedById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        String email = user.getEmail();
+        UserVO userVO = userRemoteClient.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        userVO.setId(user.getId());
+        userVO.setUserCredo(user.getUserCredo());
+        userVO.setProfilePicturePath(user.getProfilePicturePath());
+        userVO.setStatus(user.getStatus());
+        userVO.setRating(user.getRating());
+
         UserLocation userLocation = user.getUserLocation();
         if (userLocation != null) {
             UserLocationDto userLocationDto = modelMapper.map(userLocation, UserLocationDto.class);
             userVO.setUserLocation(userLocationDto);
         }
-        userVO.setUserCredo(user.getUserCredo());
-        userVO.setProfilePicturePath(user.getProfilePicturePath());
+
         return userVO;
     }
 }

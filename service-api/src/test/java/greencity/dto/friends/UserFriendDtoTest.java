@@ -17,7 +17,6 @@ class UserFriendDtoTest {
         Double rating = 1.0;
         Long mutualFriends = 2L;
         String profilePicture = "profilePicture";
-        Long chatId = 4L;
         String friendStatus = "FRIEND";
         Long requesterId = 3L;
         UserFriendDto userFriendDto = new UserFriendDto(id, name, rating, uLocation.getId(),
@@ -45,7 +44,6 @@ class UserFriendDtoTest {
         Long ulId = null;
         Long mutualFriends = 2L;
         String profilePicturePath = "/path/to/profile/picture";
-        Long chatId = 4L;
         String friendStatus = "FRIEND";
         Long requesterId = 3L;
 

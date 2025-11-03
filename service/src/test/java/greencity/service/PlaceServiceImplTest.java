@@ -124,7 +124,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
-            .userStatus(UserStatus.ACTIVATED)
+            .status(UserStatus.ACTIVATED)
             .languageVO(language)
             .build();
     private final UserVO userVOAdmin =
@@ -133,7 +133,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_ADMIN)
-            .userStatus(UserStatus.ACTIVATED)
+            .status(UserStatus.ACTIVATED)
             .languageVO(language)
             .build();
     Place genericEntity1 = Place.builder()

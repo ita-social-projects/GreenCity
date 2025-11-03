@@ -1184,6 +1184,9 @@ class EventServiceImplTest {
     void getEventsForUnauthorizedUserTest() {
         Pageable pageable = PageRequest.of(0, 6);
         FilterEventDto filterEventDto = getFilterEventDto();
+        filterEventDto.setCities(null);
+        filterEventDto.setStatuses(null);
+        filterEventDto.setTags(null);
         Page<Event> eventsPage = mock(Page.class);
         Page<Long> idsPage = new PageImpl<>(List.of(3L, 1L), pageable, 2);
         TupleElement<?>[] elements = getTupleElements();
@@ -1418,6 +1421,19 @@ class EventServiceImplTest {
 
         assertEquals(5L, countOfAttendedEventsByUserId);
         verify(eventRepo).countDistinctByAttendersId(userId);
+    }
+
+    @Test
+    void getCountOfAttendedEventsByEmailTest() {
+        User user = getUser();
+
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(eventRepo.countDistinctByAttendersId(user.getId())).thenReturn(5L);
+
+        Long countOfAttendedEventsByEmail = eventService.getCountOfAttendedEventsByEmail(user.getEmail());
+
+        assertEquals(5L, countOfAttendedEventsByEmail);
+        verify(eventRepo).countDistinctByAttendersId(user.getId());
     }
 
     @Test

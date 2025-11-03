@@ -1,8 +1,11 @@
 package greencity.mapping;
 
+import greencity.client.UserRemoteClient;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.UserStatus;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +27,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserManagementVOMapperTest {
+    @Mock
+    UserRemoteClient userRemoteClient;
 
     @Mock
     ModelMapper modelMapper;
@@ -34,17 +39,16 @@ class UserManagementVOMapperTest {
     @Test
     void convertTest() {
         var user = getUser();
+        user.setStatus(UserStatus.ACTIVATED);
         var userManagementVO = getUserManagementVO();
+        userManagementVO.setEmail(user.getEmail());
+        userManagementVO.setRating(user.getRating());
         UserVO userVO = mock(UserVO.class);
 
-        when(modelMapper.map(user, UserVO.class))
-            .thenReturn(userVO);
+        when(userRemoteClient.findByEmail(user.getEmail()))
+            .thenReturn(Optional.of(userVO));
         when(userVO.getRole())
             .thenReturn(userManagementVO.getRole());
-        when(userVO.getUserStatus())
-            .thenReturn(userManagementVO.getUserStatus());
-        when(userVO.getEmail())
-            .thenReturn(userManagementVO.getEmail());
 
         UserManagementVO result = userManagementVOMapper.convert(user);
         assertEquals(userManagementVO, result);
@@ -58,17 +62,16 @@ class UserManagementVOMapperTest {
 
         for (int i = 0; i < userPage.getContent().size(); i++) {
             User user = userPage.getContent().get(i);
+            user.setStatus(UserStatus.ACTIVATED);
             UserVO userVO = userVOPage.getContent().get(i);
             UserManagementVO userManagementVO = expected.getContent().get(i);
+            userManagementVO.setEmail(user.getEmail());
+            userManagementVO.setRating(user.getRating());
 
-            when(modelMapper.map(user, UserVO.class))
-                .thenReturn(userVO);
+            when(userRemoteClient.findByEmail(user.getEmail()))
+                .thenReturn(Optional.of(userVO));
             when(userVO.getRole())
                 .thenReturn(userManagementVO.getRole());
-            when(userVO.getUserStatus())
-                .thenReturn(userManagementVO.getUserStatus());
-            when(userVO.getEmail())
-                .thenReturn(userManagementVO.getEmail());
         }
 
         Page<UserManagementVO> result = userManagementVOMapper.mapAllToPage(userPage);

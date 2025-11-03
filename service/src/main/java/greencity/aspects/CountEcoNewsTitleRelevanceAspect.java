@@ -15,7 +15,7 @@ import java.util.Objects;
 @Aspect
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "greencity.relevance", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "greencity.relevance", name = "enabled", havingValue = "enabled")
 public class CountEcoNewsTitleRelevanceAspect {
     private final EcoNewsService ecoNewsService;
     private final EcoNewsRelevanceService ecoNewsRelevanceService;

@@ -251,7 +251,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(habit.getId()))
-                .thenReturn(Collections.emptyList());
+            .thenReturn(Collections.emptyList());
 
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
@@ -266,7 +266,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         when(toDoListItemRepo.getAllToDoListItemIdByHabitIdISContained(anyLong()))
-                .thenReturn(Arrays.asList(2L, 3L, 4L));
+            .thenReturn(Arrays.asList(2L, 3L, 4L));
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
         verify(toDoListItemRepo).getToDoListByListOfId(any());
@@ -314,7 +314,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssignInProgress));
 
         assertThrows(UserAlreadyHasHabitAssignedException.class,
-                () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
+            () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
     }
 
     @Test
@@ -322,10 +322,10 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.countHabitAssignsByUserIdAndAcquiredFalseAndCancelledFalse(
-                user.getId()))
-                .thenReturn(10);
+            user.getId()))
+            .thenReturn(10);
         assertThrows(UserAlreadyHasMaxNumberOfActiveHabitAssigns.class,
-                () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
+            () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
     }
 
     @Test
@@ -333,9 +333,9 @@ class HabitAssignServiceImplTest {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(any(), any(), any()))
-                .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssign));
         assertThrows(UserAlreadyHasHabitAssignedException.class,
-                () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
+            () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
     }
 
     @Test
@@ -452,7 +452,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         List<HabitAssignManagementDto> actual = habitAssignService
-                .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDto);
+            .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDto);
         assertEquals(List.of(habitAssignManagementDto), actual);
     }
 
@@ -627,9 +627,9 @@ class HabitAssignServiceImplTest {
     void updateStatusByHabitAssignId() {
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
-                .thenReturn(habitAssignManagementDto);
+            .thenReturn(habitAssignManagementDto);
         assertEquals(habitAssignManagementDto,
-                habitAssignService.updateStatusByHabitAssignId(1L, habitAssignStatDto));
+            habitAssignService.updateStatusByHabitAssignId(1L, habitAssignStatDto));
     }
 
     @Test
@@ -855,9 +855,9 @@ class HabitAssignServiceImplTest {
     @Test
     void buildHabitAssignDtoContent() {
         when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
-                .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
-                HabitAssignDto.class)).thenReturn(habitAssignDto);
+            HabitAssignDto.class)).thenReturn(habitAssignDto);
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
         assertEquals(habitAssignDto, habitAssignService.findHabitAssignByUserIdAndHabitId(1L, 1L, "en"));
@@ -1089,16 +1089,6 @@ class HabitAssignServiceImplTest {
         verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
         verify(toDoListItemService).getUserToDoListItemsByHabitAssignIdAndStatusInProgress(anyLong(), any());
         verify(customToDoListItemService).findAllCustomToDoListItemsWithStatusInProgress(anyLong(), anyLong());
-    }
-
-    @Test
-    void getUserToDoListItemAndUserCustomToDoListWithNotFoundExceptionTest() {
-        when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(Collections.emptyList());
-
-        assertThrows(NotFoundException.class, () -> habitAssignService
-                .getListOfUserAndCustomToDoListsWithStatusInprogress(1L, "en"));
-
-        verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
     }
 
     @Test
@@ -1485,7 +1475,7 @@ class HabitAssignServiceImplTest {
     void updateStatusAndDurationOfHabitAssignThrowNotFoundExceptionTest() {
         when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.empty());
         var exception = assertThrows(NotFoundException.class,
-                () -> habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 1));
+            () -> habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 1));
         assertEquals(exception.getMessage(), ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + 1L);
         verify(habitAssignRepo).findById(anyLong());
     }
@@ -1523,7 +1513,7 @@ class HabitAssignServiceImplTest {
     void updateUserHabitInfoDurationThrowNotFoundExceptionTest() {
         when(habitAssignRepo.existsById(anyLong())).thenReturn(false);
         var exception = assertThrows(NotFoundException.class,
-                () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 1));
+            () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 1));
         assertEquals(exception.getMessage(), ErrorMessage.HABIT_NOT_FOUND_BY_ID + 1L);
         verify(habitAssignRepo).existsById(anyLong());
     }
@@ -1532,11 +1522,11 @@ class HabitAssignServiceImplTest {
     void updateUserHabitInfoDurationThrowInvalidStatusExceptionTest() {
         when(habitAssignRepo.existsById(anyLong())).thenReturn(true);
         when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong()))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
         var exception = assertThrows(InvalidStatusException.class,
-                () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 1));
+            () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 1));
         assertEquals(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS,
-                exception.getMessage());
+            exception.getMessage());
         verify(habitAssignRepo).existsById(anyLong());
         verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong());
     }

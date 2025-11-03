@@ -5,7 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.entity.User;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
@@ -17,16 +17,16 @@ public class UserForListDtoMapper extends AbstractConverter<User, UserForListDto
 
     @Override
     protected UserForListDto convert(User user) {
-        Long id = user.getId();
-        UserVOAdvancedDto userVO = userRemoteClient.findNotDeactivatedByIdAdvanced(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        String email = user.getEmail();
+        UserVOAdvancedDto userVO = userRemoteClient.findByEmailAdvanced(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
         return UserForListDto.builder()
-            .id(userVO.getId())
-            .name(userVO.getName())
+            .id(user.getId())
+            .name(user.getName())
             .dateOfRegistration(userVO.getDateOfRegistration())
-            .email(userVO.getEmail())
-            .userStatus(userVO.getUserStatus())
+            .email(email)
+            .userStatus(user.getStatus())
             .role(userVO.getRole())
             .userCredo(user.getUserCredo())
             .build();

@@ -4,6 +4,8 @@ import static greencity.constant.ErrorMessage.INVALID_RELEVANCE_POOLS;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_STRENGTH;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_WEIGHTS;
 import greencity.dto.econews.EcoNewsVO;
+import greencity.entity.EcoNews_;
+import greencity.entity.Tag;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.utils.RelevanceWeightUtils;
@@ -25,7 +27,9 @@ import greencity.mapping.PageableAdvancedDtoMapper;
 import jakarta.annotation.PostConstruct;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -102,7 +107,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         String title,
         String author,
         UserVO user) {
-        String tagsString = String.join(",", tags);
+        String tagsString = tags == null ? "" : String.join(",", tags);
         RelevantEcoNewsCacheKey key = new RelevantEcoNewsCacheKey(
             user.getId(),
             tagsString,
@@ -120,7 +125,12 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
                 .author(author)
                 .tags(tagsString)
                 .build();
-            Page<EcoNews> findResultPage = ecoNewsRepo.findAll(ecoNewsService.getSpecification(filter), pageable);
+            Pageable pageableForFindAll = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, EcoNews_.CREATION_DATE));
+            Page<EcoNews> findResultPage = ecoNewsRepo.findAll(ecoNewsService.getSpecification(filter),
+                pageableForFindAll);
             findResult = findResultPage.getContent();
             totalEcoNewsCount = findResultPage.getTotalElements();
         } else {
@@ -254,22 +264,34 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             .collect(Collectors.toMap(relevance -> relevance.getEcoNews().getId(),
                 Function.identity()));
         List<EcoNewsWithRelevanceVectorsDto> newsWithVectors = news.stream()
-            .map(newsItem -> new EcoNewsWithRelevanceVectorsDto(
-                newsItem,
-                ecoNewsRelevanceMap.get(newsItem.getId()),
-                tags.ecoNewsTagsIndexes(),
-                userProfile,
-                relevanceScoresWeights))
+            .map(newsItem -> {
+                List<Long> tagIds = Optional.ofNullable(newsItem.getTags())
+                    .orElse(Collections.emptyList()).stream()
+                    .map(Tag::getId)
+                    .toList();
+                EcoNewsRelevance ecoNewsRelevance = ecoNewsRelevanceMap.get(newsItem.getId());
+                Float[] titleVector = null;
+                if (ecoNewsRelevance != null && !ecoNewsRelevance.getIsOutdated()) {
+                    titleVector = ecoNewsRelevance.getTitleVector();
+                }
+                return new EcoNewsWithRelevanceVectorsDto(
+                    newsItem.getId(),
+                    tagIds,
+                    titleVector,
+                    tags.ecoNewsTagsIndexes(),
+                    userProfile,
+                    relevanceScoresWeights);
+            })
             .toList();
         newsWithVectors.stream()
             .sorted(Comparator.comparingDouble(EcoNewsWithRelevanceVectorsDto::getRelevanceScore).reversed())
             .forEach(newsItem -> {
                 if (newsItem.getRelevanceScore() > relevanceScoresStrength[0]) {
-                    pools.relevantStrongNewsIds().add(newsItem.getEcoNews().getId());
+                    pools.relevantStrongNewsIds().add(newsItem.getEcoNewsId());
                 } else if (newsItem.getRelevanceScore() < relevanceScoresStrength[1]) {
-                    pools.nonRelevantNewsIds().add(newsItem.getEcoNews().getId());
+                    pools.nonRelevantNewsIds().add(newsItem.getEcoNewsId());
                 } else {
-                    pools.relevantWeakNewsIds().add(newsItem.getEcoNews().getId());
+                    pools.relevantWeakNewsIds().add(newsItem.getEcoNewsId());
                 }
             });
     }

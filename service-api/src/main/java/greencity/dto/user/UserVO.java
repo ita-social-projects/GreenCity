@@ -2,32 +2,22 @@ package greencity.dto.user;
 
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.location.UserLocationDto;
-import greencity.enums.Role;
-import greencity.enums.UserStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Builder
-public class UserVO {
-    private Long id;
-
-    private String name;
-
-    private String email;
-
-    private Role role;
-
-    private String userCredo;
-
-    private UserStatus userStatus;
-
-    private String profilePicturePath;
-
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
+public class UserVO extends UserManagementVO {
     private UserLocationDto userLocation;
 
     private LanguageDTO languageVO;

@@ -93,7 +93,7 @@ class NotificationServiceImplTest {
         testPlace1.setId(2L);
 
         EmailPreferenceDto emailPreferenceDto =
-            new EmailPreferenceDto(1L, emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+            new EmailPreferenceDto(userVO.getEmail(), emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
 
         when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity))
             .thenReturn(Collections.singletonList(userVO));
@@ -132,7 +132,7 @@ class NotificationServiceImplTest {
         testPlace1.setId(2L);
 
         EmailPreferenceDto emailPreferenceDto =
-            new EmailPreferenceDto(1L, emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+            new EmailPreferenceDto(userVO.getEmail(), emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
 
         when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity))
             .thenReturn(Collections.singletonList(userVO));
@@ -171,7 +171,7 @@ class NotificationServiceImplTest {
         testPlace1.setId(2L);
 
         EmailPreferenceDto emailPreferenceDto =
-            new EmailPreferenceDto(1L, emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+            new EmailPreferenceDto(userVO.getEmail(), emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
 
         when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(emailPreference, periodicity))
             .thenReturn(Collections.singletonList(userVO));
@@ -315,13 +315,14 @@ class NotificationServiceImplTest {
         UserVO targetUserVO = getUserVO();
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
         EmailPreferenceDto twiceADayPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.INVITES, EmailPreferencePeriodicity.TWICE_A_DAY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.INVITES,
+                EmailPreferencePeriodicity.TWICE_A_DAY);
         EmailPreferenceDto dailyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.INVITES, EmailPreferencePeriodicity.DAILY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.INVITES, EmailPreferencePeriodicity.DAILY);
         EmailPreferenceDto weeklyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.INVITES, EmailPreferencePeriodicity.WEEKLY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.INVITES, EmailPreferencePeriodicity.WEEKLY);
         EmailPreferenceDto monthlyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY);
         notification.setTargetUser(targetUser);
 
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {
@@ -359,14 +360,14 @@ class NotificationServiceImplTest {
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 1, 10, 0);
-        EmailPreferenceDto twiceADayPreferenceDto = new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS,
-            EmailPreferencePeriodicity.TWICE_A_DAY);
+        EmailPreferenceDto twiceADayPreferenceDto = new EmailPreferenceDto(targetUser.getEmail(),
+            EmailPreference.COMMENTS, EmailPreferencePeriodicity.TWICE_A_DAY);
         EmailPreferenceDto dailyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.DAILY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.DAILY);
         EmailPreferenceDto weeklyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.WEEKLY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.WEEKLY);
         EmailPreferenceDto monthlyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY);
         notification.setTargetUser(targetUser);
 
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {
@@ -402,14 +403,14 @@ class NotificationServiceImplTest {
         User targetUser = getUser();
         UserVO targetUserVO = getUserVO();
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 7, 12, 10, 0);
-        EmailPreferenceDto twiceADayPreferenceDto = new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS,
-            EmailPreferencePeriodicity.TWICE_A_DAY);
+        EmailPreferenceDto twiceADayPreferenceDto = new EmailPreferenceDto(targetUser.getEmail(),
+            EmailPreference.COMMENTS, EmailPreferencePeriodicity.TWICE_A_DAY);
         EmailPreferenceDto dailyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.DAILY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.DAILY);
         EmailPreferenceDto weeklyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.WEEKLY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.WEEKLY);
         EmailPreferenceDto monthlyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.COMMENTS, EmailPreferencePeriodicity.MONTHLY);
         notification.setTargetUser(targetUser);
 
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {
@@ -446,13 +447,14 @@ class NotificationServiceImplTest {
         UserVO targetUserVO = getUserVO();
         LocalDateTime mockDateTime = LocalDateTime.of(2024, 8, 1, 18, 0);
         EmailPreferenceDto twiceADayPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.LIKES, EmailPreferencePeriodicity.TWICE_A_DAY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.LIKES,
+                EmailPreferencePeriodicity.TWICE_A_DAY);
         EmailPreferenceDto dailyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.LIKES, EmailPreferencePeriodicity.DAILY);
         EmailPreferenceDto weeklyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.LIKES, EmailPreferencePeriodicity.WEEKLY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.LIKES, EmailPreferencePeriodicity.WEEKLY);
         EmailPreferenceDto monthlyPreferenceDto =
-            new EmailPreferenceDto(targetUser.getId(), EmailPreference.LIKES, EmailPreferencePeriodicity.MONTHLY);
+            new EmailPreferenceDto(targetUser.getEmail(), EmailPreference.LIKES, EmailPreferencePeriodicity.MONTHLY);
         notification.setTargetUser(targetUser);
 
         try (MockedStatic<LocalDateTime> mockedStatic = Mockito.mockStatic(LocalDateTime.class)) {

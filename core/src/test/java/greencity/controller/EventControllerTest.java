@@ -748,10 +748,28 @@ class EventControllerTest {
 
     @Test
     @SneakyThrows
+    void getAllAttendersCountExternalTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/attenders/count/external")
+            .param("email", "test@email"))
+            .andExpect(status().isOk());
+        verify(eventService).getCountOfAttendedEventsByEmail("test@email");
+    }
+
+    @Test
+    @SneakyThrows
     void getOrganizersCountTest() {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/organizers/count?user-id=1"))
             .andExpect(status().isOk());
         verify(eventService).getCountOfOrganizedEventsByUserId(1L);
+    }
+
+    @Test
+    @SneakyThrows
+    void getOrganizersCountExternalTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/organizers/count/external")
+            .param("email", "test@email"))
+            .andExpect(status().isOk());
+        verify(eventService).getCountOfOrganizedEventsByEmail("test@email");
     }
 
     @SneakyThrows

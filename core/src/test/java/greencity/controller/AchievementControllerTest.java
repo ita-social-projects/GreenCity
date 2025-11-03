@@ -117,4 +117,31 @@ class AchievementControllerTest {
         verify(achievementService).findAchievementCountByTypeAndCategory(TestConst.USER_ID, "test@gmail.com",
             UNACHIEVED, null);
     }
+
+    @Test
+    void findAllV2Test() throws Exception {
+        mockMvc.perform(get(achievementLink + "/all")
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(achievementService).findAll();
+    }
+
+    @Test
+    void findAllUserAchievementsByUserIdTest() throws Exception {
+        Long userId = 1L;
+        mockMvc.perform(get(achievementLink + "/user-achievements/" + userId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(achievementService).findAllUserAchievementsByUserId(userId);
+    }
+
+    @Test
+    void findAllUserAchievementsByEmailTest() throws Exception {
+        String email = "test@gmail";
+        mockMvc.perform(get(achievementLink + "/user-achievements")
+            .param("email", email)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(achievementService).findAllUserAchievementsByEmail(email);
+    }
 }

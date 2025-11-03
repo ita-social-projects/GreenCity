@@ -3,9 +3,12 @@ package greencity.repository;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.GreenCityUserProfileDtoResponse;
+import greencity.dto.user.GreenCityUserInfoDto;
 import greencity.dto.user.UserLocationStatisticDto;
+import greencity.dto.user.UserStatusStatisticDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.UserStatus;
 import jakarta.persistence.Tuple;
 import java.util.List;
 import java.util.Optional;
@@ -261,7 +264,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                     '_', '\\_'),
                                     '#', '\\#'), '%')
                       )
-                  )
                   OR LOWER(u.user_credo) LIKE LOWER(
                       CONCAT('%',
                              REPLACE(REPLACE(REPLACE(
@@ -291,6 +293,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                                                    '#', '\\#'), '%')
                                                         )
                           )
+                      )
                   )
             """)
 
@@ -645,23 +648,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Tuple findUsersFriendByUserIdAndFriendId(Long userId, Long friendId);
 
     /**
-     * Method finds chatId of two users.
-     *
-     * @param userId   {@link Long} current user's id.
-     * @param friendId {@link Long} friend`s id.
-     * @return {@link Long}.
-     */
-    @Query(nativeQuery = true, value = "SELECT crp.room_id FROM chat_rooms r "
-        + "INNER JOIN chat_rooms_participants crp on r.id = crp.room_id "
-        + "WHERE r.type = 'PRIVATE' AND crp.participant_id in (:userId,:friendId) "
-        + "GROUP BY crp.room_id "
-        + "HAVING COUNT(crp) = 2 LIMIT 1;")
-    Long findIdOfPrivateChatOfUsers(Long userId, Long friendId);
-
-    /**
      * Method for getting all users who made request for joining the event.
      *
-     * @param eventId - id of the event
+     * @param eventId  - id of the event
+     * @param pageable - pageable object
      *
      */
     @Query(nativeQuery = true, value = "SELECT greencity_users.* FROM greencity_users "
@@ -672,7 +662,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Retrieves the distribution of users by city.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the city name
      *         and the count of users in that city.
      */
@@ -681,16 +670,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.cityEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.cityEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCity(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCity();
 
     /**
      * Retrieves the distribution of users by region.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the region name
      *         and the count of users in that region.
      */
@@ -699,16 +686,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.regionEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.regionEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByRegion();
 
     /**
      * Retrieves the distribution of users by country.
      *
-     * @param activatedUserIds A list of activated user IDs.
      * @return A list of UserLocationStatisticDto objects containing the country
      *         name and the count of users in that country.
      */
@@ -717,11 +702,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
                COALESCE(ul.countryEn, 'No Location'), COUNT(u.id))
         FROM User u
         LEFT JOIN u.userLocation ul
-        WHERE u.id IN :activatedUserIds
+        WHERE u.status = 'ACTIVATED'
         GROUP BY ul.countryEn
         """)
-    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry(
-        @Param("activatedUserIds") List<Long> activatedUserIds);
+    List<UserLocationStatisticDto> getUserLocationsDistributionByCountry();
 
     /**
      * Get all user friends{@link User}.
@@ -793,14 +777,24 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     int updateUserName(Long userId, String userName);
 
     /**
-     * Updates the profile picture path of a user by their id.
+     * Method for updating user's email.
      *
-     * @param userId             the id of the user
+     * @param userId - {@link Long} of user's id.
+     * @param email  - new user's email.
+     */
+    @Modifying
+    @Query("UPDATE User SET email = :email WHERE id = :userId")
+    void updateUserEmail(Long userId, String email);
+
+    /**
+     * Updates the profile picture path of a user by email.
+     *
+     * @param email              the email of the user
      * @param profilePicturePath the new profile picture path
      */
     @Modifying
-    @Query("UPDATE User u SET u.profilePicturePath =:profilePicturePath WHERE u.id =:userId")
-    int updateUserProfilePictureByUserId(@Param("userId") Long userId,
+    @Query("UPDATE User u SET u.profilePicturePath =:profilePicturePath WHERE u.email =:email")
+    int updateUserProfilePictureByEmail(@Param("email") String email,
         @Param("profilePicturePath") String profilePicturePath);
 
     /**
@@ -821,11 +815,25 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query("""
             SELECT
-            new greencity.dto.user.GreenCityUserProfileDtoResponse(u.id, u.profilePicturePath, u.userCredo, u.rating)
+            new greencity.dto.user.GreenCityUserProfileDtoResponse(u.id, u.email, u.profilePicturePath, u.userCredo,
+                     u.rating)
             FROM User u
             WHERE u.id IN :userIds
         """)
     List<GreenCityUserProfileDtoResponse> findGreenCityUserProfilesByUserIds(List<Long> userIds);
+
+    /**
+     * Method to find list of user ids by emails.
+     *
+     * @param emails emails of users for whom to fetch the data
+     * @return list of user ids
+     */
+    @Query("""
+            SELECT u.id
+            FROM User u
+            WHERE u.email IN :emails
+        """)
+    List<Long> getUserIdsByEmails(List<String> emails);
 
     /**
      * Find {@link User} by email.
@@ -849,4 +857,62 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<UserFriendDto> findUserFriendsWithMutualCountAndChatId(
         @Param("userId") Long userId,
         @Param("greencity_users") List<Long> userIds);
+
+    /**
+     * Method to find green city user info by emails.
+     *
+     * @param emails emails of users for whom to fetch the data
+     * @return list of {@link GreenCityUserInfoDto}
+     */
+    @Query("""
+            SELECT new greencity.dto.user.GreenCityUserInfoDto(u.id, u.email, u.profilePicturePath, u.userCredo,
+                     u.status, u.rating)
+            FROM User u
+            WHERE u.email IN :emails
+        """)
+    List<GreenCityUserInfoDto> findGreenCityUserInfoDtosByEmails(@Param("emails") List<String> emails);
+
+    /**
+     * Retrieves the list of IDs of users from the given list who have the
+     * {@code UserStatus} set to {@code ACTIVATED}. This method is typically used to
+     * filter active users for further processing or analysis.
+     *
+     * @return a list of {@code Long} values representing the IDs of all activated
+     *         users
+     */
+    @Query("""
+        SELECT u.id
+        FROM User u
+        WHERE u.status = 'ACTIVATED' AND u.id IN :ids
+        """)
+    List<Long> findAllActivatedUserIdsFromList(@Param("ids") List<Long> ids);
+
+    /**
+     * Counts all users by user {@link UserStatus}.
+     *
+     * @return amount of user with given {@link UserStatus}.
+     */
+    long countAllByStatus(UserStatus userStatus);
+
+    /**
+     * Retrieves the distribution of user statuses across all users.
+     *
+     * @return A list of UserStatusStatisticDto objects containing the status and
+     *         the count of users with that status.
+     */
+    @Query("""
+        SELECT new greencity.dto.user.UserStatusStatisticDto(u.status, COUNT(u.id))
+        FROM User u
+        GROUP BY u.status
+        """)
+    List<UserStatusStatisticDto> getUserStatusesDistribution();
+
+    /**
+     * Find not 'DEACTIVATED' {@link User} by email.
+     *
+     * @param email - {@link User}'s email
+     * @return found {@link User}
+     */
+    @Query("FROM User WHERE email=:email AND status = 'ACTIVATED'")
+    Optional<User> findNotDeactivatedByEmail(String email);
 }

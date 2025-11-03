@@ -92,6 +92,7 @@ public class SecurityConfig {
     public static final String USERS = "/users";
     private static final String DISLIKE_V2 = "/dislikeV2";
     private static final String LIKE_V2 = "/likeV2";
+    private static final String EXTERNAL = "/external";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -303,7 +304,7 @@ public class SecurityConfig {
                     "/ai/**",
                     EXPORT_SETTINGS_LINKS,
                     LOGS_LINKS,
-                    "/ai/forecast")
+                    USERS + "/activatedUsersAmount")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
@@ -437,21 +438,41 @@ public class SecurityConfig {
                     COMMENTS + "/{id}",
                     "/user/all",
                     "/user/roles",
-                    "/ai/generate/eco-news")
+                    "/ai/generate/eco-news",
+                    USERS + "/status",
+                    "/custom/to-do-list-items",
+                    ECO_NEWS + COUNT + EXTERNAL,
+                    EVENTS + ATTENDERS + COUNT + EXTERNAL,
+                    EVENTS + ORGANIZERS + COUNT + EXTERNAL,
+                    "/habit/statistic/acquired" + COUNT + EXTERNAL,
+                    "/habit/statistic/in-progress" + COUNT + EXTERNAL,
+                    USERS + "/user/cities",
+                    USERS + "/user/all-friends",
+                    USERS + "/user/friends",
+                    USERS + "/user/top-friends",
+                    USERS + "/profiles" + EXTERNAL,
+                    USERS + "/reasons",
+                    USERS + "/status")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/place/filter/predicate")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.PUT,
-                    "/place/update/")
+                    "/place/update/",
+                    USERS + "/user/picturePath",
+                    USERS + "/status/{userId}")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.PATCH,
                     "/place/status",
-                    "/place/statuses")
+                    "/place/statuses",
+                    USERS + "/user/location",
+                    USERS + "/user-rating",
+                    USERS + "/user/name")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.DELETE,
                     "/place/{id}",
-                    "/place")
+                    "/place",
+                    USERS + "/delete")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/user/filter",
@@ -462,10 +483,7 @@ public class SecurityConfig {
                     "/user/status",
                     "/user/role",
                     "/user/update/role",
-                    USERS + "/{id}/location",
-                    USERS + "/rating",
-                    USERS + "/credo",
-                    USERS + "/{userId}/name")
+                    USERS + "/**")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
                     COMMENTS)
@@ -474,9 +492,6 @@ public class SecurityConfig {
                     ACHIEVEMENTS + "/all",
                     ACHIEVEMENTS + "/user-achievements/**",
                     USERS + "/**")
-                .hasAnyRole(ADMIN)
-                .requestMatchers(HttpMethod.PUT,
-                    USERS + "/picturePath")
                 .hasAnyRole(ADMIN)
                 .anyRequest().permitAll())
             .logout(logout -> logout.logoutUrl("/logout")

@@ -81,6 +81,14 @@ public interface CustomToDoListItemService {
     List<CustomToDoListItemResponseDto> findAllAvailableCustomToDoListItems(Long userId, Long habitId);
 
     /**
+     * Method for finding all custom to-do list items.
+     *
+     * @param email user email.
+     * @return list of {@link CustomToDoListItemVO}
+     */
+    List<CustomToDoListItemResponseDto> findAllAvailableCustomToDoListItems(String email, Long habitId);
+
+    /**
      * Method for finding all custom to-do list items with not DISABLED status by
      * habitAssignId.
      *

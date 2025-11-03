@@ -12,6 +12,7 @@ import greencity.entity.*;
 import greencity.enums.AchievementStatus;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.*;
@@ -45,6 +46,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final RatingPointsService ratingPointsService;
+    private final UserRepo userRepo;
 
     /**
      * {@inheritDoc}
@@ -52,6 +54,18 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public List<UserAchievementVO> findAllUserAchievementsByUserId(Long userId) {
         return userAchievementRepo.getUserAchievementByUserId(userId).stream()
+            .map(userAchievement -> modelMapper.map(userAchievement, UserAchievementVO.class))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserAchievementVO> findAllUserAchievementsByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return userAchievementRepo.getUserAchievementByUserId(user.getId()).stream()
             .map(userAchievement -> modelMapper.map(userAchievement, UserAchievementVO.class))
             .toList();
     }

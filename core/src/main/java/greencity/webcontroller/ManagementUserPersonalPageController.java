@@ -1,7 +1,7 @@
 package greencity.webcontroller;
 
+import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserClaims;
-import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.event.EventDto;
@@ -84,17 +84,16 @@ public class ManagementUserPersonalPageController {
     /**
      * Method that updates status of a {@link UserVO}.
      *
-     * @param id            Path variable - id of user
-     * @param userStatus    Status that has to be set to user
-     * @param currentUserId {@link Long} id of current user
+     * @param id          Path variable - id of user
+     * @param userStatus  Status that has to be set to user
+     * @param currentUser {@link UserVO} claims of current user
      *
      * @return View template path {@link String}.
      */
     @PostMapping(value = "/updateUserStatus")
-    public String updateUserStatus(@PathVariable Long id, @RequestParam(name = "userStatus") String userStatus,
-        @CurrentUserId Long currentUserId) {
-        UserStatus status = UserStatus.valueOf(userStatus.toUpperCase());
-        userService.updateStatus(id, status, currentUserId);
+    public String updateUserStatus(@PathVariable Long id, @RequestParam(name = "userStatus") UserStatus userStatus,
+        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        userService.updateUserStatusById(currentUser, id, userStatus);
         return "redirect:/management/users/{id}";
     }
 

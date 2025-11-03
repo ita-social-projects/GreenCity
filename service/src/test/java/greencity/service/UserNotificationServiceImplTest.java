@@ -676,12 +676,13 @@ class UserNotificationServiceImplTest {
     @Test
     void removeActionUserFromNotificationIfNotificationIsNullTest() {
         when(notificationRepo.findNotificationByTargetUserIdAndNotificationTypeAndIdentifier(testUser.getId(),
-                NotificationType.EVENT_CREATED, 1L)).thenReturn(null);
+            NotificationType.EVENT_CREATED, 1L)).thenReturn(null);
         userNotificationService.removeActionUserFromNotification(testUserVo, testUserVo, 1L,
-                NotificationType.EVENT_CREATED);
+            NotificationType.EVENT_CREATED);
 
-        verify(notificationRepo, times(0)).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(testUser.getId(),
-                NotificationType.EVENT_CREATED, 1L);
+        verify(notificationRepo, times(0)).findNotificationByTargetUserIdAndNotificationTypeAndTargetId(
+            testUser.getId(),
+            NotificationType.EVENT_CREATED, 1L);
     }
 
     @Test
@@ -921,7 +922,8 @@ class UserNotificationServiceImplTest {
 
     @Test
     void checkLastDayOfHabitPrimaryDurationToMessageNoHabitAssigns() {
-        when(habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage()).thenReturn(Collections.emptyList());
+        when(habitAssignRepo.getHabitAssignsWithLastDayOfPrimaryDurationToMessage())
+            .thenReturn(Collections.emptyList());
 
         userNotificationService.checkLastDayOfHabitPrimaryDurationToMessage();
 
@@ -933,7 +935,7 @@ class UserNotificationServiceImplTest {
     void checkLastDayOfHabitPrimaryDurationToMessageShouldSendNotification() {
         Habit habit = getHabit().setHabitTranslations(List.of(getHabitTranslation()));
         User user = getUser().setId(2L);
-        UserVO userVO = spy(getUserVO().setId(2L));
+        UserVO userVO = spy((UserVO) getUserVO().setId(2L));
         HabitAssign habitAssign = getHabitAssign(HabitAssignStatus.INPROGRESS).setUser(user).setHabit(habit);
         LanguageDTO language = ModelUtils.getLanguageDTO();
         Notification notification = getNotification();

@@ -21,13 +21,15 @@ import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
+import greencity.dto.user.UserActivationDto;
+import greencity.dto.user.UserDeactivationReasonDto;
 import greencity.dto.user.UserToDoListItemResponseDto;
-import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UserVOAdvancedDto;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
+import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -36,7 +38,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.validation.ConstraintValidatorContext;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.net.MalformedURLException;
@@ -46,10 +47,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import static greencity.TestConst.ACCESS_TOKEN;
-import static greencity.TestConst.USER_ID;
-import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
     public static UserVO getUserVO() {
@@ -215,7 +212,7 @@ public class ModelUtils {
         advancedDto.setEmail(TestConst.EMAIL);
         advancedDto.setRole(Role.ROLE_USER);
         advancedDto.setUserCredo(TestConst.CREDO);
-        advancedDto.setUserStatus(ACTIVATED);
+        advancedDto.setStatus(UserStatus.ACTIVATED);
         advancedDto.setUserLocation(UserLocationDto.builder()
             .latitude(1d)
             .longitude(1d)
@@ -330,14 +327,20 @@ public class ModelUtils {
         return new SocialNetworkImageResponseDTO(1L, "image path", "host path");
     }
 
-    public static UserStatusDto getUserStatusDto() {
-        return UserStatusDto.builder().id(USER_ID).userStatus(ACTIVATED).build();
+    public static UserDeactivationReasonDto getUserDeactivationReasonDto() {
+        return UserDeactivationReasonDto.builder()
+            .email("test@mail")
+            .name("Taras")
+            .lang("en")
+            .deactivationReason("reason")
+            .build();
     }
 
-    public static HttpEntity<UserStatusDto> getEntity() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity<>(getUserStatusDto(), headers);
+    public static UserActivationDto getUserActivationDto() {
+        return UserActivationDto.builder()
+            .email("test@mail")
+            .name("Taras")
+            .lang("en")
+            .build();
     }
 }
