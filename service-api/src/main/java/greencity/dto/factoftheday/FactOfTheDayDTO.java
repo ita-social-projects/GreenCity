@@ -3,6 +3,7 @@ package greencity.dto.factoftheday;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
+import greencity.annotations.Sortable;
 import greencity.dto.tag.TagDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@Sortable(fields = {"id", "name", "createDate"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class FactOfTheDayDTO {

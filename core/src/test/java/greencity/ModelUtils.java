@@ -17,6 +17,7 @@ import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsGroupedTagsDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
@@ -27,8 +28,6 @@ import greencity.dto.event.EventInformationDto;
 import greencity.dto.event.EventResponseDto;
 import greencity.dto.event.UpdateEventDateLocationDto;
 import greencity.dto.event.UpdateEventRequestDto;
-import greencity.dto.exportsettings.EnvironmentDto;
-import greencity.dto.exportsettings.TableParamsRequestDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterDiscountDto;
 import greencity.dto.filter.FilterDistanceDto;
@@ -45,10 +44,9 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.MapBoundsDto;
-import greencity.dto.logs.filter.LogFileFilterDto;
 import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.exportsettings.TableRowsDto;
-import greencity.dto.exportsettings.TablesMetadataDto;
+import greencity.dto.socialnetwork.SocialNetworkImageRequestDTO;
+import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.tag.TagUkEnNamesDto;
 import greencity.dto.tag.TagUkEnDto;
 import greencity.dto.tag.TagVO;
@@ -60,15 +58,15 @@ import greencity.dto.todolistitem.ToDoListItemPostDto;
 import greencity.dto.todolistitem.ToDoListItemRequestDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserFilterDtoResponse;
+import greencity.dto.user.UserManagementCreateDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserToDoListItemResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Comment;
+import greencity.dto.user.CreateGreenCityUserDto;
 import greencity.entity.User;
-import greencity.enums.ArticleType;
-import greencity.enums.CommentStatus;
 import greencity.enums.EventStatus;
 import greencity.enums.EventType;
 import greencity.enums.Role;
@@ -88,13 +86,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.LinkedList;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -131,11 +126,7 @@ public class ModelUtils {
     public static User getUser() {
         return User.builder()
             .id(1L)
-            .email(TestConst.EMAIL)
             .name(TestConst.NAME)
-            .role(Role.ROLE_USER)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
             .build();
     }
 
@@ -145,6 +136,16 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
+            .languageVO(getLanguageDTO())
+            .build();
+    }
+
+    public static UserClaims getUserClaims() {
+        UserVO userVO = getUserVO();
+        return UserClaims.builder()
+            .userId(TestConst.USER_ID)
+            .userEmail(TestConst.EMAIL)
+            .roles(List.of(userVO.getRole()))
             .build();
     }
 
@@ -179,23 +180,11 @@ public class ModelUtils {
     }
 
     public static LanguageDTO getLanguageDTO() {
-        return new LanguageDTO(1L, "en");
+        return new LanguageDTO(1L, "en", "English");
     }
 
     public static LanguageTranslationDTO getLanguageTranslationDTO() {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
-    }
-
-    public static Comment getEcoNewsComment() {
-        return Comment.builder()
-            .id(1L)
-            .text("text")
-            .createdDate(LocalDateTime.now())
-            .modifiedDate(LocalDateTime.now())
-            .status(CommentStatus.ORIGINAL)
-            .user(getUser())
-            .articleType(ArticleType.ECO_NEWS)
-            .build();
     }
 
     public static Principal getPrincipal() {
@@ -204,9 +193,9 @@ public class ModelUtils {
 
     public static List<LanguageTranslationDTO> getLanguageTranslationsDTOs() {
         return Arrays.asList(
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "hello"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "text"),
-            new LanguageTranslationDTO(new LanguageDTO(1L, "en"), "smile"));
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "hello"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "text"),
+            new LanguageTranslationDTO(new LanguageDTO(1L, "en", "English"), "smile"));
     }
 
     public static ToDoListItemPostDto getToDoListItemPostDto() {
@@ -235,7 +224,16 @@ public class ModelUtils {
             .email("user@gmail.com")
             .userCredo("Credo")
             .role(Role.ROLE_ADMIN)
-            .userStatus(UserStatus.ACTIVATED)
+            .status(UserStatus.ACTIVATED)
+            .build();
+    }
+
+    public static UserManagementCreateDto getUserManagementCreateDto() {
+        return UserManagementCreateDto.builder()
+            .id(1L)
+            .name("Username")
+            .email("user@gmail.com")
+            .role(Role.ROLE_ADMIN)
             .build();
     }
 
@@ -495,7 +493,6 @@ public class ModelUtils {
             .id(1L)
             .requesterId(1L)
             .friendStatus("FRIEND")
-            .chatId(1L)
             .build();
     }
 
@@ -576,7 +573,7 @@ public class ModelUtils {
             .id(1L)
             .name(TestConst.NAME)
             .email(TestConst.EMAIL)
-            .userStatus(ACTIVATED)
+            .status(ACTIVATED)
             .role(Role.ROLE_USER).build());
     }
 
@@ -619,15 +616,6 @@ public class ModelUtils {
             .name("testx")
             .location(new LocationDto())
             .build());
-    }
-
-    public static LogFileFilterDto getLogFileFilterDto() {
-        return new LogFileFilterDto(
-            "filename",
-            "fileContent",
-            null,
-            null,
-            LogLevel.INFO);
     }
 
     public static EventResponseDto getEventResponseDto() {
@@ -684,31 +672,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static TablesMetadataDto getTablesMetadataDto() {
-        Map<String, List<String>> tables = new HashMap<>();
-        List<String> columns = List.of("id", "name", "email");
-        tables.put("users", columns);
-
-        return new TablesMetadataDto(tables);
-    }
-
-    public static TableRowsDto getTableRowsDto() {
-        List<Map<String, String>> tableData = new LinkedList<>();
-        Map<String, String> row = new LinkedHashMap<>();
-        row.put("id", "1");
-        row.put("date_of_registration", "1970-01-01 00:00:00");
-        row.put("email", "someemail@some.com");
-        row.put("name", "Name");
-        row.put("role", "ROLE_ADMIN");
-        tableData.add(row);
-
-        return new TableRowsDto("users", tableData);
-    }
-
-    public static TableParamsRequestDto tableParamsRequestDto() {
-        return new TableParamsRequestDto("users", 10, 1);
-    }
-
     public static MockMultipartFile getCreateJsonFile(Object dto, String fieldName) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         return new MockMultipartFile(
@@ -716,12 +679,6 @@ public class ModelUtils {
             "",
             "application/json",
             objectMapper.writeValueAsBytes(dto));
-    }
-
-    public static EnvironmentDto getEnvironmentDto() {
-        Map<String, String> env = new HashMap<>();
-        env.put("TEST_ENV_NAME", "TEST_ENV_VALUE");
-        return new EnvironmentDto(env);
     }
 
     public static EcoNewsGroupedTagsDto getEcoNewsGroupedTagsDto() {
@@ -738,6 +695,41 @@ public class ModelUtils {
             .likes(0)
             .dislikes(0)
             .countComments(0)
+            .build();
+    }
+
+    public static SocialNetworkImageRequestDTO getSocialNetworkImageRequestDTO() {
+        return SocialNetworkImageRequestDTO.builder()
+            .imagePath("http://someimage.ua")
+            .hostPath("somehost")
+            .build();
+    }
+
+    public static SocialNetworkImageResponseDTO getSocialNetworkImageResponseDTO() {
+        return SocialNetworkImageResponseDTO.builder()
+            .imagePath("http://someimage.ua")
+            .hostPath("somehost")
+            .id(5L)
+            .build();
+    }
+
+    public static CreateGreenCityUserDto getCreateGreenCityDto() {
+        return CreateGreenCityUserDto.builder()
+            .id(1L)
+            .email(TestConst.EMAIL)
+            .name(TestConst.NAME)
+            .profilePicturePath(TestConst.PICTURE_PATH)
+            .build();
+    }
+
+    public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
+        return UpdateEcoNewsDto.builder()
+            .id(1L)
+            .title("title")
+            .content("texttexttexttexttexttexttexttext")
+            .shortInfo("shortInfo")
+            .tags(Collections.singletonList("tag"))
+            .source("source")
             .build();
     }
 }

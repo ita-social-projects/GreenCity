@@ -24,4 +24,15 @@ public class ValidationExceptionDto implements Serializable {
         this.name = error.getField();
         this.message = error.getDefaultMessage();
     }
+
+    /**
+     * Constructs a new ValidationExceptionDto using the provided FieldError.
+     *
+     * @param name    exception name
+     * @param message exception message
+     */
+    public ValidationExceptionDto(String name, String message) {
+        this.name = name;
+        this.message = message;
+    }
 }

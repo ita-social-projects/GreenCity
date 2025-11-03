@@ -113,8 +113,7 @@ class RatingPointsServiceImplTest {
         when(ratingPointsRepo.findById(anyLong())).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> ratingPointsService.updateRatingPoints(ratingPointsDto)
-        );
+            () -> ratingPointsService.updateRatingPoints(ratingPointsDto));
 
         assertEquals(ErrorMessage.RATING_POINTS_NOT_FOUND_BY_ID + ratingPointsDto.getId(), exception.getMessage());
         verify(ratingPointsRepo, times(1)).findById(anyLong());
@@ -210,7 +209,7 @@ class RatingPointsServiceImplTest {
         when(ratingPointsRepo.checkByIdForExistenceOfAchievement(id)).thenReturn(true);
 
         assertThrows(IllegalStateException.class,
-                () -> ratingPointsService.deleteRatingPoints(id), ErrorMessage.DELETING_RATING_POINTS_NOT_ALLOWED);
+            () -> ratingPointsService.deleteRatingPoints(id), ErrorMessage.DELETING_RATING_POINTS_NOT_ALLOWED);
 
         verify(ratingPointsRepo, times(1)).checkByIdForExistenceOfAchievement(id);
     }
@@ -234,9 +233,10 @@ class RatingPointsServiceImplTest {
     @Test
     void searchBy_ShouldReturnEmptyPageableAdvancedDto_WhenNoResultsFound() {
         when(ratingPointsRepo.searchBy(pageable, "Non-existent", Status.ACTIVE))
-                .thenReturn(new PageImpl<>(Collections.emptyList(), pageable, 0));
+            .thenReturn(new PageImpl<>(Collections.emptyList(), pageable, 0));
 
-        PageableAdvancedDto<RatingPointsDto> result = ratingPointsService.searchBy(pageable, "Non-existent", Status.ACTIVE);
+        PageableAdvancedDto<RatingPointsDto> result =
+            ratingPointsService.searchBy(pageable, "Non-existent", Status.ACTIVE);
 
         assertNotNull(result);
         assertEquals(0, result.getTotalElements());

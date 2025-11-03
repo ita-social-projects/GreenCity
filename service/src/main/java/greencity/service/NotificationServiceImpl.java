@@ -1,15 +1,19 @@
 package greencity.service;
 
 import greencity.client.RestClient;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.emailpreference.EmailPreferenceDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.EmailNotificationDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.SubscriberDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Notification;
 import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.enums.EmailPreference;
 import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
@@ -18,7 +22,13 @@ import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
-import greencity.repository.UserNotificationPreferenceRepo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,17 +40,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
-import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 import static greencity.utils.NotificationUtils.isMessageLocalizationRequired;
 import static greencity.utils.NotificationUtils.localizeMessage;
+import static greencity.utils.NotificationUtils.resolveTimesInEnglish;
+import static greencity.utils.NotificationUtils.resolveTimesInUkrainian;
 
 @Slf4j
 @Service
@@ -52,8 +55,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepo notificationRepo;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
+    private final UserRemoteClient userRemoteClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-    private final UserNotificationPreferenceRepo userNotificationPreferenceRepo;
     private final UserService userService;
     @Value("${client.address}")
     private String clientAddress;
@@ -104,6 +107,8 @@ public class NotificationServiceImpl implements NotificationService {
         sendScheduledNotifications(NotificationType.ECONEWS_LIKE, EmailPreference.LIKES, now);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_COMMENT_LIKE);
         sendScheduledNotifications(NotificationType.EVENT_COMMENT_LIKE, EmailPreference.LIKES, now);
+        log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.EVENT_LIKE);
+        sendScheduledNotifications(NotificationType.EVENT_LIKE, EmailPreference.LIKES, now);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_LIKE);
         sendScheduledNotifications(NotificationType.HABIT_LIKE, EmailPreference.LIKES, now);
         log.info(LogMessage.IN_SEND_SCHEDULED_EMAIL, now, NotificationType.HABIT_COMMENT_LIKE);
@@ -208,11 +213,15 @@ public class NotificationServiceImpl implements NotificationService {
                 notificationRepo.findAllByNotificationByTypeAndViewedIsFalseAndEmailSentIsFalse(type);
             if (!notifications.isEmpty()) {
                 notifications.stream()
-                    .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getId(), emailPreference, now))
+                    .filter(n -> isTimeToSendScheduleNotification(n.getTargetUser().getEmail(), emailPreference, now))
                     .map(notification -> notification.setEmailSent(true))
                     .forEach(notification -> {
+                        User targetUser = notification.getTargetUser();
+                        UserVO userVO = modelMapper.map(targetUser, UserVO.class);
+                        LanguageDTO language = userVO.getLanguageVO();
+
                         ScheduledEmailMessage message = createScheduledEmailMessage(notification,
-                            notification.getTargetUser().getLanguage().getCode());
+                            language.getCode());
                         restClient.sendScheduledEmailNotification(message);
                     });
                 notificationRepo.saveAll(notifications);
@@ -220,23 +229,23 @@ public class NotificationServiceImpl implements NotificationService {
         });
     }
 
-    private boolean isTimeToSendScheduleNotification(Long userId, EmailPreference emailPreference, LocalDateTime now) {
-        boolean timeToSend = userNotificationPreferenceRepo.existsByUserIdAndEmailPreferenceAndPeriodicity(userId,
-            emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY);
+    private boolean isTimeToSendScheduleNotification(String email, EmailPreference emailPreference, LocalDateTime now) {
+        boolean timeToSend = userRemoteClient.searchUserNotificationPreference(new EmailPreferenceDto(email,
+            emailPreference, EmailPreferencePeriodicity.TWICE_A_DAY));
         if (now.getHour() < 12) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.DAILY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(email, emailPreference,
+                    EmailPreferencePeriodicity.DAILY));
         }
         if (now.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.WEEKLY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(email, emailPreference,
+                    EmailPreferencePeriodicity.WEEKLY));
         }
         if (now.getDayOfMonth() == 1) {
-            timeToSend = timeToSend || userNotificationPreferenceRepo
-                .existsByUserIdAndEmailPreferenceAndPeriodicity(userId, emailPreference,
-                    EmailPreferencePeriodicity.MONTHLY);
+            timeToSend = timeToSend || userRemoteClient
+                .searchUserNotificationPreference(new EmailPreferenceDto(email, emailPreference,
+                    EmailPreferencePeriodicity.MONTHLY));
         }
         return timeToSend;
     }
@@ -248,12 +257,13 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendEmailNotification(EmailNotificationDto notificationDto) {
         Notification notification = modelMapper.map(notificationDto, Notification.class);
         NotificationType type = notification.getNotificationType();
-        LanguageVO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguageVO();
+        LanguageDTO userLanguage = userService.findById(notification.getTargetUser().getId()).getLanguageVO();
         ScheduledEmailMessage message = createScheduledEmailMessage(notification, userLanguage.getCode());
         List<NotificationType> likes = List.of(
             NotificationType.ECONEWS_COMMENT_LIKE,
             NotificationType.ECONEWS_LIKE,
             NotificationType.EVENT_COMMENT_LIKE,
+            NotificationType.EVENT_LIKE,
             NotificationType.HABIT_LIKE,
             NotificationType.HABIT_COMMENT_LIKE);
         List<NotificationType> comments = List.of(
@@ -308,7 +318,7 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDateTime now = LocalDateTime.now(ZONE_ID);
         List<SubscriberDto> subscribers = userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(
             EmailPreference.PLACES, periodicity).stream()
-            .filter(u -> isTimeToSendScheduleNotification(u.getId(), EmailPreference.PLACES, now))
+            .filter(u -> isTimeToSendScheduleNotification(u.getEmail(), EmailPreference.PLACES, now))
             .map(o -> modelMapper.map(o, SubscriberDto.class))
             .toList();
 
@@ -362,7 +372,8 @@ public class NotificationServiceImpl implements NotificationService {
         if (actionUsersSize > 1) {
             actionUserText = actionUsersSize + " " + bundle.getString("USERS");
         } else if (actionUsersSize == 1) {
-            actionUserText = notification.getActionUsers().getFirst().getName();
+            User firstActionUser = notification.getActionUsers().getFirst();
+            actionUserText = firstActionUser.getName();
         } else {
             actionUserText = "";
         }
@@ -372,7 +383,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
         String secondMessage = notification.getSecondMessage() != null ? notification.getSecondMessage() : "";
         int messagesCount = notification.getActionUsers().size();
-        String times = language.equals("ua")
+        String times = language.equals("uk")
             ? resolveTimesInUkrainian(messagesCount)
             : resolveTimesInEnglish(messagesCount);
         String body = bodyTemplate
@@ -381,9 +392,11 @@ public class NotificationServiceImpl implements NotificationService {
             .replace("{secondMessage}", secondMessage)
             .replace("{times}", times);
 
+        User targetUser = notification.getTargetUser();
+
         return ScheduledEmailMessage.builder()
-            .email(notification.getTargetUser().getEmail())
-            .username(notification.getTargetUser().getName())
+            .userId(targetUser.getId())
+            .username(targetUser.getName())
             .baseLink(createBaseLink(notification))
             .subject(subject)
             .body(body)

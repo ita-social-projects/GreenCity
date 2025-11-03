@@ -69,7 +69,7 @@ class ManagementTagsControllerTest {
     void findAll() throws Exception {
         int page = 0;
         int size = 10;
-        String language = "ua";
+        String language = "uk";
         Pageable pageable = PageRequest.of(page, size);
         List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
         PageableAdvancedDto<TagVO> tags = ModelUtils.getPageableAdvancedDtoForTag();
@@ -153,7 +153,7 @@ class ManagementTagsControllerTest {
     void search() throws Exception {
         int page = 0;
         int size = 10;
-        String language = "ua";
+        String language = "uk";
         Pageable pageable = PageRequest.of(page, size);
         List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
         PageableAdvancedDto<TagVO> tags = ModelUtils.getPageableAdvancedDtoForTag();

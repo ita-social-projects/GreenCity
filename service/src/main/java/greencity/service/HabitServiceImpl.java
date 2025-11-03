@@ -1,6 +1,8 @@
 package greencity.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import greencity.achievement.AchievementCalculation;
+import greencity.client.UserRemoteClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -11,53 +13,55 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.notification.LikeNotificationDto;
 import greencity.dto.todolistitem.ToDoListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitTranslation;
-import greencity.entity.User;
-import greencity.entity.Tag;
-import greencity.entity.HabitAssign;
 import greencity.entity.CustomToDoListItem;
-import greencity.entity.Language;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.Role;
-import greencity.enums.AchievementCategoryType;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.HabitAssignStatus;
 import greencity.enums.NotificationType;
+import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.mapping.CustomHabitMapper;
 import greencity.mapping.CustomToDoListMapper;
 import greencity.mapping.CustomToDoListResponseDtoMapper;
 import greencity.mapping.HabitTranslationDtoMapper;
 import greencity.mapping.HabitTranslationMapper;
 import greencity.rating.RatingCalculation;
+import greencity.repository.CustomToDoListItemRepo;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitInvitationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import greencity.repository.ToDoListItemTranslationRepo;
-import greencity.repository.HabitAssignRepo;
 import greencity.repository.RatingPointsRepo;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import greencity.repository.CustomToDoListItemRepo;
-import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
+import greencity.repository.ToDoListItemTranslationRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.HabitTranslationFilter;
 import jakarta.persistence.Tuple;
+import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -66,14 +70,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.transaction.Transactional;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
  * Implementation of {@link HabitService}.
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
@@ -85,10 +90,9 @@ public class HabitServiceImpl implements HabitService {
     private final CustomHabitMapper customHabitMapper;
     private final ToDoListItemTranslationRepo toDoListItemTranslationRepo;
     private final CustomToDoListItemRepo customToDoListItemRepo;
-    private final LanguageRepo languageRepo;
     private final UserRepo userRepo;
     private final TagsRepo tagsRepo;
-    private final FileService fileService;
+    private final ImageConverterImpl imageConverter;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
@@ -97,8 +101,9 @@ public class HabitServiceImpl implements HabitService {
     private final AchievementCalculation achievementCalculation;
     private final RatingPointsRepo ratingPointsRepo;
     private final HabitInvitationService habitInvitationService;
-    private final FriendService friendService;
     private final HabitInvitationRepo habitInvitationRepo;
+    private final LanguageService languageService;
+    private final UserRemoteClient userRemoteClient;
 
     /**
      * Method returns Habit by its id.
@@ -134,15 +139,14 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode) {
-        long userId = userVO.getId();
+    public PageableDto<HabitDto> getAllHabitsByLanguageCode(Long userId, Pageable pageable, String languageCode) {
         List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
 
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
                 requestedCustomHabitIds, userId, languageCode);
-        return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO.getId());
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, userId);
     }
 
     /**
@@ -239,10 +243,9 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable,
+    public PageableDto<HabitDto> getAllByDifferentParameters(Long userId, Pageable pageable,
         Optional<List<String>> tags, Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities,
         String languageCode) {
-        Long userId = userVO.getId();
         HabitTranslationFilterDto filterDto = HabitTranslationFilterDto.builder()
             .userId(userId)
             .languageCode(languageCode)
@@ -252,7 +255,7 @@ public class HabitServiceImpl implements HabitService {
             .build();
         Specification<HabitTranslation> specification = new HabitTranslationFilter(filterDto);
         Page<HabitTranslation> habitTranslationsPage = habitTranslationRepo.findAll(specification, pageable);
-        return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO.getId());
+        return buildPageableDtoForDifferentParameters(habitTranslationsPage, userId);
     }
 
     private PageableDto<HabitDto> buildPageableDtoForDifferentParameters(Page<HabitTranslation> habitTranslationsPage,
@@ -340,15 +343,19 @@ public class HabitServiceImpl implements HabitService {
     @Transactional
     @Override
     public CustomHabitDtoResponse addCustomHabit(
-        CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
-        User user = userRepo.findByEmail(userEmail)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, Long userId) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (StringUtils.isNotBlank(addCustomHabitDtoRequest.getImage())) {
-            image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
+            image = imageConverter.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
         }
         if (image != null) {
-            addCustomHabitDtoRequest.setImage(fileService.upload(image));
+            try {
+                addCustomHabitDtoRequest.setImage(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+            }
         } else {
             addCustomHabitDtoRequest.setImage(DEFAULT_TITLE_IMAGE_PATH);
         }
@@ -402,9 +409,9 @@ public class HabitServiceImpl implements HabitService {
     @Transactional
     @Override
     public CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest habitDto, Long habitId,
-        String userEmail, MultipartFile image) {
-        User user = userRepo.findByEmail(userEmail)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        Long userId, MultipartFile image) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
         Habit toUpdate = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + habitId));
         checkAccessForAdminAndModeratorAndByUserId(user, toUpdate);
@@ -429,10 +436,14 @@ public class HabitServiceImpl implements HabitService {
             saveNewCustomToDoListItemsToUpdate(habitDto, toUpdate, user);
         }
         if (StringUtils.isNotBlank(habitDto.getImage())) {
-            image = fileService.convertToMultipartImage(habitDto.getImage());
+            image = imageConverter.convertToMultipartImage(habitDto.getImage());
         }
         if (image != null) {
-            toUpdate.setImage(fileService.upload(image));
+            try {
+                toUpdate.setImage(userRemoteClient.uploadFile(image));
+            } catch (WebClientRequestException | WebClientResponseException e) {
+                log.warn(AppConstant.USER_SERVICE_UNAVAILABLE_LOG, e.getMessage());
+            }
         }
         if (isNotEmpty(habitDto.getTagIds())) {
             setTagsIdsToHabit(habitDto, toUpdate);
@@ -491,8 +502,7 @@ public class HabitServiceImpl implements HabitService {
                 return true;
             })
             .map(dto -> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(habitDto,
-                languageRepo.findByCode(dto.getLanguageCode())
-                    .orElseThrow(() -> new NotFoundException(ErrorMessage.SELECT_CORRECT_LANGUAGE)),
+                languageService.findByCode(dto.getLanguageCode()),
                 habit))
             .flatMap(Collection::stream).toList();
         habit.setHabitTranslations(habitTranslations);
@@ -518,14 +528,19 @@ public class HabitServiceImpl implements HabitService {
             List<Long> friendsIds = addCustomHabitDtoRequest.getFriendsToInvite().stream()
                 .map(UserFriendDto::getId)
                 .collect(Collectors.toList());
+            UserVO userVO = modelMapper.map(user, UserVO.class);
+            LanguageDTO language = userVO.getLanguageVO();
+
             habitAssignService.inviteFriendForYourHabitWithEmailNotification(
-                modelMapper.map(user, UserVO.class), friendsIds, habit.getId(),
-                Locale.of(user.getLanguage().getCode()));
+                userVO, friendsIds, habit.getId(),
+                Locale.of(language.getCode()));
         }
     }
 
     private void checkAccessForAdminAndModeratorAndByUserId(User user, Habit habit) {
-        if (user.getRole() != Role.ROLE_ADMIN && user.getRole() != Role.ROLE_MODERATOR
+        UserVO userVO = modelMapper.map(user, UserVO.class);
+
+        if (userVO.getRole() != Role.ROLE_ADMIN && userVO.getRole() != Role.ROLE_MODERATOR
             && !user.getId().equals(habit.getUserId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
@@ -535,11 +550,11 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteCustomHabit(Long customHabitId, String ownerEmail) {
+    public void deleteCustomHabit(Long customHabitId, Long ownerId) {
         Habit toDelete = habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId));
-        User owner = userRepo.findByEmail(ownerEmail)
-            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + ownerEmail));
+        User owner = userRepo.findById(ownerId)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + ownerId));
         unAssignOwnerFromCustomHabit(toDelete, owner.getId());
         toDelete.setIsDeleted(true);
         habitRepo.save(toDelete);
@@ -637,12 +652,12 @@ public class HabitServiceImpl implements HabitService {
     }
 
     @Override
-    public void addToFavorites(Long habitId, String email) {
+    public void addToFavorites(Long habitId, Long userId) {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (habit.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_HABIT_TO_FAVORITES);
@@ -654,12 +669,12 @@ public class HabitServiceImpl implements HabitService {
     }
 
     @Override
-    public void removeFromFavorites(Long habitId, String email) {
+    public void removeFromFavorites(Long habitId, Long userId) {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
 
-        User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        User currentUser = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
 
         if (!habit.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.HABIT_NOT_IN_FAVORITES);
@@ -673,21 +688,19 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(UserVO userVO, Pageable pageable,
+    public PageableDto<HabitDto> getAllFavoriteHabitsByLanguageCode(Long userId, Pageable pageable,
         String languageCode) {
-        Long userId = userVO.getId();
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findMyFavoriteHabits(pageable, userId, languageCode);
-        return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO.getId());
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, userId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(UserVO userVO, String name, Pageable pageable,
+    public PageableDto<UserFriendHabitInviteDto> findAllFriendsOfUser(Long userId, String name, Pageable pageable,
         Long habitId) {
-        Long userId = userVO.getId();
         name = Optional.ofNullable(name).orElse("");
         Page<UserFriendHabitInviteDto> friendsWithIsInvitedStatus =
             findUserFriendsWithHabitInvitesMapped(userId, name, habitId, pageable);
@@ -755,22 +768,31 @@ public class HabitServiceImpl implements HabitService {
     private Page<UserFriendHabitInviteDto> findUserFriendsWithHabitInvitesMapped(
         Long userId, String name, Long habitId, Pageable pageable) {
         List<Tuple> tuples = habitInvitationRepo.findUserFriendsWithHabitInvites(userId, name, habitId, pageable);
+        Map<Long, String> userIdToUserEmailMap = tuples.stream()
+            .collect(Collectors.toMap(
+                tuple -> tuple.get("id", Long.class),
+                tuple -> tuple.get("email", String.class)));
+
         List<UserFriendHabitInviteDto> dtoList = tuples.stream()
-            .map(tuple -> UserFriendHabitInviteDto.builder()
-                .id(tuple.get("id", Long.class))
-                .name(tuple.get("name", String.class))
-                .email(tuple.get("email", String.class))
-                .profilePicturePath(tuple.get("profile_picture", String.class))
-                .hasInvitation(tuple.get("has_invitation", Boolean.class))
-                .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
-                .build())
+            .map(tuple -> {
+                Long id = tuple.get("id", Long.class);
+                String email = userIdToUserEmailMap.get(id);
+                return UserFriendHabitInviteDto.builder()
+                    .id(id)
+                    .name(tuple.get("name", String.class))
+                    .email(email)
+                    .profilePicturePath(tuple.get("profile_picture", String.class))
+                    .hasInvitation(tuple.get("has_invitation", Boolean.class))
+                    .hasAcceptedInvitation(tuple.get("has_accepted_invitation", Boolean.class))
+                    .build();
+            })
             .collect(Collectors.toList());
         return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
 
     private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequestWithLanguage(
         CustomHabitDtoRequest habitDto,
-        Language language, Habit habit) {
+        LanguageDTO language, Habit habit) {
         return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations(), language, habit);
     }
 }

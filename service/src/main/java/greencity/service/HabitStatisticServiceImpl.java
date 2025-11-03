@@ -4,23 +4,33 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habitstatistic.GetHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitDateCount;
+import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.HabitStatusCount;
+import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
+import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatisticRepo;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
-import greencity.dto.habitstatistic.GetHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
+import greencity.repository.UserRepo;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -31,18 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import greencity.repository.UserRepo;
-import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@EnableCaching
 @AllArgsConstructor
 public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final HabitStatisticRepo habitStatisticRepo;
@@ -51,6 +51,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     private final DateService dateService;
     private final ModelMapper modelMapper;
     private final UserRepo userRepo;
+    private final UserService userService;
 
     /**
      * {@inheritDoc}
@@ -183,8 +184,28 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * {@inheritDoc}
      */
     @Override
+    public Long getAmountOfHabitsInProgressByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return habitStatisticRepo.getAmountOfHabitsInProgressByUserId(user.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Long getAmountOfAcquiredHabitsByUserId(Long userId) {
         return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long getAmountOfAcquiredHabitsByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return habitStatisticRepo.getAmountOfAcquiredHabitsByUserId(user.getId());
     }
 
     /**
@@ -200,9 +221,11 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      */
     @Override
     public Map<String, Long> calculateUserInterest() {
-        Long totalActiveUsers = userRepo.countActiveUsers();
-        List<Long> creators = habitRepo.countActiveHabitCreators();
-        List<Long> followers = habitRepo.countActiveHabitFollowers();
+        long totalActiveUsers = userService.countAllByStatus(UserStatus.ACTIVATED);
+        List<Long> creatorsWithExistingHabits = habitRepo.countHabitCreators();
+        List<Long> creators = userService.findAllActivatedUserIds(creatorsWithExistingHabits);
+        List<Long> followersWithExistingHabits = habitRepo.countHabitFollowers();
+        List<Long> followers = userService.findAllActivatedUserIds(followersWithExistingHabits);
         Set<Long> participatingUsers = new HashSet<>(followers);
         participatingUsers.addAll(creators);
 

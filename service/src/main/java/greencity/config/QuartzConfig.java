@@ -1,0 +1,152 @@
+package greencity.config;
+
+import static greencity.constant.QuartzConstants.*;
+import greencity.logging.LoggingJobListener;
+import greencity.exception.exceptions.InvalidCronException;
+import greencity.exception.exceptions.TriggerException;
+import greencity.scheduler.EcoNewsGenerationJob;
+import greencity.scheduler.EcoNewsRelevanceJob;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.quartz.*;
+import org.quartz.spi.TriggerFiredBundle;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SpringBeanJobFactory;
+
+/**
+ * Quartz configuration for the EcoNews generation job.
+ *
+ * <p>
+ * Uses a cron expression from the configuration file and automatically fixes it
+ * if both day-of-month and day-of-week are specified, which is not supported by
+ * Quartz.
+ * </p>
+ */
+@Configuration
+@RequiredArgsConstructor
+public class QuartzConfig {
+    @Value("${cron.generateEcoNews}")
+    private String generateEcoNewsCron;
+    @Value("${cron.calculateRelevance}")
+    private String calculateRelevanceCron;
+    private final ApplicationContext applicationContext;
+
+    @Bean
+    public SchedulerFactoryBeanCustomizer customizer(SpringBeanJobFactory jobFactory) {
+        return factory -> factory.setJobFactory(jobFactory);
+    }
+
+    @Bean
+    public SpringBeanJobFactory springBeanJobFactory(AutowireCapableBeanFactory beanFactory) {
+        AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory(beanFactory);
+        jobFactory.setApplicationContext(applicationContext);
+        return jobFactory;
+    }
+
+    @Bean
+    public Scheduler scheduler(SchedulerFactoryBean factoryBean,
+        Trigger ecoNewsGenerationTrigger,
+        JobDetail ecoNewsGenerationJobDetail) throws SchedulerException {
+        Scheduler scheduler = factoryBean.getScheduler();
+        scheduler.getListenerManager().addJobListener(new LoggingJobListener());
+
+        if (!scheduler.checkExists(ecoNewsGenerationJobDetail.getKey())) {
+            scheduler.scheduleJob(ecoNewsGenerationJobDetail, ecoNewsGenerationTrigger);
+        } else if (!scheduler.checkExists(ecoNewsGenerationTrigger.getKey())) {
+            scheduler.rescheduleJob(ecoNewsGenerationTrigger.getKey(), ecoNewsGenerationTrigger);
+        }
+
+        return scheduler;
+    }
+
+    @Bean
+    public JobDetail ecoNewsGenerationJobDetail() {
+        return JobBuilder.newJob(EcoNewsGenerationJob.class)
+            .withIdentity(ECO_NEWS_GENERATION_JOB_IDENTITY)
+            .storeDurably()
+            .build();
+    }
+
+    @Bean
+    public Trigger ecoNewsGenerationTrigger(JobDetail ecoNewsGenerationJobDetail) {
+        String fixedCron = fixCronExpression(generateEcoNewsCron);
+        try {
+            return TriggerBuilder.newTrigger()
+                .forJob(ecoNewsGenerationJobDetail)
+                .withIdentity(ECO_NEWS_GENERATION_TRIGGER_IDENTITY)
+                .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
+                .build();
+        } catch (RuntimeException e) {
+            throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
+        }
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "enabled")
+    public JobDetail ecoNewsRelevanceJobDetail() {
+        return JobBuilder.newJob(EcoNewsRelevanceJob.class)
+            .withIdentity("ecoNewsRelevanceJob")
+            .storeDurably()
+            .build();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "greencity.relevance.enabled", havingValue = "enabled")
+    public Trigger ecoNewsRelevanceTrigger() {
+        String fixedCron = fixCronExpression(calculateRelevanceCron);
+        try {
+            return TriggerBuilder.newTrigger()
+                .forJob(ecoNewsRelevanceJobDetail())
+                .withIdentity("ecoNewsRelevanceTrigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule(fixedCron))
+                .build();
+        } catch (RuntimeException e) {
+            throw new TriggerException(CREATION_CRON_FAILED_MESSAGE + fixedCron, e);
+        }
+    }
+
+    private String fixCronExpression(String cron) {
+        String[] fields = cron.trim().split(CRON_FIELD_SPLIT_REGEX);
+        if (fields.length != CRON_FIELDS_COUNT_EXPECTED) {
+            throw new InvalidCronException(INVALID_CRON_EXPRESSION_ERROR + cron);
+        }
+
+        if (shouldFixDayOfMonth(fields)) {
+            fields[CRON_FIELD_DAY_OF_MONTH_INDEX] = CRON_DAY_OF_MONTH_PLACEHOLDER;
+        }
+
+        return String.join(CRON_SPACE_SEPARATOR, fields);
+    }
+
+    private boolean shouldFixDayOfMonth(String[] fields) {
+        boolean hasDayOfMonth = !fields[CRON_FIELD_DAY_OF_MONTH_INDEX]
+            .equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
+            && !fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD);
+        boolean hasDayOfWeek = !fields[CRON_FIELD_DAY_OF_WEEK_INDEX]
+            .equals(CRON_DAY_OF_MONTH_PLACEHOLDER)
+            && !fields[CRON_FIELD_DAY_OF_WEEK_INDEX].equals(CRON_WILDCARD);
+
+        return (hasDayOfMonth && hasDayOfWeek)
+            || fields[CRON_FIELD_DAY_OF_MONTH_INDEX].equals(CRON_WILDCARD);
+    }
+
+    @RequiredArgsConstructor
+    private static class AutowiringSpringBeanJobFactory extends SpringBeanJobFactory {
+        private final AutowireCapableBeanFactory factory;
+
+        @NotNull
+        @Override
+        protected Object createJobInstance(@NotNull TriggerFiredBundle bundle) throws Exception {
+            Object jobInstance = super.createJobInstance(bundle);
+            factory.autowireBean(jobInstance);
+            return jobInstance;
+        }
+    }
+}

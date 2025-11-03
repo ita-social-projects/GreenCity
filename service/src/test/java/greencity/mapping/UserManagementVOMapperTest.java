@@ -1,28 +1,55 @@
 package greencity.mapping;
 
+import greencity.client.UserRemoteClient;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.UserStatus;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import java.util.List;
 
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserManagementVO;
 import static greencity.ModelUtils.getUserManagementVOPage;
 import static greencity.ModelUtils.getUserPage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserManagementVOMapperTest {
+    @Mock
+    UserRemoteClient userRemoteClient;
+
+    @Mock
+    ModelMapper modelMapper;
+
     @InjectMocks
     UserManagementVOMapper userManagementVOMapper;
 
     @Test
     void convertTest() {
         var user = getUser();
+        user.setStatus(UserStatus.ACTIVATED);
         var userManagementVO = getUserManagementVO();
+        userManagementVO.setEmail(user.getEmail());
+        userManagementVO.setRating(user.getRating());
+        UserVO userVO = mock(UserVO.class);
+
+        when(userRemoteClient.findByEmail(user.getEmail()))
+            .thenReturn(Optional.of(userVO));
+        when(userVO.getRole())
+            .thenReturn(userManagementVO.getRole());
+
         UserManagementVO result = userManagementVOMapper.convert(user);
         assertEquals(userManagementVO, result);
     }
@@ -31,7 +58,24 @@ class UserManagementVOMapperTest {
     void mapAllToPageTest() {
         Page<User> userPage = getUserPage();
         Page<UserManagementVO> expected = getUserManagementVOPage();
+        Page<UserVO> userVOPage = new PageImpl<>(List.of(Mockito.mock(UserVO.class)));
+
+        for (int i = 0; i < userPage.getContent().size(); i++) {
+            User user = userPage.getContent().get(i);
+            user.setStatus(UserStatus.ACTIVATED);
+            UserVO userVO = userVOPage.getContent().get(i);
+            UserManagementVO userManagementVO = expected.getContent().get(i);
+            userManagementVO.setEmail(user.getEmail());
+            userManagementVO.setRating(user.getRating());
+
+            when(userRemoteClient.findByEmail(user.getEmail()))
+                .thenReturn(Optional.of(userVO));
+            when(userVO.getRole())
+                .thenReturn(userManagementVO.getRole());
+        }
+
         Page<UserManagementVO> result = userManagementVOMapper.mapAllToPage(userPage);
+
         assertEquals(expected.getContent(), result.getContent());
         assertEquals(expected.getTotalElements(), result.getTotalElements());
         assertEquals(expected.getPageable(), result.getPageable());

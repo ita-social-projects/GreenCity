@@ -1,6 +1,7 @@
 package greencity.dto.ratingstatistics;
 
 import java.time.ZonedDateTime;
+import greencity.annotations.Sortable;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ import lombok.Builder;
 @Getter
 @Setter
 @Builder
+@Sortable
 @EqualsAndHashCode
 public class RatingStatisticsDtoForTables {
     private Long id;

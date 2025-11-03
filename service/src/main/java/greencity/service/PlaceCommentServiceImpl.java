@@ -21,7 +21,6 @@ import greencity.repository.PlaceCommentRepo;
 import greencity.repository.RatingPointsRepo;
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -47,7 +46,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private PhotoService photoService;
     private ModelMapper modelMapper;
     private final greencity.rating.RatingCalculation ratingCalculation;
-    private final HttpServletRequest httpServletRequest;
     private AchievementCalculation achievementCalculation;
     private final RatingPointsRepo ratingPointsRepo;
 
@@ -70,7 +68,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     @Override
     public PlaceCommentResponseDto save(Long placeId, PlaceCommentRequestDto placeCommentRequestDto, String email) {
         UserVO userVO = restClient.findByEmail(email);
-        if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
+        if (userVO.getStatus().equals(UserStatus.BLOCKED)) {
             throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
         }
         Place place = modelMapper.map(placeService.findById(placeId), Place.class);

@@ -10,11 +10,11 @@
                 <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="city_en" type="VARCHAR(255)" />
-            <column name="city_ua" type="VARCHAR(255)" />
+            <column name="city_uk" type="VARCHAR(255)" />
             <column name="region_en" type="VARCHAR(255)" />
-            <column name="region_ua" type="VARCHAR(255)" />
+            <column name="region_uk" type="VARCHAR(255)" />
             <column name="country_en" type="VARCHAR(255)" />
-            <column name="country_ua" type="VARCHAR(255)" />
+            <column name="country_uk" type="VARCHAR(255)" />
             <column name="latitude" type="DOUBLE" />
             <column name="longitude" type="DOUBLE" />
         </createTable>

@@ -88,7 +88,7 @@ class ManagementEcoNewsStatisticsControllerTest {
         when(ecoNewsStatisticService.getTagStatistics()).thenReturn(Collections.emptyList());
 
         ResultActions resultActions = mockMvc.perform(get("/management/econews/statistics/tags")
-                .accept(MediaType.APPLICATION_JSON));
+            .accept(MediaType.APPLICATION_JSON));
 
         resultActions.andExpect(status().isNoContent());
 

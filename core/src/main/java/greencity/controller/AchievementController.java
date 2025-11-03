@@ -1,8 +1,12 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUserClaims;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.user.UserClaims;
 import greencity.enums.AchievementStatus;
 import greencity.service.AchievementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,18 +45,18 @@ public class AchievementController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
-    public ResponseEntity<List<AchievementVO>> getAll(@Parameter(hidden = true) Principal principal,
+    public ResponseEntity<List<AchievementVO>> getAll(
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) AchievementStatus achievementStatus,
         @RequestParam(required = false) Long achievementCategoryId) {
         return ResponseEntity.ok().body(
-            achievementService.findAllByTypeAndCategory(principal.getName(), achievementStatus, achievementCategoryId));
+            achievementService.findAllByTypeAndCategory(userClaims.userId(), userClaims.userEmail(), achievementStatus,
+                achievementCategoryId));
     }
 
     /**
@@ -75,17 +80,83 @@ public class AchievementController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping("/count")
-    public ResponseEntity<Integer> getAchievementCount(@Parameter(hidden = true) Principal principal,
+    public ResponseEntity<Integer> getAchievementCount(
+        @Parameter(hidden = true) @CurrentUserId Long userId,
+        @Parameter(hidden = true) Principal principal,
         @Parameter(description = "Available values : ACHIEVED, UNACHIEVED."
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) AchievementStatus achievementStatus,
         @RequestParam(required = false) Long achievementCategoryId) {
-        return ResponseEntity.ok().body(achievementService.findAchievementCountByTypeAndCategory(principal.getName(),
-            achievementStatus, achievementCategoryId));
+        return ResponseEntity.ok()
+            .body(achievementService.findAchievementCountByTypeAndCategory(userId, principal.getName(),
+                achievementStatus, achievementCategoryId));
+    }
+
+    /**
+     * Method returns all achievements.
+     *
+     * @return list of {@link AchievementVO}
+     */
+    @Operation(summary = "Get all achievements by type and category.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @GetMapping("/all")
+    public ResponseEntity<List<AchievementVO>> findAll() {
+        return ResponseEntity.ok().body(achievementService.findAll());
+    }
+
+    /**
+     * Method returns all user achievements by user id.
+     *
+     * @param userId id of the user
+     *
+     * @return list of {@link UserAchievementVO}
+     */
+    @Operation(summary = "Get all user achievements by user id.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @GetMapping("/user-achievements/{userId}")
+    public ResponseEntity<List<UserAchievementVO>> findAllUserAchievementsByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok().body(achievementService.findAllUserAchievementsByUserId(userId));
+    }
+
+    /**
+     * For external services usage. Method returns all user achievements by user
+     * email.
+     *
+     * @param email email of the user
+     *
+     * @return list of {@link UserAchievementVO}
+     */
+    @Operation(summary = "Get all user achievements by user email.", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
+    })
+    @GetMapping("/user-achievements")
+    public ResponseEntity<List<UserAchievementVO>> findAllUserAchievementsByEmail(@RequestParam String email) {
+        return ResponseEntity.ok().body(achievementService.findAllUserAchievementsByEmail(email));
     }
 }

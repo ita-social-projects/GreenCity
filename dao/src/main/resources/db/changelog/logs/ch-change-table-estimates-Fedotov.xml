@@ -27,22 +27,4 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="Dmytro Fedotov" id="estimates3">
-        <preConditions onFail="MARK_RAN">
-            <foreignKeyConstraintExists foreignKeyName="FK4ybp1p4b8005qrgccsrookt9p"/>
-        </preConditions>
-        <dropForeignKeyConstraint
-                constraintName="FK4ybp1p4b8005qrgccsrookt9p"
-                baseTableName="estimates"/>
-    </changeSet>
-
-    <changeSet author="Dmytro Fedotov" id="estimates4">
-        <preConditions onFail="MARK_RAN">
-            <indexExists indexName="FK4ybp1p4b8005qrgccsrookt9p" tableName="estimates"/>
-        </preConditions>
-        <dropIndex
-                indexName="FK4ybp1p4b8005qrgccsrookt9p"
-                tableName="estimates"/>
-    </changeSet>
-
 </databaseChangeLog>

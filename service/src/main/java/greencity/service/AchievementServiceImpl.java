@@ -6,18 +6,19 @@ import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.habit.HabitVO;
 import greencity.entity.*;
 import greencity.enums.AchievementStatus;
 import greencity.exception.exceptions.BadCategoryRequestException;
 import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,12 +35,10 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@EnableCaching
 @Slf4j
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
     private final ModelMapper modelMapper;
-    private final UserService userService;
     private final UserAchievementRepo userAchievementRepo;
     private final SimpMessagingTemplate messagingTemplate;
     private final AchievementCategoryRepo achievementCategoryRepo;
@@ -47,6 +46,48 @@ public class AchievementServiceImpl implements AchievementService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final RatingPointsService ratingPointsService;
+    private final UserRepo userRepo;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserAchievementVO> findAllUserAchievementsByUserId(Long userId) {
+        return userAchievementRepo.getUserAchievementByUserId(userId).stream()
+            .map(userAchievement -> modelMapper.map(userAchievement, UserAchievementVO.class))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserAchievementVO> findAllUserAchievementsByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+        return userAchievementRepo.getUserAchievementByUserId(user.getId()).stream()
+            .map(userAchievement -> modelMapper.map(userAchievement, UserAchievementVO.class))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AchievementVO> findAll() {
+        return achievementRepo.findAll().stream()
+            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
+            .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableAdvancedDto<AchievementVO> findAll(Pageable pageable) {
+        Page<Achievement> pages = achievementRepo.findAll(pageable);
+        return createPageable(pages);
+    }
 
     /**
      * {@inheritDoc}
@@ -75,16 +116,6 @@ public class AchievementServiceImpl implements AchievementService {
         return mapToVO(achievementRepo.save(achievement));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-
-    @Override
-    public PageableAdvancedDto<AchievementVO> findAll(Pageable pageable) {
-        Page<Achievement> pages = achievementRepo.findAll(pageable);
-        return createPageable(pages);
-    }
-
     public Pageable preparePageable(Pageable pageable, String sortBy, String sortDir) {
         Sort sort = (sortDir == null || sortDir.isEmpty() || sortDir.equalsIgnoreCase("asc"))
             ? Sort.by(sortBy).ascending()
@@ -100,9 +131,9 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public List<AchievementVO> findAllByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+    public List<AchievementVO> findAllByTypeAndCategory(Long userId, String principalEmail,
+        AchievementStatus achievementStatus,
         Long achievementCategoryId) {
-        Long userId = userService.findByEmail(principalEmail).getId();
         Long searchAchievementCategoryId =
             achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;
         List<AchievementVO> achievements = switch (achievementStatus) {
@@ -172,9 +203,9 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public Integer findAchievementCountByTypeAndCategory(String principalEmail, AchievementStatus achievementStatus,
+    public Integer findAchievementCountByTypeAndCategory(Long userId, String principalEmail,
+        AchievementStatus achievementStatus,
         Long achievementCategoryId) {
-        Long userId = userService.findByEmail(principalEmail).getId();
         Long searchAchievementCategoryId =
             achievementCategoryId != null ? findCategoryById(achievementCategoryId).getId() : null;
         List<AchievementVO> achievements = switch (achievementStatus) {

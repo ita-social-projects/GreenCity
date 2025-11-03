@@ -14,26 +14,11 @@
     <version>1.0-SNAPSHOT</version>
     <name>service</name>
 
-    <properties>
-        <commons-io.version>2.15.0</commons-io.version>
-        <org.springframework.social.version>2.0.3.RELEASE</org.springframework.social.version>
-        <google.maps.version>2.2.0</google.maps.version>
-        <apache.http.client.version>5.3-alpha1</apache.http.client.version>
-        <azure.storage.blob.version>12.25.0</azure.storage.blob.version>
-        <jts.core.version>1.19.0</jts.core.version>
-        <commons.collections4.version>4.4</commons.collections4.version>
-        <google.cloud.storage.version>2.29.1</google.cloud.storage.version>
-        <apache.commons.version>3.13.0</apache.commons.version>
-        <io.github.cdimascio.dotenv.version>3.1.0</io.github.cdimascio.dotenv.version>
-        <apache.poi.version>5.4.0</apache.poi.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>greencity</groupId>
             <artifactId>dao</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -44,12 +29,10 @@
             <groupId>greencity</groupId>
             <artifactId>service-api</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -60,7 +43,6 @@
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>${modelmapper.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.amqp</groupId>
@@ -81,7 +63,6 @@
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-storage</artifactId>
             <version>${google.cloud.storage.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
@@ -91,23 +72,17 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.social</groupId>
-            <artifactId>spring-social-facebook</artifactId>
-            <version>${org.springframework.social.version}</version>
-            <scope>compile</scope>
+            <version>${commons.io.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${apache.commons.version}</version>
+            <version>${commons.lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.maps</groupId>
             <artifactId>google-maps-services</artifactId>
-            <version>${google.maps.version}</version>
+            <version>${google.maps.services.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>io.opencensus</groupId>
@@ -149,6 +124,14 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${apache.poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -26,7 +26,7 @@
                                  onDelete="CASCADE"
                                  onUpdate="CASCADE"
                                  referencedColumnNames="id"
-                                 referencedTableName="users"/>
+                                 referencedTableName="greencity_users"/>
     </changeSet>
     <changeSet id="comment_users_dislikes3" author="Andrii Danylenko">
         <dropForeignKeyConstraint

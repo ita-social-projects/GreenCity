@@ -9,8 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<Notification, Long>,
-    JpaSpecificationExecutor<Notification> {
+public interface NotificationRepo extends JpaRepository<Notification, Long>, JpaSpecificationExecutor<Notification> {
     /**
      * Checks if there are any unread notifications for the specified user.
      *
@@ -110,7 +109,6 @@ public interface NotificationRepo extends CustomNotificationRepo, JpaRepository<
     @Query("""
         SELECT n FROM Notification n
         JOIN FETCH n.targetUser tu
-        JOIN FETCH tu.language
         JOIN FETCH n.actionUsers
         WHERE n.notificationType = :notificationType
         AND n.viewed = false

@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageArrayValidation;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
@@ -345,8 +346,8 @@ public class EventController {
     })
     @PostMapping("/{eventId}/favorites")
     public ResponseEntity<Object> addToFavorites(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.addToFavorites(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.addToFavorites(eventId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -367,8 +368,8 @@ public class EventController {
     })
     @DeleteMapping("/{eventId}/favorites")
     public ResponseEntity<Object> removeFromFavorites(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.removeFromFavorites(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.removeFromFavorites(eventId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -509,8 +510,8 @@ public class EventController {
     })
     @GetMapping("/{eventId}/likes")
     public ResponseEntity<Boolean> isEventLikedByUser(
-        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventLikedByUser(eventId, userVO));
+        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventLikedByUser(eventId, userId));
     }
 
     /**
@@ -530,8 +531,8 @@ public class EventController {
     })
     @GetMapping("/{eventId}/dislikes")
     public ResponseEntity<Boolean> isEventDislikedByUser(
-        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventDislikedByUser(eventId, userVO));
+        @PathVariable Long eventId, @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.isEventDislikedByUser(eventId, userId));
     }
 
     /**
@@ -553,8 +554,8 @@ public class EventController {
     public ResponseEntity<Object> rateEvent(
         @PathVariable Long eventId,
         @RequestBody @NotNull @Positive @Max(3) Integer grade,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.rateEvent(eventId, principal.getName(), grade);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.rateEvent(eventId, userId, grade);
         return ResponseEntity.ok().build();
     }
 
@@ -614,6 +615,26 @@ public class EventController {
     }
 
     /**
+     * For external services usage. The method finds count of events attended by
+     * user email.
+     *
+     * @param email {@link String} email of current user.
+     * @return {@link Long} count of attended events.
+     */
+    @Operation(summary = "Finds amount of events where user is attender", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/attenders/count/external")
+    public ResponseEntity<Long> getAllAttendersCount(@RequestParam String email) {
+        return ResponseEntity.ok().body(eventService.getCountOfAttendedEventsByEmail(email));
+    }
+
+    /**
      * The method finds count of events organized by user id.
      *
      * @param userId {@link Long} id of current user.
@@ -633,6 +654,26 @@ public class EventController {
     }
 
     /**
+     * For external services usage. The method finds count of events organized by
+     * user email.
+     *
+     * @param email {@link String} email of current user.
+     * @return {@link Long} count of organized events.
+     */
+    @Operation(summary = "Finds amount of events where user is organizer", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping("/organizers/count/external")
+    public ResponseEntity<Long> getOrganizersCount(@RequestParam String email) {
+        return ResponseEntity.ok().body(eventService.getCountOfOrganizedEventsByEmail(email));
+    }
+
+    /**
      * Method for adding an event to requested by event id.
      *
      * @author Olha Pitsyk.
@@ -648,8 +689,8 @@ public class EventController {
     })
     @PostMapping("/{eventId}/addToRequested")
     public ResponseEntity<Object> addToRequested(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.addToRequested(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.addToRequested(eventId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -669,8 +710,8 @@ public class EventController {
     })
     @DeleteMapping("/{eventId}/removeFromRequested")
     public ResponseEntity<Object> removeFromRequested(@PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal) {
-        eventService.removeFromRequested(eventId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        eventService.removeFromRequested(eventId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -690,10 +731,10 @@ public class EventController {
     @GetMapping("/{eventId}/requested-users")
     public ResponseEntity<PageableDto<UserForListDto>> getRequestedUsers(
         @PathVariable Long eventId,
-        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(eventService.getRequestedUsers(eventId, principal.getName(), pageable));
+            .body(eventService.getRequestedUsers(eventId, userId, pageable));
     }
 
     /**
@@ -739,7 +780,7 @@ public class EventController {
     /**
      * Method for retrieving all events, where user is attendee.
      *
-     * @param userVO {@link UserVO} current user information.
+     * @param userId current user id.
      * @return all events, where user is an attendee.
      * @author Andrii Danylenko.
      */
@@ -753,8 +794,8 @@ public class EventController {
     @GetMapping("/user-data/getAllUserAssigned")
     public ResponseEntity<Page<EventResponseDto>> getAllUserAssigned(
         @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userVO.getId()));
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.ok(eventService.getPageableAllEventsAttendedByUser(pageable, userId));
     }
 
     /**

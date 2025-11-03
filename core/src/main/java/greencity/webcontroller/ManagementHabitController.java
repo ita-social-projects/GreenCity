@@ -56,7 +56,7 @@ public class ManagementHabitController {
      * @return View template path {@link String}.
      */
     @GetMapping
-    @ApiPageable
+    @ApiPageable(clazz = HabitManagementDto.class)
     public String findAllHabits(Model model, @Parameter(hidden = true) Pageable pageable,
         @RequestParam(value = "searchReg", required = false) String searchReg,
         @RequestParam(value = "durationFrom", required = false) Integer durationFrom,
@@ -108,7 +108,7 @@ public class ManagementHabitController {
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
         @Parameter(hidden = true) Model model) {
-        model.addAttribute("htodos", toDoListItemService.getToDoListByHabitId(id));
+        model.addAttribute("todos", toDoListItemService.getToDoListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
         model.addAttribute("acquired",
             habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.ACQUIRED));

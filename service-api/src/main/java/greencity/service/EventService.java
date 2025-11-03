@@ -98,17 +98,17 @@ public interface EventService {
      * Method for adding an event to favorites by event id.
      *
      * @param eventId - event id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      */
-    void addToFavorites(Long eventId, String email);
+    void addToFavorites(Long eventId, Long userId);
 
     /**
      * Method for removing an event from favorites by event id.
      *
      * @param eventId - event id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      */
-    void removeFromFavorites(Long eventId, String email);
+    void removeFromFavorites(Long eventId, Long userId);
 
     /**
      * Return Events searched by some query.
@@ -143,11 +143,11 @@ public interface EventService {
     /**
      * Rate Event.
      *
-     * @param email   - user that rates event
+     * @param userId  - id of user that rates event
      * @param eventId - id of rated event
      * @param grade   - grade of event
      */
-    void rateEvent(Long eventId, String email, int grade);
+    void rateEvent(Long eventId, Long userId, int grade);
 
     /**
      * Get all event attenders.
@@ -188,12 +188,28 @@ public interface EventService {
     Long getCountOfAttendedEventsByUserId(Long userId);
 
     /**
+     * Method for getting amount of attended events by user email.
+     *
+     * @param email {@link String} user email.
+     * @return {@link Long} amount of attended events.
+     */
+    Long getCountOfAttendedEventsByEmail(String email);
+
+    /**
      * Method for getting amount of organized events by user id.
      *
      * @param userId {@link Long} user id.
      * @return {@link Long} amount of organized events by user id.
      */
     Long getCountOfOrganizedEventsByUserId(Long userId);
+
+    /**
+     * Method for getting amount of organized events by user email.
+     *
+     * @param email {@link String} user email.
+     * @return {@link Long} amount of organized events.
+     */
+    Long getCountOfOrganizedEventsByEmail(String email);
 
     /**
      * Method to like or unlike {@link EventVO} specified by id.
@@ -250,19 +266,19 @@ public interface EventService {
      * Method to check if user liked an event.
      *
      * @param eventId - id of {@link EventDto} to check liked or not.
-     * @param userVO  - instance of {@link UserVO}.
+     * @param userId  - {@link Long} current user id.
      * @return user liked event or not.
      */
-    boolean isEventLikedByUser(Long eventId, UserVO userVO);
+    boolean isEventLikedByUser(Long eventId, Long userId);
 
     /**
      * Method to check if user disliked an event.
      *
      * @param eventId - id of {@link EventDto} to check disliked or not.
-     * @param userVO  - instance of {@link UserVO}.
+     * @param userId  - {@link Long} current user id.
      * @return user liked event or not.
      */
-    boolean isEventDislikedByUser(Long eventId, UserVO userVO);
+    boolean isEventDislikedByUser(Long eventId, Long userId);
 
     /**
      * Retrieves a set of user profile pictures for all users who have liked the
@@ -286,26 +302,26 @@ public interface EventService {
      * Method for adding an event to requested by event id.
      *
      * @param eventId - event id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      * @author Olha Pitsyk.
      */
-    void addToRequested(Long eventId, String email);
+    void addToRequested(Long eventId, Long userId);
 
     /**
      * Method for removing an event from requested by event id.
      *
      * @param eventId - event id.
-     * @param email   - user email.
+     * @param userId  - user's id.
      * @author Olha Pitsyk.
      */
-    void removeFromRequested(Long eventId, String email);
+    void removeFromRequested(Long eventId, Long userId);
 
     /**
      * Method for getting all users who made request for joining the event.
      *
      * @author Olha Pitsyk.
      */
-    PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable);
+    PageableDto<UserForListDto> getRequestedUsers(Long eventId, Long userId, Pageable pageable);
 
     /**
      * Method for approving request for joining the event.

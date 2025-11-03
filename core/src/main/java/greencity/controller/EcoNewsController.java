@@ -2,7 +2,10 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserClaims;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEcoNewsDtoRequest;
 import greencity.annotations.ValidLanguage;
@@ -20,9 +23,11 @@ import greencity.dto.econews.EcoNewContentSourceDto;
 import greencity.dto.econews.EcoNewsGroupedTagsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +42,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,6 +66,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
+    private final EcoNewsRelevanceService ecoNewsRelevanceService;
+
+    @Value("${greencity.relevance.enabled}")
+    private String relevanceServiceStatus;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -103,8 +113,8 @@ public class EcoNewsController {
     })
     @PostMapping("/{ecoNewsId}/favorites")
     public ResponseEntity<Object> addToFavorites(@PathVariable Long ecoNewsId,
-        @Parameter(hidden = true) Principal principal) {
-        ecoNewsService.addToFavorites(ecoNewsId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        ecoNewsService.addToFavorites(ecoNewsId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -123,8 +133,8 @@ public class EcoNewsController {
     })
     @DeleteMapping("/{ecoNewsId}/favorites")
     public ResponseEntity<Object> removeFromFavorites(@PathVariable Long ecoNewsId,
-        @Parameter(hidden = true) Principal principal) {
-        ecoNewsService.removeFromFavorites(ecoNewsId, principal.getName());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        ecoNewsService.removeFromFavorites(ecoNewsId, userId);
         return ResponseEntity.ok().build();
     }
 
@@ -149,12 +159,12 @@ public class EcoNewsController {
             required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
         @Parameter(description = "Image of eco news") @ImageValidation @RequestPart(
             required = false) MultipartFile image,
-        @Parameter(hidden = true) @CurrentUser UserVO user,
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims,
         @PathVariable Long ecoNewsId) {
         if (!ecoNewsId.equals(updateEcoNewsDto.getId())) {
             throw new WrongIdException(ErrorMessage.ECO_NEWS_ID_IN_PATH_PARAM_AND_ENTITY_NOT_EQUAL);
         }
-        return ResponseEntity.ok().body(ecoNewsService.update(updateEcoNewsDto, image, user));
+        return ResponseEntity.ok().body(ecoNewsService.update(updateEcoNewsDto, image, userClaims));
     }
 
     /**
@@ -192,7 +202,7 @@ public class EcoNewsController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
     })
-    @ApiPageable
+    @ApiPageable(clazz = EcoNewsGenericDto.class)
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findAll(
         @Parameter(hidden = true) Pageable page,
@@ -202,11 +212,40 @@ public class EcoNewsController {
         @RequestParam(required = false, name = "author-id") Long authorId,
         @Parameter(description = "Search for favorite news") @RequestParam(required = false, name = "favorite",
             defaultValue = "false") boolean favorite,
-        @Parameter(hidden = true) Principal principal) {
-        String userEmail = principal != null ? principal.getName() : null;
-
+        @Parameter(hidden = true) @CurrentUserId(required = false) Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            ecoNewsService.find(page, tags, title, authorId, favorite, userEmail));
+            ecoNewsService.find(page, tags, title, authorId, favorite, userId));
+    }
+
+    @Operation(summary = "Check if relevance is enabled.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @GetMapping("/relevance-enabled")
+    public ResponseEntity<Boolean> isRelevanceEnabled() {
+        boolean isRelevanceEnabled = relevanceServiceStatus.equals("enabled");
+        return ResponseEntity.status(HttpStatus.OK).body(isRelevanceEnabled);
+    }
+
+    @Operation(summary = "Find eco news by relevance.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST)))
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/relevant")
+    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findRelevantNews(
+        @Parameter(hidden = true) Pageable page,
+        @Parameter(description = "Tags to filter (if do not input tags get all)") @RequestParam(
+            required = false) List<String> tags,
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false, name = "author-name") String author,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ecoNewsRelevanceService.findRelevantEcoNews(page, tags, title, author, userVO));
     }
 
     /**
@@ -289,6 +328,25 @@ public class EcoNewsController {
     public ResponseEntity<Long> findAmountOfPublishedNews(
         @RequestParam(required = false, name = "author-id") Long authorId) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNews(authorId));
+    }
+
+    /**
+     * For external services usage. The method find count of published eco news.
+     *
+     * @return count of published eco news.
+     */
+    @Operation(summary = "Find count of published eco news", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+    })
+    @GetMapping("/count/external")
+    public ResponseEntity<Long> findAmountOfPublishedNews(
+        @RequestParam(name = "authorEmail") String authorEmail) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNews(authorEmail));
     }
 
     /**

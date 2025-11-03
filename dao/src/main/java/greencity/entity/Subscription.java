@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import greencity.enums.SubscriptionType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,6 +25,7 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, length = 72)
     private String email;
 
     @UuidGenerator

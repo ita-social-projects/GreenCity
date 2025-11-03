@@ -2,20 +2,22 @@ package greencity.webcontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
-import greencity.dto.PageableAdvancedDto;
+import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableDetailedDto;
 import greencity.dto.user.UserFilterDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
+import greencity.dto.user.UserManagementCreateDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import greencity.security.jwt.JwtTool;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
@@ -28,14 +30,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import static greencity.ModelUtils.getPrincipal;
@@ -51,7 +50,6 @@ import static greencity.TestConst.STATUS_ACTIVATED;
 import static greencity.TestConst.TEST_QUERY;
 import static greencity.TestConst.USER_ID;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -78,6 +76,9 @@ class ManagementUserControllerTest {
     @Mock
     private FilterService filterService;
 
+    @Mock
+    JwtTool jwtTool;
+
     @InjectMocks
     private ManagementUserController managementUserController;
 
@@ -87,8 +88,12 @@ class ManagementUserControllerTest {
 
     @BeforeEach
     void setUp() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(managementUserController).setCustomArgumentResolvers(
-            new PageableHandlerMethodArgumentResolver(), new UserArgumentResolver(userService, modelMapper)).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(managementUserController)
+            .setCustomArgumentResolvers(
+                new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper),
+                new UserIdArgumentResolver(jwtTool))
+            .build();
         objectMapper = new ObjectMapper();
     }
 
@@ -101,9 +106,10 @@ class ManagementUserControllerTest {
 
     @Test
     void changeStatusTest() {
+        UserVO currentUser = getUserVO();
         Map<String, String> body = getUserStatusBody();
-        managementUserController.changeStatus(USER_ID, body);
-        verify(restClient).updateStatus(USER_ID, UserStatus.ACTIVATED);
+        managementUserController.changeStatus(USER_ID, body, currentUser);
+        verify(userService).updateUserStatusById(currentUser, USER_ID, UserStatus.ACTIVATED);
     }
 
     @Test
@@ -114,7 +120,8 @@ class ManagementUserControllerTest {
 
         PageableDetailedDto<UserManagementVO> userPageableDetailedDto = getUserPageableDetailedDto();
 
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findNotDeactivatedByEmail(principal.getName()))
+            .thenReturn(userVO);
         when(userService.getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class)))
             .thenReturn(userPageableDetailedDto);
         when(filterService.getAllFilters(USER_ID)).thenReturn(response);
@@ -126,41 +133,40 @@ class ManagementUserControllerTest {
             .param("query", TEST_QUERY))
             .andExpect(model().attribute("users", userPageableDetailedDto));
 
-        verify(userService).findByEmail(anyString());
         verify(userService).getAllUsersByCriteria(any(UserFilterDto.class), any(Pageable.class));
         verify(filterService).getAllFilters(USER_ID);
     }
 
     @Test
-    void searchTest() throws Exception {
-        Pageable pageable = PageRequest.of(0, 20, Sort.unsorted());
-        UserManagementViewDto userViewDto = UserManagementViewDto.builder().id("1L").name("vivo").email("test@ukr.net")
-            .userCredo("Hello").role("1").userStatus("1").build();
-        String content = objectMapper.writeValueAsString(userViewDto);
-        List<UserManagementVO> userManagementVOS = Collections.singletonList(new UserManagementVO());
-        PageableAdvancedDto<UserManagementVO> userAdvancedDto =
-            new PageableAdvancedDto<>(userManagementVOS, 20, 0, 0, 0, true, true, true, true);
-        when(restClient.search(pageable, userViewDto)).thenReturn(userAdvancedDto);
-        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/search").content(content).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-    }
-
-    @Test
     void getReasonsOfDeactivation() throws Exception {
         List<String> test = List.of("test", "test");
-        when(restClient.getDeactivationReason(1L, "en")).thenReturn(test);
-        this.mockMvc
-            .perform(
-                get(MANAGEMENT_USER_LINK + "/reasons" + "?id=1" + "&admin=en").contentType(MediaType.APPLICATION_JSON))
+        UserVO currentUser = getUserVO();
+
+        when(userService.findNotDeactivatedByEmail(currentUser.getEmail()))
+            .thenReturn(currentUser);
+        when(userService.getDeactivationReasons(1L, currentUser)).thenReturn(test);
+
+        this.mockMvc.perform(get(MANAGEMENT_USER_LINK + "/reasons" + "?id=1")
+            .principal(currentUser::getEmail)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(restClient).getDeactivationReason(1L, "en");
+
+        verify(userService).getDeactivationReasons(1L, currentUser);
     }
 
     @Test
     void setActivatedStatus() throws Exception {
-        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/activate" + "?id=1").contentType(MediaType.APPLICATION_JSON))
+        UserVO currentUser = getUserVO();
+
+        when(userService.findNotDeactivatedByEmail(currentUser.getEmail()))
+            .thenReturn(currentUser);
+
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/activate" + "?id=1")
+            .principal(currentUser::getEmail)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(restClient).setActivatedStatus(1L);
+
+        verify(userService).updateUserStatusById(currentUser, 1L, UserStatus.ACTIVATED);
     }
 
     @Test
@@ -172,22 +178,34 @@ class ManagementUserControllerTest {
 
     @Test
     void deactivateUser() throws Exception {
-        List<String> test = List.of("test", "test");
-        String json = objectMapper.writeValueAsString(test);
+        List<String> reasons = List.of("test", "test");
+        String json = objectMapper.writeValueAsString(reasons);
+        UserVO currentUser = getUserVO();
+
+        when(userService.findNotDeactivatedByEmail(currentUser.getEmail()))
+            .thenReturn(currentUser);
+
         mockMvc.perform(
-            post(MANAGEMENT_USER_LINK + "/deactivate" + "?id=1").content(json).contentType(MediaType.APPLICATION_JSON))
+            post(MANAGEMENT_USER_LINK + "/deactivate" + "?id=1")
+                .principal(currentUser::getEmail)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(restClient).deactivateUser(1L, test);
+
+        verify(userService).deactivateUserByIdWithReasons(currentUser, 1L, reasons);
     }
 
     @Test
     void saveUserTest() throws Exception {
-        UserManagementDto dto = ModelUtils.getUserManagementDto();
+        UserManagementCreateDto dto = ModelUtils.getUserManagementCreateDto();
 
-        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/register").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .param("id", dto.getId().toString()).param("name", dto.getName()).param("email", dto.getEmail())
-            .param("userCredo", dto.getUserCredo()).param("role", dto.getRole().toString())
-            .param("userStatus", dto.getUserStatus().toString())).andExpect(status().is3xxRedirection());
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/register")
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("id", dto.getId().toString())
+            .param("name", dto.getName())
+            .param("email", dto.getEmail())
+            .param("role", dto.getRole().toString()))
+            .andExpect(status().is3xxRedirection());
 
         verify(restClient).managementRegisterUser(dto);
     }
@@ -204,13 +222,6 @@ class ManagementUserControllerTest {
     }
 
     @Test
-    void getUserById() throws Exception {
-        mockMvc.perform(get(MANAGEMENT_USER_LINK + "/findById" + "?id=1").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        verify(restClient).findById(1L);
-    }
-
-    @Test
     void findFriendsByIdTest() throws Exception {
         mockMvc.perform(get(MANAGEMENT_USER_LINK + "/" + 1L + "/friends").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -221,18 +232,24 @@ class ManagementUserControllerTest {
     void deactivateAllTest() throws Exception {
         List<Long> list = List.of(1L, 2L);
         String context = objectMapper.writeValueAsString(list);
-        mockMvc
-            .perform(
-                post(MANAGEMENT_USER_LINK + "/deactivateAll").content(context).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        context = objectMapper.writeValueAsString(null);
+        UserVO currentUser = getUserVO();
 
-        mockMvc
-            .perform(
-                post(MANAGEMENT_USER_LINK + "/deactivateAll").content(context).contentType(MediaType.APPLICATION_JSON))
+        when(userService.findNotDeactivatedByEmail(currentUser.getEmail()))
+            .thenReturn(currentUser);
+
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/deactivateAll")
+            .principal(currentUser::getEmail)
+            .content(context)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        context = objectMapper.writeValueAsString(null);
+        mockMvc.perform(post(MANAGEMENT_USER_LINK + "/deactivateAll")
+            .content(context)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
 
-        verify(restClient).deactivateAllUsers(list);
+        verify(userService).deactivateAllUsers(list, currentUser);
     }
 
     @Test
@@ -245,6 +262,7 @@ class ManagementUserControllerTest {
 
     @Test
     void saveUserFilterTest() throws Exception {
+        String jwt = "jwt";
         var principal = getPrincipal();
         UserFilterDtoRequest dto = UserFilterDtoRequest.builder().name("Test").userRole("ADMIN").userStatus("ACTIVATED")
             .searchCriteria("Test").build();
@@ -252,11 +270,16 @@ class ManagementUserControllerTest {
         User user = getUser();
 
         String content = objectMapper.writeValueAsString(dto);
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(jwtTool.extractJwtFromNativeWebRequest(any()))
+            .thenReturn(jwt);
+        when(jwtTool.extractUserId(jwt))
+            .thenReturn(TestConst.USER_ID);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(post(MANAGEMENT_USER_LINK + "/filter-save").content(content).principal(principal)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isFound());
+
+        verify(filterService).save(userVO.getId(), dto);
     }
 
     @Test

@@ -39,9 +39,7 @@ public class DataBaseBackUpController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @GetMapping("/backup")
     public ResponseEntity<String> backupDatabase() {
@@ -63,9 +61,7 @@ public class DataBaseBackUpController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
-            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
-            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @GetMapping("/backupFiles")
     public ResponseEntity<List<String>> getBackupFiles(

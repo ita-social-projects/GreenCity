@@ -3,12 +3,16 @@ package greencity.mapping;
 import greencity.dto.habit.HabitAssignPreviewDto;
 import greencity.dto.habit.HabitPreviewDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.user.UserVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
+import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +23,13 @@ import java.util.Objects;
  */
 @Component
 public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, HabitAssignPreviewDto> {
+    private final ModelMapper modelMapper;
+
+    @Lazy
+    public HabitAssignPreviewDtoMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
     /**
      * Method convert {@link HabitAssign} to {@link HabitAssignPreviewDto}.
      *
@@ -28,8 +39,12 @@ public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, 
     protected HabitAssignPreviewDto convert(HabitAssign habitAssign) {
         Habit habit = habitAssign.getHabit();
         List<HabitTranslation> habitTranslations = habitAssign.getHabit().getHabitTranslations();
+        User habitAssignUser = habitAssign.getUser();
+        UserVO habitAssignUserVO = modelMapper.map(habitAssignUser, UserVO.class);
+        LanguageDTO language = habitAssignUserVO.getLanguageVO();
+
         HabitTranslationDto habitTranslationDto = habitTranslations.stream()
-            .filter(tr -> Objects.equals(tr.getLanguage().getCode(), habitAssign.getUser().getLanguage().getCode()))
+            .filter(tr -> Objects.equals(tr.getLanguageCode(), language.getCode()))
             .findFirst().map(tr -> HabitTranslationDto.builder()
                 .name(tr.getName())
                 .description(tr.getDescription())
@@ -44,7 +59,7 @@ public class HabitAssignPreviewDtoMapper extends AbstractConverter<HabitAssign, 
         return HabitAssignPreviewDto.builder()
             .id(habitAssign.getId())
             .status(habitAssign.getStatus())
-            .userId(habitAssign.getUser().getId())
+            .userId(habitAssignUser.getId())
             .duration(habitAssign.getDuration())
             .workingDays(habitAssign.getWorkingDays())
             .habit(habitPreviewDto)

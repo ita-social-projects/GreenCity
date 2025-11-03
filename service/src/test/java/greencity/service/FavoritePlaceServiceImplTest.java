@@ -1,8 +1,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.TestConst;
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
@@ -32,8 +30,6 @@ class FavoritePlaceServiceImplTest {
     @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
     @Mock
-    private RestClient restClient;
-    @Mock
     private PlaceService placeService;
     @Mock
     private ModelMapper modelMapper;
@@ -43,26 +39,26 @@ class FavoritePlaceServiceImplTest {
     private final FavoritePlaceDto dto = ModelUtils.getFavoritePlaceDto();
     private final FavoritePlace favoritePlace = ModelUtils.getFavoritePlace();
     private final FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
-    private final String userEmail = favoritePlace.getUser().getEmail();
+    private final Long userId = favoritePlace.getUser().getId();
     private final Long favoritePlaceId = favoritePlace.getId();
     private final PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
 
     @Test
     void saveFavoritePlaceAlreadyExistTest() {
         when(placeService.existsById(any())).thenReturn(true);
-        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(new FavoritePlace());
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(dto.getPlaceId(), userId)).thenReturn(new FavoritePlace());
         when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
 
         Exception exception = assertThrows(
             WrongIdException.class,
-            () -> favoritePlaceService.save(dto, userEmail));
+            () -> favoritePlaceService.save(dto, userId));
 
         String expectedMessage =
-            "Favorite place already exist for this placeId: " + dto.getPlaceId() + " and user with email: " +
-                userEmail;
+            "Favorite place already exist for this placeId: " + dto.getPlaceId() + " and user with id: " +
+                userId;
         String actualMessage = exception.getMessage();
 
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
@@ -71,7 +67,7 @@ class FavoritePlaceServiceImplTest {
 
         Exception exception = assertThrows(
             WrongIdException.class,
-            () -> favoritePlaceService.save(dto, userEmail));
+            () -> favoritePlaceService.save(dto, userId));
 
         String expectedMessage = ErrorMessage.PLACE_NOT_FOUND_BY_ID;
         String actualMessage = exception.getMessage();
@@ -86,7 +82,7 @@ class FavoritePlaceServiceImplTest {
         when(placeService.existsById(any())).thenReturn(false);
 
         Exception exception = assertThrows(
-            WrongIdException.class, () -> favoritePlaceService.save(dto, userEmail));
+            WrongIdException.class, () -> favoritePlaceService.save(dto, userId));
         String expectedMessage = ErrorMessage.PLACE_NOT_FOUND_BY_ID;
         String actualMessage = exception.getMessage();
 
@@ -98,39 +94,37 @@ class FavoritePlaceServiceImplTest {
         when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class))).thenReturn(dto);
         when(modelMapper.map(any(FavoritePlaceDto.class), eq(FavoritePlace.class))).thenReturn(favoritePlace);
         when(placeService.existsById(any())).thenReturn(true);
-        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(anyLong(), anyLong())).thenReturn(null);
         when(favoritePlaceRepo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-        FavoritePlaceDto actual = favoritePlaceService.save(dto, userEmail);
+        FavoritePlaceDto actual = favoritePlaceService.save(dto, userId);
 
-        verify(restClient, times(1)).findIdByEmail(userEmail);
         verify(placeService, times(1)).existsById(any());
-        verify(favoritePlaceRepo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
+        verify(favoritePlaceRepo, times(1)).findByPlaceIdAndUserId(anyLong(), anyLong());
         verify(favoritePlaceRepo, times(1)).save(any(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlaceDto.class), eq(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlace.class), eq(FavoritePlaceDto.class));
-        verify(restClient, times(1)).findIdByEmail(anyString());
 
         assertEquals(dto, actual);
     }
 
     @Test
     void deleteByIdAndUserEmail() {
-        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(favoritePlace);
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(anyLong(), anyLong())).thenReturn(favoritePlace);
 
-        assertEquals(favoritePlaceId, favoritePlaceService.deleteByUserEmailAndPlaceId(favoritePlaceId, userEmail));
+        assertEquals(favoritePlaceId, favoritePlaceService.deleteByUserIdAndPlaceId(favoritePlaceId, userId));
 
-        verify(favoritePlaceRepo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
+        verify(favoritePlaceRepo, times(1)).findByPlaceIdAndUserId(anyLong(), anyLong());
         verify(favoritePlaceRepo, times(1)).delete(any());
     }
 
     @Test
     void deleteByIdAndUserEmail_FavoritePlaceNotExist() {
-        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(anyLong(), anyLong())).thenReturn(null);
 
         Exception exception = assertThrows(
             NotFoundException.class,
-            () -> favoritePlaceService.deleteByUserEmailAndPlaceId(favoritePlaceId, userEmail));
+            () -> favoritePlaceService.deleteByUserIdAndPlaceId(favoritePlaceId, userId));
         String expectedMessage = ErrorMessage.FAVORITE_PLACE_NOT_FOUND;
         String actualMessage = exception.getMessage();
 
@@ -139,22 +133,22 @@ class FavoritePlaceServiceImplTest {
 
     @Test
     void updateTest() {
-        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(any(), any())).thenReturn(favoritePlace);
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(any(), any())).thenReturn(favoritePlace);
         when(favoritePlaceRepo.save(any(FavoritePlace.class))).thenReturn(favoritePlace);
         when(modelMapper.map(favoritePlace, FavoritePlaceDto.class)).thenReturn(dto);
 
-        FavoritePlaceDto actual = favoritePlaceService.update(dto, userEmail);
+        FavoritePlaceDto actual = favoritePlaceService.update(dto, userId);
 
         assertEquals(dto, actual);
     }
 
     @Test
     void updateFavoritePlaceNotExistTest() {
-        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(any(), any())).thenReturn(null);
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(any(), any())).thenReturn(null);
 
         Exception exception = assertThrows(
             NotFoundException.class,
-            () -> favoritePlaceService.update(dto, userEmail));
+            () -> favoritePlaceService.update(dto, userId));
 
         String expectedMessage = ErrorMessage.FAVORITE_PLACE_NOT_FOUND;
         String actualMessage = exception.getMessage();
@@ -170,16 +164,16 @@ class FavoritePlaceServiceImplTest {
             favoritePlaces.add(favoritePlace);
             placeByBoundsDtos.add(placeByBoundsDto);
         }
-        when(favoritePlaceRepo.findAllByUserEmail(anyString())).thenReturn(favoritePlaces);
+        when(favoritePlaceRepo.findAllByUserId(anyLong())).thenReturn(favoritePlaces);
         when(modelMapper.map(any(FavoritePlace.class), eq(PlaceByBoundsDto.class))).thenReturn(placeByBoundsDto);
-        assertEquals(placeByBoundsDtos, favoritePlaceService.findAllByUserEmail(TestConst.EMAIL));
+        assertEquals(placeByBoundsDtos, favoritePlaceService.findAllByUserId(userId));
     }
 
     @Test
     void findAllWhenNotRecords() {
-        when(favoritePlaceRepo.findAllByUserEmail(anyString())).thenReturn(Collections.emptyList());
+        when(favoritePlaceRepo.findAllByUserId(anyLong())).thenReturn(Collections.emptyList());
 
-        boolean isNoRecords = favoritePlaceService.findAllByUserEmail(TestConst.EMAIL).isEmpty();
+        boolean isNoRecords = favoritePlaceService.findAllByUserId(userId).isEmpty();
 
         assertTrue(isNoRecords);
     }
@@ -232,18 +226,18 @@ class FavoritePlaceServiceImplTest {
         location.setAddress(favoritePlaceVO.getPlace().getLocation().getAddressEn());
         PlaceByBoundsDto favoritePlaceByBoundsDto =
             new PlaceByBoundsDto(favoritePlaceVO.getId(), favoritePlaceVO.getName(), location);
-        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(favoritePlace);
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(2L, userId)).thenReturn(favoritePlace);
         when(modelMapper.map(favoritePlace, PlaceByBoundsDto.class)).thenReturn(favoritePlaceByBoundsDto);
 
         assertEquals(favoritePlaceByBoundsDto,
-            favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
+            favoritePlaceService.getFavoritePlaceWithLocation(2L, userId));
     }
 
     @Test
     void getFavoritePlaceWithLocationNotFoundException() {
-        when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(null);
+        when(favoritePlaceRepo.findByPlaceIdAndUserId(2L, userId)).thenReturn(null);
         assertThrows(NotFoundException.class,
-            () -> favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
+            () -> favoritePlaceService.getFavoritePlaceWithLocation(2L, userId));
     }
 
 }

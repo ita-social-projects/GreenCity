@@ -19,19 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-/**
- * Scope {@code prototype} is used for creation new bean
- * {@link EcoNewsSpecification} every time after new request.
- */
-@Component
-@Scope("prototype")
-@Slf4j
 @RequiredArgsConstructor
 public class EcoNewsSpecification implements MySpecification<EcoNews> {
     private final transient List<SearchCriteria> searchCriteriaList;
@@ -39,31 +29,35 @@ public class EcoNewsSpecification implements MySpecification<EcoNews> {
     // Predicate Creators
     private final transient Map<String, TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate>> pred =
         Map.of(
-            "id", this::getNumericPredicate,
-            "title", this::getStringPredicate,
-            "text", this::getStringPredicate,
-            "imagePath", this::getStringPredicate,
-            "source", this::getStringPredicate,
-            "author", this::getAuthorPredicate,
+            EcoNews_.ID, this::getNumericPredicate,
+            EcoNews_.TITLE, this::getStringPredicate,
+            EcoNews_.TEXT, this::getStringPredicate,
+            EcoNews_.IMAGE_PATH, this::getStringPredicate,
+            EcoNews_.SOURCE, this::getStringPredicate,
+            EcoNews_.AUTHOR, this::getAuthorPredicate,
             "dateRange", this::getDataRangePredicate,
-            "creationDate", this::getCreationDatePredicate,
-            "tags", this::getTagsPredicate,
-            "hidden", this::getBooleanPredicate);
+            EcoNews_.CREATION_DATE, this::getCreationDatePredicate,
+            EcoNews_.TAGS, this::getTagsPredicate,
+            EcoNews_.HIDDEN, this::getBooleanPredicate);
 
     @Override
-    public Predicate toPredicate(@NotNull Root<EcoNews> root, @NotNull CriteriaQuery<?> criteriaQuery,
-        CriteriaBuilder criteriaBuilder) {
-        Predicate allPredicates = criteriaBuilder.conjunction();
-        for (SearchCriteria searchCriteria : searchCriteriaList) {
-            TriFunction<Root<EcoNews>, CriteriaBuilder, SearchCriteria, Predicate> predicateCreator =
-                pred.get(searchCriteria.getType());
-            if (predicateCreator != null) {
-                Predicate predicate = predicateCreator.apply(root, criteriaBuilder, searchCriteria);
-                allPredicates = criteriaBuilder.and(allPredicates, predicate);
-            }
-        }
+    public Predicate toPredicate(@NotNull Root<EcoNews> root,
+        @NotNull CriteriaQuery<?> criteriaQuery,
+        @NotNull CriteriaBuilder criteriaBuilder) {
+        Predicate allPredicates = toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
         criteriaQuery.orderBy(getOrderList(root, criteriaQuery, criteriaBuilder));
         return allPredicates;
+    }
+
+    private Predicate getAuthorPredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder,
+        SearchCriteria searchCriteria) {
+        String authorString = searchCriteria.getValue().toString().trim();
+        if (authorString.isEmpty()) {
+            return criteriaBuilder.conjunction();
+        }
+
+        return criteriaBuilder.like(root.get(searchCriteria.getKey()).get("name"),
+            "%" + searchCriteria.getValue() + "%");
     }
 
     private Predicate getTagsPredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder,

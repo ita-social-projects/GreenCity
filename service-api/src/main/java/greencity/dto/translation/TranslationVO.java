@@ -1,6 +1,5 @@
 package greencity.dto.translation;
 
-import greencity.dto.language.LanguageVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 public class TranslationVO {
     private Long id;
 
-    private LanguageVO language;
+    private String languageCode;
 
     private String content;
 }

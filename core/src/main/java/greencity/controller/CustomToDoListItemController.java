@@ -1,6 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.CurrentUserId;
+import greencity.annotations.ValidCurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.todolistitem.BulkSaveCustomToDoListItemDto;
 import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
@@ -47,6 +47,8 @@ public class CustomToDoListItemController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
@@ -55,6 +57,31 @@ public class CustomToDoListItemController {
         @PathVariable Long userId, @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customToDoListItemService.findAllAvailableCustomToDoListItems(userId, habitId));
+    }
+
+    /**
+     * For external services usage. Method for finding all custom to-do list items.
+     *
+     * @param email user email
+     * @return list of {@link CustomToDoListItemVO}
+     */
+    @Operation(summary = "Get all available custom to-do-list-items", description = "For external services usage.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
+    })
+    @GetMapping
+    public ResponseEntity<List<CustomToDoListItemResponseDto>> getAllAvailableCustomToDoListItems(
+        @RequestParam String email, @RequestParam Long habitId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(customToDoListItemService.findAllAvailableCustomToDoListItems(email, habitId));
     }
 
     /**
@@ -72,11 +99,13 @@ public class CustomToDoListItemController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @PostMapping("/{userId}/{habitAssignId}/custom-to-do-list-items")
     public ResponseEntity<List<CustomToDoListItemResponseDto>> saveUserCustomToDoListItems(
         @Valid @RequestBody BulkSaveCustomToDoListItemDto dto,
-        @Parameter(description = "Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @Parameter(description = "Id of current user. Cannot be empty.") @PathVariable @ValidCurrentUserId Long userId,
         @PathVariable Long habitAssignId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -99,11 +128,13 @@ public class CustomToDoListItemController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PatchMapping("/{userId}/custom-to-do-list-items")
-    public ResponseEntity<CustomToDoListItemResponseDto> updateItemStatus(@PathVariable @CurrentUserId Long userId,
+    public ResponseEntity<CustomToDoListItemResponseDto> updateItemStatus(@PathVariable @ValidCurrentUserId Long userId,
         @RequestParam("itemId") Long itemId,
         @RequestParam("status") String itemStatus) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -123,10 +154,12 @@ public class CustomToDoListItemController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
-            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @PatchMapping("/{userId}/done")
-    public void updateItemStatusToDone(@PathVariable @CurrentUserId Long userId,
+    public void updateItemStatusToDone(@PathVariable @ValidCurrentUserId Long userId,
         @RequestParam("itemId") Long itemId) {
         customToDoListItemService.updateItemStatusToDone(userId, itemId);
     }
@@ -145,12 +178,14 @@ public class CustomToDoListItemController {
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @DeleteMapping("/{userId}/custom-to-do-list-items")
     public ResponseEntity<List<Long>> bulkDeleteCustomToDoListItems(
         @Parameter(description = "Ids of custom to-do-list-items separated by a comma \n e.g. 1,2",
             required = true) @RequestParam String ids,
-        @PathVariable @CurrentUserId Long userId) {
+        @PathVariable @ValidCurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(customToDoListItemService.bulkDelete(ids));
     }
 
@@ -172,7 +207,7 @@ public class CustomToDoListItemController {
     })
     @GetMapping("/{userId}/custom-to-do-list-items")
     public ResponseEntity<List<CustomToDoListItemResponseDto>> getAllCustomToDoItemsByStatus(
-        @PathVariable @CurrentUserId Long userId,
+        @PathVariable @ValidCurrentUserId Long userId,
         @Parameter(description = "Available values : ACTIVE, DONE, DISABLED, INPROGRESS."
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) String status) {

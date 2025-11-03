@@ -1,13 +1,12 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserAsFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserVO;
 import greencity.enums.RecommendedFriendsType;
 import greencity.service.FriendService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +41,7 @@ public class FriendController {
      * Method for deleting user's friend.
      *
      * @param friendId id user friend.
-     * @param userVO   {@link UserVO} user.
+     * @param userId   current user id.
      * @author Marian Datsko
      */
     @Operation(summary = "Delete user's friend")
@@ -58,8 +57,8 @@ public class FriendController {
     @DeleteMapping("/{friendId}")
     public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriend(
         @Parameter(description = "Id friend of current user. Cannot be empty.") @PathVariable long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        friendService.deleteUserFriendById(userVO.getId(), friendId);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        friendService.deleteUserFriendById(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -78,7 +77,7 @@ public class FriendController {
      * Method for add new user friend.
      *
      * @param friendId id user friend.
-     * @param userVO   {@link UserVO} user.
+     * @param userId   current user id.
      * @author Marian Datsko
      */
     @Operation(summary = "Add new user friend")
@@ -94,8 +93,8 @@ public class FriendController {
     @PostMapping("/{friendId}")
     public ResponseEntity<ResponseEntity.BodyBuilder> addNewFriend(
         @Parameter(description = "Id friend of current user. Cannot be empty.") @PathVariable long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        friendService.addNewFriend(userVO.getId(), friendId);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        friendService.addNewFriend(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -103,7 +102,7 @@ public class FriendController {
      * Method for accepting friend request from user.
      *
      * @param friendId id user friend.
-     * @param userVO   {@link UserVO} user.
+     * @param userId   current user id.
      */
     @Operation(summary = "Accept friend request")
     @ApiResponses(value = {
@@ -118,8 +117,8 @@ public class FriendController {
     @PatchMapping("/{friendId}/acceptFriend")
     public ResponseEntity<ResponseEntity.BodyBuilder> acceptFriendRequest(
         @Parameter(description = "Friend's id. Cannot be empty.") @PathVariable long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        friendService.acceptFriendRequest(userVO.getId(), friendId);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        friendService.acceptFriendRequest(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -128,7 +127,7 @@ public class FriendController {
      * REJECTED.
      *
      * @param friendId id user friend.
-     * @param userVO   {@link UserVO} user.
+     * @param userId   current user id.
      */
     @Operation(summary = "Decline friend request")
     @ApiResponses(value = {
@@ -143,8 +142,8 @@ public class FriendController {
     @PatchMapping("/{friendId}/declineFriend")
     public ResponseEntity<Object> declineFriendRequest(
         @Parameter(description = "Friend's id. Cannot be empty.") @PathVariable long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        friendService.declineFriendRequest(userVO.getId(), friendId);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        friendService.declineFriendRequest(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -165,7 +164,7 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/user/{userId}")
-    @ApiPageable
+    @ApiPageable(clazz = UserManagementDto.class)
     public ResponseEntity<PageableDto<UserManagementDto>> findUserFriendsByUserId(
         @Parameter(hidden = true) @PageableDefault Pageable page,
         @PathVariable long userId) {
@@ -194,22 +193,22 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{userId}/all-user-friends")
-    @ApiPageable
+    @ApiPageable(clazz = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(
         @Parameter(hidden = true) @PageableDefault Pageable page,
         @PathVariable long userId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long currentUserId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(page, userId,
-                userVO.getId()));
+                currentUserId));
     }
 
     /**
      * Method to find {@link UserFriendDto}s that are not friend for current
      * user(except current user).
      *
-     * @param userVO user.
+     * @param userId current user id.
      * @param name   filtering name.
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
@@ -224,17 +223,17 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/not-friends-yet")
-    @ApiPageable
+    @ApiPageable(clazz = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
         @Parameter(hidden = true) @PageableDefault Pageable page,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestParam(required = false, defaultValue = "") String name,
         @RequestParam(required = false, defaultValue = "false") boolean filterByFriendsOfFriends,
         @RequestParam(required = false, defaultValue = "false") boolean filterByCity) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
-                userVO.getId(),
+                userId,
                 name,
                 filterByFriendsOfFriends,
                 filterByCity,
@@ -244,7 +243,7 @@ public class FriendController {
     /**
      * Method to find recommended friends for current user by type.
      *
-     * @param userVO user.
+     * @param userId current user id.
      * @param type   type to find recommended friends Supported values:
      *               "FRIENDS_OF_FRIENDS", "HABITS", "CITY".
      *
@@ -259,20 +258,20 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/recommended-friends")
-    @ApiPageable
+    @ApiPageable(clazz = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> findRecommendedFriends(
         @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) RecommendedFriendsType type,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findRecommendedFriends(userVO.getId(), type, page));
+            .body(friendService.findRecommendedFriends(userId, type, page));
     }
 
     /**
      * Method to find {@link UserFriendDto}s which sent request to current user.
      *
-     * @param userVO user.
+     * @param userId current user id.
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
@@ -285,21 +284,21 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/friendRequests")
-    @ApiPageable
+    @ApiPageable(clazz = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> getAllUserFriendsRequests(
         @RequestParam(required = false, defaultValue = "") String name,
         @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
         @Parameter(hidden = true) Pageable page,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.getAllUserFriendRequests(userVO.getId(), name, filterByCity, page));
+            .body(friendService.getAllUserFriendRequests(userId, name, filterByCity, page));
     }
 
     /**
      * The method returns friends for the current user.
      *
-     * @param userVO user.
+     * @param userId current user id.
      * @param name   filtering name.
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
@@ -313,15 +312,15 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED)))
     })
     @GetMapping
-    @ApiPageable
+    @ApiPageable(clazz = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> findAllFriendsOfUser(
         @RequestParam(required = false, defaultValue = "") String name,
         @RequestParam(required = false, defaultValue = "false") boolean filterByCity,
         @Parameter(hidden = true) Pageable page,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllFriendsOfUser(userVO.getId(),
+            .body(friendService.findAllFriendsOfUser(userId,
                 name,
                 filterByCity,
                 page));
@@ -332,7 +331,7 @@ public class FriendController {
      *
      * @param friendId The id of the friend for whom you want to find mutual
      *                 friends.
-     * @param userVO   current user.
+     * @param userId   current user id.
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
@@ -347,13 +346,13 @@ public class FriendController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/mutual-friends")
-    @ApiPageable
+    @ApiPageable(clazz = UserFriendDto.class)
     public ResponseEntity<PageableDto<UserFriendDto>> getMutualFriends(
         @RequestParam Long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) Pageable page) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(friendService.getMutualFriends(userVO.getId(), friendId, page));
+            .body(friendService.getMutualFriends(userId, friendId, page));
     }
 
     /**
@@ -361,7 +360,7 @@ public class FriendController {
      * with friendId.
      *
      * @param friendId id user friend.
-     * @param userVO   {@link UserVO} user.
+     * @param userId   current user id.
      * @author Lilia Mokhnatska
      */
     @Operation(summary = "Delete user's request to friend")
@@ -377,8 +376,8 @@ public class FriendController {
     @DeleteMapping("/{friendId}/cancelRequest")
     public ResponseEntity<ResponseEntity.BodyBuilder> cancelRequest(
         @Parameter(description = "Id friend of current user. Cannot be empty.") @PathVariable long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        friendService.deleteRequestOfCurrentUserToFriend(userVO.getId(), friendId);
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        friendService.deleteRequestOfCurrentUserToFriend(userId, friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -386,7 +385,7 @@ public class FriendController {
      * Method for getting common data of users.
      *
      * @param friendId id of user.
-     * @param userVO   {@link UserVO} user.
+     * @param userId   current user id.
      *
      * @return {@link UserAsFriendDto}
      * @author Denys Ryhal.
@@ -404,9 +403,9 @@ public class FriendController {
     @GetMapping("/user-data-as-friend/{friendId}")
     public ResponseEntity<UserAsFriendDto> getUserAsFriend(
         @PathVariable Long friendId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.getUserAsFriend(userVO.getId(), friendId));
+            .body(friendService.getUserAsFriend(userId, friendId));
     }
 }

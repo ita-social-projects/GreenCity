@@ -1,23 +1,24 @@
 package greencity.config;
 
 import greencity.constant.ErrorMessage;
-import greencity.exception.exceptions.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.core.MethodParameter;
+import org.springframework.data.domain.Sort;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.context.request.NativeWebRequest;
-
 import static greencity.constant.PageableConstants.DEFAULT_PAGE;
 import static greencity.constant.PageableConstants.DEFAULT_PAGE_SIZE;
 import static greencity.constant.PageableConstants.PAGE;
 import static greencity.constant.PageableConstants.SIZE;
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,28 +28,38 @@ class CustomPageableHandlerMethodArgumentResolverTest {
     @Mock
     private NativeWebRequest webRequest;
 
+    @Mock
+    private CustomSortHandlerMethodArgumentResolver customSortHandlerMethodArgumentResolver;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        resolver = new CustomPageableHandlerMethodArgumentResolver();
+        resolver = new CustomPageableHandlerMethodArgumentResolver(customSortHandlerMethodArgumentResolver);
     }
 
     @Test
     void shouldReturnDefaultPageableWhenNoParametersProvidedTest() {
-        when(webRequest.getParameter("page")).thenReturn(null);
-        when(webRequest.getParameter("size")).thenReturn(null);
+        when(webRequest.getParameter(PAGE)).thenReturn(null);
+        when(webRequest.getParameter(SIZE)).thenReturn(null);
+        when(customSortHandlerMethodArgumentResolver.resolveArgument(any(), any(), any(), any()))
+            .thenReturn(Sort.unsorted());
 
-        Pageable pageable = resolver.resolveArgument(null, null, webRequest, null);
+        MethodParameter methodParameter = mock(MethodParameter.class);
+
+        Pageable pageable = resolver.resolveArgument(methodParameter, null, webRequest, null);
 
         assertEquals(PageRequest.of(DEFAULT_PAGE, DEFAULT_PAGE_SIZE), pageable);
     }
 
     @Test
     void shouldReturnCustomPageableWhenValidParametersProvidedTest() {
-        when(webRequest.getParameter("page")).thenReturn("2");
-        when(webRequest.getParameter("size")).thenReturn("10");
+        when(webRequest.getParameter(PAGE)).thenReturn("2");
+        when(webRequest.getParameter(SIZE)).thenReturn("10");
+        when(customSortHandlerMethodArgumentResolver.resolveArgument(any(), any(), any(), any()))
+            .thenReturn(Sort.unsorted());
 
-        Pageable pageable = resolver.resolveArgument(null, null, webRequest, null);
+        MethodParameter methodParameter = mock(MethodParameter.class);
+
+        Pageable pageable = resolver.resolveArgument(methodParameter, null, webRequest, null);
 
         assertEquals(PageRequest.of(2, 10), pageable);
     }
@@ -57,11 +68,13 @@ class CustomPageableHandlerMethodArgumentResolverTest {
     void shouldThrowExceptionWhenPageIsNegativeTest() {
         when(webRequest.getParameter(PAGE)).thenReturn("-1");
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(null, null, webRequest, null));
+        MethodParameter methodParameter = mock(MethodParameter.class);
 
-        assertEquals(String.format(ErrorMessage.NEGATIVE_VALUE_EXCEPTION,"page"),
-                exception.getMessage());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> resolver.resolveArgument(methodParameter, null, webRequest, null));
+
+        assertEquals(String.format(ErrorMessage.NEGATIVE_VALUE_EXCEPTION, "page"),
+            exception.getMessage());
     }
 
     @Test
@@ -69,11 +82,13 @@ class CustomPageableHandlerMethodArgumentResolverTest {
         when(webRequest.getParameter(PAGE)).thenReturn("1");
         when(webRequest.getParameter(SIZE)).thenReturn("-10");
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(null, null, webRequest, null));
+        MethodParameter methodParameter = mock(MethodParameter.class);
 
-        assertEquals(String.format(ErrorMessage.NEGATIVE_VALUE_EXCEPTION,"size"),
-                exception.getMessage());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> resolver.resolveArgument(methodParameter, null, webRequest, null));
+
+        assertEquals(String.format(ErrorMessage.NEGATIVE_VALUE_EXCEPTION, "size"),
+            exception.getMessage());
     }
 
     @Test
@@ -81,8 +96,10 @@ class CustomPageableHandlerMethodArgumentResolverTest {
         when(webRequest.getParameter(PAGE)).thenReturn("2");
         when(webRequest.getParameter(SIZE)).thenReturn("200");
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
-                resolver.resolveArgument(null, null, webRequest, null));
+        MethodParameter methodParameter = mock(MethodParameter.class);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> resolver.resolveArgument(methodParameter, null, webRequest, null));
 
         assertEquals(ErrorMessage.MAX_PAGE_SIZE_EXCEPTION, exception.getMessage());
     }
@@ -91,22 +108,25 @@ class CustomPageableHandlerMethodArgumentResolverTest {
     void shouldThrowExceptionWhenPageIsInvalidTest() {
         when(webRequest.getParameter("page")).thenReturn("abc");
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(null, null, webRequest, null));
+        MethodParameter methodParameter = mock(MethodParameter.class);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> resolver.resolveArgument(methodParameter, null, webRequest, null));
 
         assertEquals(String.format(ErrorMessage.INVALID_VALUE_EXCEPTION, "page"),
-                exception.getMessage());
+            exception.getMessage());
     }
 
     @Test
-    void shouldThrowExceptionWhenSizeInvalidTest(){
+    void shouldThrowExceptionWhenSizeInvalidTest() {
         when(webRequest.getParameter(PAGE)).thenReturn("2");
         when(webRequest.getParameter(SIZE)).thenReturn("abc");
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                resolver.resolveArgument(null, null, webRequest, null));
+        MethodParameter methodParameter = mock(MethodParameter.class);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> resolver.resolveArgument(methodParameter, null, webRequest, null));
 
         assertEquals(String.format(ErrorMessage.INVALID_VALUE_EXCEPTION, "size"), exception.getMessage());
     }
-
 }

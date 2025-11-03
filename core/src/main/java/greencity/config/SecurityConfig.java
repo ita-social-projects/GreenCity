@@ -1,5 +1,6 @@
 package greencity.config;
 
+import greencity.constant.ErrorMessage;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.filters.XSSFilter;
 import greencity.security.jwt.JwtTool;
@@ -30,6 +31,8 @@ import static greencity.constant.AppConstant.ADMIN;
 import static greencity.constant.AppConstant.USER;
 import static greencity.constant.AppConstant.MODERATOR;
 import static greencity.constant.AppConstant.UBS_EMPLOYEE;
+import static greencity.constant.AppConstant.LOGS_LINKS;
+import static greencity.constant.AppConstant.EXPORT_SETTINGS_LINKS;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -86,7 +89,10 @@ public class SecurityConfig {
     private static final String HABIT_INVITE = "/habit/invite";
     private static final String INVITATION_ID = "/{invitationId}";
     private static final String COMMIT_INFO = "/commit-info";
-    public static final String LOGS = "/logs/**";
+    public static final String USERS = "/users";
+    private static final String DISLIKE_V2 = "/dislikeV2";
+    private static final String LIKE_V2 = "/likeV2";
+    private static final String EXTERNAL = "/external";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -128,7 +134,7 @@ public class SecurityConfig {
             .addFilterBefore(new XSSFilter(),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception.authenticationEntryPoint((req, resp, exc) -> resp
-                .sendError(SC_UNAUTHORIZED, "Authorize first."))
+                .sendError(SC_UNAUTHORIZED, ErrorMessage.UNAUTHORIZED_RESPONSE))
                 .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities.")))
             .authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -143,14 +149,13 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**")
                 .permitAll()
-                .requestMatchers("/css/**", "/img/**").permitAll()
+                .requestMatchers("/css/**", "/img/**", "/scripts/**").permitAll()
                 .requestMatchers(HttpMethod.GET,
                     FACT_OF_THE_DAY + RANDOM,
                     CATEGORIES,
                     "/place/info/{id}",
                     "/place/statuses",
                     "/place/all",
-                    "/habit",
                     "/habit/{id}",
                     "/habit/{id}/to-do-list",
                     "/tags/search",
@@ -196,7 +201,6 @@ public class SecurityConfig {
                     EVENTS + EVENT_ID,
                     EVENTS + "/v2" + EVENT_ID,
                     EVENTS + EVENT_ID + ATTENDERS,
-                    "/languages/codes",
                     SEARCH + ECO_NEWS,
                     SEARCH + EVENTS,
                     SEARCH + PLACES,
@@ -224,13 +228,15 @@ public class SecurityConfig {
                     CUSTOM_TO_DO_LIST,
                     CUSTOM_TO_DO_LIST_URL,
                     "/custom/to-do-list-items/{userId}/{habitId}",
+                    ECO_NEWS + "/relevant",
                     ECO_NEWS + COUNT,
                     ECO_NEWS + ECO_NEWS_ID + "/summary",
                     ECO_NEWS + ECO_NEWS_ID + LIKES + "/{userId}",
-                    ECO_NEWS + ECO_NEWS_ID + "/dislikeV2",
-                    ECO_NEWS + ECO_NEWS_ID + "/likeV2",
+                    ECO_NEWS + ECO_NEWS_ID + DISLIKE_V2,
+                    ECO_NEWS + ECO_NEWS_ID + LIKE_V2,
                     "/favorite_place/",
                     "/to-do-list-items",
+                    "/habit",
                     "/habit/assign/allForCurrentUser",
                     "/habit/assign/allMutualHabits/{userId}",
                     "/habit/assign/allUser/{userId}",
@@ -295,7 +301,10 @@ public class SecurityConfig {
                     FRIENDS,
                     NOTIFICATIONS,
                     HABIT_ASSIGN_ID + "/friends/habit-duration-info",
-                    "/ai/**")
+                    "/ai/**",
+                    EXPORT_SETTINGS_LINKS,
+                    LOGS_LINKS,
+                    USERS + "/activatedUsersAmount")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     CATEGORIES,
@@ -326,7 +335,6 @@ public class SecurityConfig {
                     NOTIFICATIONS + NOTIFICATION_ID + "/viewNotification",
                     NOTIFICATIONS + NOTIFICATION_ID + "/unreadNotification",
                     CUSTOM_TO_DO_LIST_ITEMS,
-                    "/files",
                     HABIT_ASSIGN_ID,
                     HABIT_ASSIGN_ID + "/custom",
                     "/habit/assign/{habitAssignId}/enroll/**",
@@ -353,9 +361,12 @@ public class SecurityConfig {
                     ECO_NEWS + "/{ecoNewsId}/favorites",
                     "/habit/assign/{habitId}/invite",
                     "place/v2/save",
-                    EVENTS + COMMENTS + "/dislikeV2" + COMMENT_ID,
-                    EVENTS + COMMENTS + "/likeV2" + COMMENT_ID,
-                    LOGS)
+                    EVENTS + COMMENTS + DISLIKE_V2 + COMMENT_ID,
+                    EVENTS + COMMENTS + LIKE_V2 + COMMENT_ID,
+                    ECO_NEWS + COMMENTS + DISLIKE_V2,
+                    ECO_NEWS + COMMENTS + LIKE,
+                    ECO_NEWS + COMMENTS + LIKE_V2,
+                    LOGS_LINKS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.PUT,
                     "/habit/statistic/{id}",
@@ -426,35 +437,63 @@ public class SecurityConfig {
                     COMMENTS,
                     COMMENTS + "/{id}",
                     "/user/all",
-                    "/user/roles")
+                    "/user/roles",
+                    "/ai/generate/eco-news",
+                    USERS + "/status",
+                    "/custom/to-do-list-items",
+                    ECO_NEWS + COUNT + EXTERNAL,
+                    EVENTS + ATTENDERS + COUNT + EXTERNAL,
+                    EVENTS + ORGANIZERS + COUNT + EXTERNAL,
+                    "/habit/statistic/acquired" + COUNT + EXTERNAL,
+                    "/habit/statistic/in-progress" + COUNT + EXTERNAL,
+                    USERS + "/user/cities",
+                    USERS + "/user/all-friends",
+                    USERS + "/user/friends",
+                    USERS + "/user/top-friends",
+                    USERS + "/profiles" + EXTERNAL,
+                    USERS + "/reasons",
+                    USERS + "/status")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
                     "/place/filter/predicate")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.PUT,
-                    "/place/update/")
+                    "/place/update/",
+                    USERS + "/user/picturePath",
+                    USERS + "/status/{userId}")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.PATCH,
                     "/place/status",
-                    "/place/statuses")
+                    "/place/statuses",
+                    USERS + "/user/location",
+                    USERS + "/user-rating",
+                    USERS + "/user/name")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.DELETE,
                     "/place/{id}",
-                    "/place")
+                    "/place",
+                    USERS + "/delete")
                 .hasAnyRole(ADMIN, MODERATOR)
                 .requestMatchers(HttpMethod.POST,
-                    "/user/filter")
+                    "/user/filter",
+                    USERS + "/create")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.PATCH,
                     "/user",
                     "/user/status",
                     "/user/role",
-                    "/user/update/role")
+                    "/user/update/role",
+                    USERS + "/**")
                 .hasAnyRole(ADMIN)
                 .requestMatchers(HttpMethod.DELETE,
                     COMMENTS)
                 .hasAnyRole(ADMIN)
-                .anyRequest().hasAnyRole(ADMIN))
+                .requestMatchers(HttpMethod.GET,
+                    ACHIEVEMENTS + "/all",
+                    ACHIEVEMENTS + "/user-achievements/**",
+                    USERS + "/**")
+                .hasAnyRole(ADMIN)
+                .anyRequest().permitAll())
             .logout(logout -> logout.logoutUrl("/logout")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", HttpMethod.GET.name()))
                 .clearAuthentication(true)

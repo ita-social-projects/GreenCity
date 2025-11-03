@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -56,7 +57,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/place")
@@ -185,9 +185,9 @@ public class PlaceController {
     })
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
-        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @Parameter(hidden = true) Principal principal) {
+        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(favoritePlaceService.save(favoritePlaceDto, principal.getName()));
+            .body(favoritePlaceService.save(favoritePlaceDto, userId));
     }
 
     /**
@@ -237,7 +237,7 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @GetMapping("/{status}")
-    @ApiPageable
+    @ApiPageable(clazz = AdminPlaceDto.class)
     public ResponseEntity<PageableDto<AdminPlaceDto>> getPlacesByStatus(
         @PathVariable PlaceStatus status,
         @Parameter(hidden = true) Pageable pageable) {
@@ -268,8 +268,8 @@ public class PlaceController {
     @PostMapping("/filter")
     public ResponseEntity<List<PlaceByBoundsDto>> getFilteredPlaces(
         @Valid @RequestBody FilterPlaceDto filterDto,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userVO));
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.ok().body(placeService.getPlacesByFilter(filterDto, userId));
     }
 
     /**
@@ -353,7 +353,7 @@ public class PlaceController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PostMapping("/filter/predicate")
-    @ApiPageable
+    @ApiPageable(clazz = AdminPlaceDto.class)
     public ResponseEntity<PageableDto<AdminPlaceDto>> filterPlaceBySearchPredicate(
         @Valid @RequestBody FilterPlaceDto filterDto,
         @Parameter(hidden = true) Pageable pageable) {
@@ -453,8 +453,8 @@ public class PlaceController {
      * The method which delete array of {@link PlaceVO}'s from DB(change
      * {@link PlaceStatus} to DELETED).
      *
-     * @param ids - list of id's of {@link PlaceVO}'s, splited by "," which need to
-     *            be deleted
+     * @param ids - list of id's of {@link PlaceVO}'s, split by "," which need to be
+     *            deleted
      * @return count of deleted {@link PlaceVO}'s
      */
     @Operation(summary = "Bulk delete places")
@@ -471,9 +471,13 @@ public class PlaceController {
     public ResponseEntity<Long> bulkDelete(
         @Parameter(description = "Ids of places separated by a comma \n e.g. 1,2",
             required = true) @RequestParam String ids) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.bulkDelete(Arrays.stream(ids.split(","))
-            .map(Long::valueOf)
-            .collect(Collectors.toList())));
+        return ResponseEntity.status(HttpStatus.OK).body(
+            placeService.bulkDelete(
+                Arrays.stream(ids.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(Long::valueOf)
+                    .toList()));
     }
 
     /**
@@ -504,10 +508,10 @@ public class PlaceController {
     @PostMapping(value = "/v2/save",
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<PlaceResponse> saveEcoPlaceFromUi(@Parameter(required = true) @RequestPart AddPlaceDto dto,
-        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(placeService.addPlaceFromUi(dto, principal.getName(), images));
+            .body(placeService.addPlaceFromUi(dto, userId, images));
     }
 
     /**
@@ -522,10 +526,10 @@ public class PlaceController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
             content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
     })
-    @ApiPageable
+    @ApiPageable(clazz = AdminPlaceDto.class)
     @GetMapping("all")
     public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(@Parameter(hidden = true) Pageable page,
-        @Parameter(hidden = true) Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll(page, principal));
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll(page, userId));
     }
 }

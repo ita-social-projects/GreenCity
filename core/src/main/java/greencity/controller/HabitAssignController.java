@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
@@ -125,7 +126,7 @@ public class HabitAssignController {
      * REQUESTED to INPROGRESS.
      *
      * @param habitAssignId {@link HabitAssignVO} id.
-     * @param userVO        {@link UserVO} instance.
+     * @param userId        current user id.
      * @param duration      {@link Integer} with needed duration.
      */
     @Operation(summary = "Update duration of HabitAssign and HabitAssignStatus")
@@ -142,17 +143,17 @@ public class HabitAssignController {
     @PutMapping("{habitAssignId}/update-status-and-duration")
     public ResponseEntity<HabitAssignUserDurationDto> updateStatusAndDurationOfHabitAssign(
         @PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestParam @Min(AppConstant.MIN_DAYS_DURATION) @Max(AppConstant.MAX_DAYS_DURATION) Integer duration) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.updateStatusAndDurationOfHabitAssign(habitAssignId, userVO.getId(), duration));
+            .body(habitAssignService.updateStatusAndDurationOfHabitAssign(habitAssignId, userId, duration));
     }
 
     /**
      * Method which updates duration of habit assigned for user.
      *
      * @param habitAssignId {@link HabitVO} id.
-     * @param userVO        {@link UserVO} instance.
+     * @param userId        current user id.
      * @param duration      {@link Integer} with needed duration.
      * @return {@link ResponseEntity}.
      */
@@ -170,10 +171,10 @@ public class HabitAssignController {
     })
     public ResponseEntity<HabitAssignUserDurationDto> updateHabitAssignDuration(
         @PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @RequestParam @Min(AppConstant.MIN_DAYS_DURATION) @Max(AppConstant.MAX_DAYS_DURATION) Integer duration) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.updateUserHabitInfoDuration(habitAssignId, userVO.getId(), duration));
+            .body(habitAssignService.updateUserHabitInfoDuration(habitAssignId, userId, duration));
     }
 
     /**
@@ -181,7 +182,7 @@ public class HabitAssignController {
      * language.
      *
      * @param habitAssignId {@link HabitAssignVO} id.
-     * @param userVO        {@link UserVO}.
+     * @param userId        current user id.
      * @param locale        needed language code.
      * @return {@link HabitAssignDto}.
      */
@@ -201,16 +202,16 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/{habitAssignId}")
     public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO, @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @CurrentUserId Long userId, @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getByHabitAssignIdAndUserId(habitAssignId, userVO.getId(), locale.getLanguage()));
+            .body(habitAssignService.getByHabitAssignIdAndUserId(habitAssignId, userId, locale.getLanguage()));
     }
 
     /**
      * Method for finding all inprogress, acquired {@link HabitAssignDto}'s for
      * current user.
      *
-     * @param userVO {@link UserVO} instance.
+     * @param userId current user id.
      * @param locale needed language code.
      * @return list of {@link HabitAssignDto}.
      */
@@ -226,11 +227,11 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/allForCurrentUser")
     public ResponseEntity<List<HabitAssignDto>> getCurrentUserHabitAssignsByIdAndAcquired(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getAllHabitAssignsByUserIdAndStatusNotCancelled(userVO.getId(), locale.getLanguage()));
+                .getAllHabitAssignsByUserIdAndStatusNotCancelled(userId, locale.getLanguage()));
     }
 
     /**
@@ -265,10 +266,10 @@ public class HabitAssignController {
      * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
      * the current user and another specified user, with pagination.
      *
-     * @param userId   the {@code User} id of the other user to find mutual habit
-     *                 assignments with.
-     * @param userVO   {@link UserVO} instance representing the current user.
-     * @param pageable the {@link Pageable} object for pagination information.
+     * @param userId        the {@code User} id of the other user to find mutual
+     *                      habit assignments with.
+     * @param currentUserId current user id.
+     * @param pageable      the {@link Pageable} object for pagination information.
      * @return a {@link ResponseEntity} containing a {@link PageableAdvancedDto}
      *         with a list of {@link HabitAssignPreviewDto} representing the found
      *         mutual habit assignments and pagination information.
@@ -284,21 +285,21 @@ public class HabitAssignController {
     @GetMapping("/allMutualHabits/{userId}")
     public ResponseEntity<PageableAdvancedDto<HabitAssignPreviewDto>> getAllMutualHabitsWithUser(
         @PathVariable Long userId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long currentUserId,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getAllMutualHabitAssignsWithUserAndStatusNotCancelled(userId, userVO.getId(), pageable));
+                .getAllMutualHabitAssignsWithUserAndStatusNotCancelled(userId, currentUserId, pageable));
     }
 
     /**
      * Finds all mutual in-progress and acquired {@link HabitAssignPreviewDto} for
      * user made by current user, with pagination.
      *
-     * @param userId   the {@code User} id of the other user to find habit
-     *                 assignments with.
-     * @param userVO   {@link UserVO} instance representing the current user.
-     * @param pageable the {@link Pageable} object for pagination information.
+     * @param userId        the {@code User} id of the other user to find habit
+     *                      assignments with.
+     * @param currentUserId current user id.
+     * @param pageable      the {@link Pageable} object for pagination information.
      * @return a {@link ResponseEntity} containing a {@link PageableAdvancedDto}
      *         with a list of {@link HabitAssignPreviewDto} representing the found
      *         assignments and pagination information.
@@ -314,18 +315,18 @@ public class HabitAssignController {
     @GetMapping("/myHabits/{userId}")
     public ResponseEntity<PageableAdvancedDto<HabitAssignPreviewDto>> getMyHabitsOfCurrentUser(
         @PathVariable Long userId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long currentUserId,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getMyHabitsOfCurrentUserAndStatusNotCancelled(userId, userVO.getId(), pageable));
+                .getMyHabitsOfCurrentUserAndStatusNotCancelled(userId, currentUserId, pageable));
     }
 
     /**
      * Method that return UserToDoList and CustomToDoList.
      *
      * @param habitAssignId {@link HabitAssignVO} id.
-     * @param userVO        {@link UserVO} instance.
+     * @param userId        current user id.
      * @param locale        needed language code.
      * @return User To-Dog List and Custom To-Do List.
      */
@@ -344,18 +345,18 @@ public class HabitAssignController {
     @GetMapping("{habitAssignId}/allUserAndCustomList")
     public ResponseEntity<UserToDoAndCustomToDoListsDto> getUserToDoAndCustomToDoLists(
         @PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getUserToDoAndCustomToDoLists(userVO.getId(), habitAssignId, locale.getLanguage()));
+                .getUserToDoAndCustomToDoLists(userId, habitAssignId, locale.getLanguage()));
     }
 
     /**
      * Method that update UserToDoList and CustomToDo List.
      *
      * @param habitAssignId {@link HabitAssignVO} id.
-     * @param userVO        {@link UserVO} instance.
+     * @param userId        current user id.
      * @param locale        needed language code.
      * @param listsDto      {@link UserToDoAndCustomToDoListsDto} instance.
      */
@@ -378,10 +379,10 @@ public class HabitAssignController {
     @PutMapping("{habitAssignId}/allUserAndCustomList")
     public ResponseEntity<ResponseEntity.BodyBuilder> updateUserAndCustomToDoLists(
         @PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Valid @RequestBody UserToDoAndCustomToDoListsDto listsDto) {
-        habitAssignService.fullUpdateUserAndCustomToDoLists(userVO.getId(), habitAssignId, listsDto,
+        habitAssignService.fullUpdateUserAndCustomToDoLists(userId, habitAssignId, listsDto,
             locale.getLanguage());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -390,7 +391,7 @@ public class HabitAssignController {
      * Method that return list of UserToDoLists and CustomToDoLists for current
      * user, specific language and INPROGRESS status.
      *
-     * @param userVO {@link UserVO} instance.
+     * @param userId current user id.
      * @param locale needed language code.
      * @return List of User To-Do Lists and Custom To-Do Lists.
      */
@@ -410,10 +411,10 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/allUserAndCustomToDoListsInprogress")
     public ResponseEntity<List<UserToDoAndCustomToDoListsDto>> getListOfUserAndCustomToDoListsInprogress(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO, @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @CurrentUserId Long userId, @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getListOfUserAndCustomToDoListsWithStatusInprogress(userVO.getId(), locale.getLanguage()));
+                .getListOfUserAndCustomToDoListsWithStatusInprogress(userId, locale.getLanguage()));
     }
 
     /**
@@ -446,7 +447,7 @@ public class HabitAssignController {
      * Method to return {@link HabitAssignVO} by it's {@link HabitVO} id.
      *
      * @param habitId {@link HabitVO} id.
-     * @param userVO  {@link UserVO} user.
+     * @param userId  current user id.
      * @param locale  needed language code.
      * @return {@link HabitAssignDto} instance.
      */
@@ -464,12 +465,12 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/{habitId}/active")
     public ResponseEntity<HabitAssignDto> getHabitAssignByHabitId(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @PathVariable Long habitId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .findHabitAssignByUserIdAndHabitId(userVO.getId(), habitId, locale.getLanguage()));
+                .findHabitAssignByUserIdAndHabitId(userId, habitId, locale.getLanguage()));
     }
 
     /**
@@ -477,7 +478,7 @@ public class HabitAssignController {
      * {@link HabitAssignVO} id.
      *
      * @param habitAssignId {@link HabitAssignVO} id.
-     * @param userVO        {@link UserVO} user.
+     * @param userId        current user id.
      * @param locale        needed language code.
      * @return {@link HabitDto} instance.
      */
@@ -495,12 +496,12 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/{habitAssignId}/more")
     public ResponseEntity<HabitDto> getUsersHabitByHabitAssignId(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @PathVariable Long habitAssignId,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .findHabitByUserIdAndHabitAssignId(userVO.getId(), habitAssignId, locale.getLanguage()));
+                .findHabitByUserIdAndHabitAssignId(userId, habitAssignId, locale.getLanguage()));
     }
 
     /**
@@ -533,7 +534,7 @@ public class HabitAssignController {
      * Method to enroll {@link HabitAssignVO} for current date.
      *
      * @param habitAssignId - id of {@link HabitAssignVO}.
-     * @param userVO        {@link UserVO} user.
+     * @param userId        - current user id.
      * @param date          - {@link LocalDate} we want to enroll.
      * @param locale        - needed language code.
      * @return {@link HabitStatusCalendarDto}.
@@ -554,18 +555,18 @@ public class HabitAssignController {
     @ApiLocale
     @PostMapping("/{habitAssignId}/enroll/{date}")
     public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.enrollHabit(habitAssignId, userVO.getId(), date, locale.getLanguage()));
+            .body(habitAssignService.enrollHabit(habitAssignId, userId, date, locale.getLanguage()));
     }
 
     /**
      * Method to unenroll {@link HabitAssignVO} for defined date.
      *
      * @param habitAssignId - id of {@link HabitAssignVO}.
-     * @param userVO        {@link UserVO} user.
+     * @param userId        - current user id.
      * @param date          - {@link LocalDate} we want to unenroll.
      * @return {@link HabitAssignDto} instance.
      */
@@ -584,17 +585,17 @@ public class HabitAssignController {
     })
     @PostMapping("/{habitAssignId}/unenroll/{date}")
     public ResponseEntity<HabitAssignDto> unenrollHabit(@PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.unenrollHabit(habitAssignId, userVO.getId(), date));
+            .body(habitAssignService.unenrollHabit(habitAssignId, userId, date));
     }
 
     /**
      * Method to find all inprogress {@link HabitAssignVO} on certain
      * {@link LocalDate}.
      *
-     * @param userVO {@link UserVO} user.
+     * @param userId current user id.
      * @param date   {@link LocalDate} date to check if there is in progress
      *               assigns.
      * @param locale needed language code.
@@ -612,19 +613,19 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/active/{date}")
     public ResponseEntity<List<HabitAssignDto>> getInprogressHabitAssignOnDate(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .findInprogressHabitAssignsOnDate(userVO.getId(), date, locale.getLanguage()));
+                .findInprogressHabitAssignsOnDate(userId, date, locale.getLanguage()));
     }
 
     /**
      * Method to find all user inprogress activities {@link HabitsDateEnrollmentDto}
      * between the specified {@link LocalDate}s.
      *
-     * @param userVO {@link UserVO} user.
+     * @param userId current user id.
      * @param from   The start {@link LocalDate} to retrieve from
      * @param to     The end {@link LocalDate} to retrieve to
      * @param locale needed language code.
@@ -642,13 +643,13 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/activity/{from}/to/{to}")
     public ResponseEntity<List<HabitsDateEnrollmentDto>> getHabitAssignBetweenDates(
-        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @CurrentUserId Long userId,
         @PathVariable(value = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @PathVariable(value = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .findHabitAssignsBetweenDates(userVO.getId(), from, to, locale.getLanguage()));
+                .findHabitAssignsBetweenDates(userId, from, to, locale.getLanguage()));
     }
 
     /**
@@ -656,7 +657,7 @@ public class HabitAssignController {
      * by habitAssignId.
      *
      * @param habitAssignId - id of {@link HabitAssignVO}.
-     * @param userVO        - {@link UserVO} user.
+     * @param userId        - current user id.
      */
     @Operation(summary = "Delete habit assign by habitAssignId for current user.")
     @ApiResponses(value = {
@@ -670,8 +671,8 @@ public class HabitAssignController {
     })
     @DeleteMapping("/delete/{habitAssignId}")
     public ResponseEntity<ResponseEntity.BodyBuilder> deleteHabitAssign(@PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        habitAssignService.deleteHabitAssign(habitAssignId, userVO.getId());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitAssignService.deleteHabitAssign(habitAssignId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -680,7 +681,7 @@ public class HabitAssignController {
      * {@link Boolean}.
      *
      * @param habitAssignId {@link HabitAssignVO} id.
-     * @param userVO        {@link UserVO}.
+     * @param userId        current user id.
      */
     @Operation(summary = "Update value progressNotificationHasDisplayed to true.")
     @ApiResponses(value = {
@@ -697,8 +698,8 @@ public class HabitAssignController {
     @PutMapping("{habitAssignId}/updateProgressNotificationHasDisplayed")
     public ResponseEntity<ResponseEntity.BodyBuilder> updateProgressNotificationHasDisplayed(
         @PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userVO.getId());
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
+        habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -709,7 +710,7 @@ public class HabitAssignController {
      * @param friendsIds - list of ids of user friends {@link UserVO} to invite.
      * @param userVO     - user who send request {@link UserVO}.
      * @param locale     - current language
-     *                   {@link greencity.dto.language.LanguageVO}.
+     *                   {@link greencity.dto.language.LanguageDTO}.
      */
     @Operation(summary = "Inviting friends on habit with email notification")
     @ApiResponses(value = {
@@ -761,8 +762,8 @@ public class HabitAssignController {
     })
     @GetMapping("/{habitAssignId}/friends/habit-duration-info")
     public ResponseEntity<List<HabitWorkingDaysDto>> getFriendsHabitsStreak(@PathVariable Long habitAssignId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUserId Long userId) {
         return ResponseEntity
-            .ok(habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userVO.getId(), habitAssignId));
+            .ok(habitAssignService.getAllHabitsWorkingDaysInfoForCurrentUserFriends(userId, habitAssignId));
     }
 }

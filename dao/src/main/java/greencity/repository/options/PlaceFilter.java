@@ -191,7 +191,6 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.or(
-            cb.like(r.join(RepoConstants.AUTHOR).get(RepoConstants.EMAIL), "%" + reg + "%"),
             cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), "%" + reg + "%"),
             cb.like(r.get(RepoConstants.NAME), "%" + reg + "%"),
             cb.like(r.join(RepoConstants.LOCATION).get(RepoConstants.ADDRESS), "%" + reg + "%"),

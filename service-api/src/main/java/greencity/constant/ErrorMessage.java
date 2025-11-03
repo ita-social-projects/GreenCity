@@ -15,13 +15,13 @@ public class ErrorMessage {
         "To-do list item with such id is already selected ";
     public static final String TO_DO_LIST_ITEM_NOT_FOUND_BY_NAMES =
         "To-do list item with such name(s) does not exist: ";
-    public static final String PARSING_URL_FAILED = "Can't parse image's url: ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists with such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
     public static final String USER_ALREADY_HAS_MAX_NUMBER_OF_HABIT_ASSIGNS =
         "User has reached the limit of active habit assigns: ";
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "Habit statistic does not exist by this id : ";
     public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
+    public static final String HABIT_NOT_FOUND = "No habits found in the system.";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
     public static final String HABIT_TRANSLATION_NOT_FOUND = "Habit translation not found for habit with id : ";
     public static final String TO_DO_LIST_ITEM_TRANSLATION_NOT_FOUND =
@@ -32,6 +32,7 @@ public class ErrorMessage {
     public static final String WRONG_BREAK_TIME = "Working hours have to contain break with right time";
     public static final String OPEN_HOURS_NOT_FOUND_BY_ID = "The opening hours does not exist by this id: ";
     public static final String INVALID_LANGUAGE_CODE = "Given language code is not supported.";
+    public static final String LANGUAGE_NOT_FOUND_BY_CODE = "The language does not exist by this code: ";
 
     public static final String CATEGORY_NOT_FOUND_BY_ID = "The category does not exist by this id: ";
     public static final String CATEGORY_NOT_FOUND_BY_NAME = "The category does not exist by this name: ";
@@ -59,8 +60,6 @@ public class ErrorMessage {
         "There is no habit assign for current user and such habit with id: ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID =
         "There is no habit assign for current user and such habit assign id: ";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS =
-        "There is no inprogress habit assign for current user: ";
     public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
         "Can't enroll habit because date input is not in a range from today to it's 7 passed days";
     public static final String HABIT_ASSIGN_ENROLL_RANGE_REACHED =
@@ -77,8 +76,8 @@ public class ErrorMessage {
     public static final String LOCATION_IS_PRESENT = "Location is present.";
     public static final String PHOTO_IS_PRESENT = "Photo is present.";
     public static final String DISCOUNT_NOT_FOUND_BY_ID = "The discount does not exist by this id: ";
-    public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
+    public static final String USERS_NOT_FOUND_BY_IDS = "Users do not exist by these ids: ";
     public static final String USER_ID_NULL = "User ID cannot be null";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
     public static final String USER_HAS_NO_TO_DO_LIST_ITEMS =
@@ -87,8 +86,6 @@ public class ErrorMessage {
     public static final String USER_TO_DO_LIST_ITEM_NOT_FOUND_BY_USER_ID =
         "UserToDoListItem(s) for this user not found";
     public static final String DUPLICATED_USER_TO_DO_LIST_ITEM = "UserToDoListItems should be unique";
-    public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
-    public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
     public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
@@ -117,10 +114,6 @@ public class ErrorMessage {
     public static final String MALFORMED_URL = "Malformed URL. The string could not be parsed.";
     public static final String USER_CANNOT_ADD_SAME_SOCIAL_NETWORK_LINKS =
         "User cannot add the same social network links";
-    public static final String SOCIAL_NETWORK_IMAGE_NOT_SAVED = "Social network image hasn't been saved";
-    public static final String SOCIAL_NETWORK_IMAGE_FOUND_BY_ID = "Social network image doesn't exist by this id: ";
-    public static final String BAD_DEFAULT_SOCIAL_NETWORK_IMAGE_PATH =
-        "Bad default social network image host path (Row in database doesn't exists)";
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_NOT_FOUND_BY_NAME = "The place does not exist by this name: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
@@ -131,7 +124,7 @@ public class ErrorMessage {
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
     public static final String PLACE_ALREADY_EXISTS = "Place with lat: %.4f and lng: %.4f already exists";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
-        "Favorite place already exist for this placeId: %d and user with email: %s";
+        "Favorite place already exist for this placeId: %d and user with id: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String USER_TO_DO_LIST_ITEMS_STATUS_IS_ALREADY_DONE =
         "The status of this to-do list item is already done ";
@@ -153,10 +146,7 @@ public class ErrorMessage {
         "Habit assign status is not INPROGRESS or user has not any assigned habits";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
         "Habit assign status is not REQUESTED or user has not any assigned habits";
-    public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
-
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
-    public static final String NO_EVENTS_FOUND = "No events found for user with ID: %d";
     public static final String WRONG_COUNT_OF_EVENT_DATES =
         "Count of dates should be at least one but not more seven";
     public static final String NO_EVENT_LINK_OR_ADDRESS = "Invalid online-link or address";
@@ -183,17 +173,12 @@ public class ErrorMessage {
         "User has already added this event to requested.";
     public static final String EVENT_IS_NOT_IN_REQUESTED = "This event is not in requested.";
     public static final String USER_DID_NOT_REQUEST_FOR_EVENT = "User with this id did not request to join event: ";
-    public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
     public static final String INVALID_COORDINATES = "The coordinates field must not be empty";
-    public static final String INVALID_LONGITUDE = "Longitude must be between -180 and 180 degrees";
-    public static final String INVALID_LATITUDE = "Latitude must be between -90 and 90 degrees";
     public static final String INVALID_DATE = "Date can't be null or empty";
-    public static final String NO_FRIENDS_ASSIGNED_ON_CURRENT_HABIT =
-        "No friends are assigned on current habit with id: ";
     public static final String INVALID_TIME_RANGE = "Start date and end date must be greater than end date";
     public static final String NOT_FOUND_IN_CURRENT_TIME_RANGE = "Not found backups in current time range";
     public static final String COMMENT_NOT_FOUND_BY_ID = "Comment doesn't exist by this id: ";
@@ -202,6 +187,7 @@ public class ErrorMessage {
         "Error during processing xss escaping of multipart file";
     public static final String STATUSES_REQUIRE_USER_ID =
         "JOINED, CREATED and SAVED statuses required user-id parameter";
+    public static final String ANNOTATION_ARGUMENT_NOT_SUPPORTED = "Annotation argument not supported";
     public static final String UNSUPPORTED_ARTICLE_TYPE = "Unsupported article type";
     public static final String UNSUPPORTED_ACTION_TYPE = "Unsupported action type";
     public static final String RATING_POINTS_NOT_FOUND_BY_NAME =
@@ -225,7 +211,6 @@ public class ErrorMessage {
     public static final String INVITATION_ALREADY_EXIST = "Invitation already exist";
     public static final String INVALID_DURATION_BETWEEN_START_AND_FINISH = "Invalid duration between start and finish";
     public static final String PAGE_NOT_FOUND_MESSAGE = "Requested page %d exceeds total pages %d.";
-    public static final String OPEN_AI_IS_NOT_RESPONDING = "Could not get a response from OpenAI.";
     public static final String WARNING_GIT_DIRECTORY_NOT_FOUND =
         "WARNING: .git directory not found. Git commit info will be unavailable.";
     public static final String GIT_REPOSITORY_NOT_INITIALIZED =
@@ -240,20 +225,32 @@ public class ErrorMessage {
     public static final String DATES_COULD_NOT_BE_NULL = "Dates could not be null";
     public static final String GEOCODING_RESULT_IS_EMPTY = "No geocoding results found for given location";
     public static final String MAX_PAGE_SIZE_EXCEPTION = "Page size must be less than or equal to 100";
+    public static final String MIN_PAGE_SIZE_EXCEPTION = "Page size must be greater than or equal to 1";
     public static final String INVALID_VALUE_EXCEPTION = "Invalid value for %s: must be an integer";
+    public static final String INVALID_SORT_FORMAT_EXCEPTION = "Invalid sort format: '%s'";
+    public static final String INVALID_SORTING_VALUE = "Unsupported value for sorting: %s";
     public static final String NEGATIVE_VALUE_EXCEPTION = "%s must be a positive number";
-    public static final String LOG_FILES_NOT_FOUND = "No log files found";
-    public static final String LOG_FILE_NOT_FOUND = "No file found with name: %s";
-    public static final String CANNOT_READ_LOG_FILE = "Error reading log file: %s";
-    public static final String BAD_SECRET_KEY = "The given secret key is incorrect";
-    public static final String CANNOT_DELETE_DOTENV = "Failed to delete .env file";
-    public static final String FUNCTIONALITY_NOT_AVAILABLE = "Functionality is not available";
-    public static final String NEGATIVE_LIMIT = "Limit cannot be negative";
-    public static final String NEGATIVE_OFFSET = "Offset cannot be negative";
-    public static final String SQL_METADATA_EXCEPTION_MESSAGE = "Error occurred while retrieving database data for: ";
-    public static final String EXCEED_LIMIT = "Out of max rows limit. Max limit is " + AppConstant.SQL_ROW_LIMIT;
-    public static final String GENERATION_EXCEL_FILE_ERROR = "Error generating Excel file";
-    public static final String EMPTY_TABLE = "Table '%s' doesn't contain any row";
-    public static final String INVALID_TABLE_NAME = "Table name must contain only lowercase letters "
-        + "and single underscores between words. Cannot start or end with an underscore.";
+    public static final String NOT_FOUND_ADDRESS_BY_COORDINATES = "Not found address with such coordinates: ";
+    public static final String INSUFFICIENT_LOCATION_DATA_FOUND =
+        "Insufficient location data found for the provided coordinates.";
+    public static final String USER_DID_NOT_SET_ANY_CITY = "User did not set any city";
+    public static final String USER_ALREADY_REGISTERED_WITH_THIS_ID = "User with id %s is already registered";
+    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with email %s is already registered";
+    public static final String NO_JWT_TOKEN_FOUND = "No JWT found in request header";
+    public static final String UNAUTHORIZED_RESPONSE = "Authorize first.";
+    public static final String USER_APP_UNAVAILABLE = "the User service is unavailable";
+    public static final String INTERNAL_SERVER_ERROR = "Internal server error: ";
+    public static final String INVALID_RELEVANCE_POOLS = "Invalid relevance pools ratio parameter value.";
+    public static final String INVALID_SCORES_WEIGHTS = "Invalid relevance scores weights parameter value.";
+    public static final String INVALID_SCORES_STRENGTH = "Invalid relevance scores strength parameter value.";
+    public static final String INVALID_TAGS_WEIGHTS = "Invalid tags weights parameter value.";
+    public static final String INVALID_RATIO_FORMAT = "Expected %d values in format '%s', but got %s.";
+    public static final String INVALID_RATIO_VALUE = "Expected value in range [0.0, 1.0], but provided value are '%s'.";
+    public static final String INVALID_RATIO_SUM =
+        "Sum of all elements must be equal 1.0, but provided value are '%s'.";
+    public static final String FORBIDDEN_USER_DELETION = "Blocker or deactivated user cannot be deleted";
+    public static final String USER_CANNOT_DEACTIVATE_YOURSELF = "You cannot deactivate yourself if you are not a USER";
+    public static final String ADMIN_CANNOT_DEACTIVATE_OTHER_ADMIN = "ADMIN cannot deactivate other ADMIN users";
+    public static final String USER_DEACTIVATION_REASON_IS_EMPTY = "The User deactivation reasons list is empty";
+    public static final String AI_USER_NOT_FOUND = "AI-generated user not found";
 }

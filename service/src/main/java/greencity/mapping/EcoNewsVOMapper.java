@@ -1,27 +1,40 @@
 package greencity.mapping;
 
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
+import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
 public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
+    private final ModelMapper modelMapper;
+
+    @Lazy
+    public EcoNewsVOMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
     @Override
     protected EcoNewsVO convert(EcoNews ecoNews) {
+        User author = ecoNews.getAuthor();
+        UserVO authorVO = modelMapper.map(author, UserVO.class);
+
         return EcoNewsVO.builder()
             .id(ecoNews.getId())
             .author(UserVO.builder()
-                .id(ecoNews.getAuthor().getId())
-                .name(ecoNews.getAuthor().getName())
-                .email(ecoNews.getAuthor().getEmail())
-                .userStatus(ecoNews.getAuthor().getUserStatus())
-                .role(ecoNews.getAuthor().getRole())
+                .id(author.getId())
+                .name(author.getName())
+                .email(authorVO.getEmail())
+                .status(authorVO.getStatus())
+                .role(authorVO.getRole())
                 .build())
             .creationDate(ecoNews.getCreationDate())
             .imagePath(ecoNews.getImagePath())
@@ -35,14 +48,14 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                         .map(tagTranslation -> TagTranslationVO.builder()
                             .name(tagTranslation.getName())
                             .id(tagTranslation.getId())
-                            .languageVO(LanguageVO.builder()
-                                .code(tagTranslation.getLanguage().getCode())
+                            .languageVO(LanguageDTO.builder()
+                                .code(tagTranslation.getLanguageCode())
                                 .id(tagTranslation.getId())
                                 .build())
                             .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                     .build())
-                .collect(Collectors.toList()))
+                .toList())
             .usersLikedNews(ecoNews.getUsersLikedNews().stream()
                 .map(user -> UserVO.builder()
                     .id(user.getId())

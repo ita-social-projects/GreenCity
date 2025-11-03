@@ -79,7 +79,8 @@ class RestLoggingInterceptorTest {
 
         assertEquals(1, listAppender.list.size());
         ILoggingEvent logEvent = listAppender.list.getFirst();
-        assertEquals("Request - Endpoint: GET /api/test?param=value, Request Body: param=value", logEvent.getFormattedMessage());
+        assertEquals("Request - Endpoint: GET /api/test?param=value, Request Body: param=value",
+            logEvent.getFormattedMessage());
     }
 
     @Test
@@ -261,7 +262,7 @@ class RestLoggingInterceptorTest {
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getQueryString()).thenReturn("param=value");
 
-        String result = invokePrivateMethod("buildEndpoint", new Class<?>[]{HttpServletRequest.class}, request);
+        String result = invokePrivateMethod("buildEndpoint", new Class<?>[] {HttpServletRequest.class}, request);
 
         assertEquals("GET /api/test?param=value", result);
     }
@@ -272,7 +273,7 @@ class RestLoggingInterceptorTest {
         when(request.getRequestURI()).thenReturn("/api/test");
         when(request.getQueryString()).thenReturn(null);
 
-        String result = invokePrivateMethod("buildEndpoint", new Class<?>[]{HttpServletRequest.class}, request);
+        String result = invokePrivateMethod("buildEndpoint", new Class<?>[] {HttpServletRequest.class}, request);
 
         assertEquals("POST /api/test", result);
     }
@@ -282,7 +283,7 @@ class RestLoggingInterceptorTest {
         when(request.getMethod()).thenReturn("GET");
         when(request.getQueryString()).thenReturn("param=value");
 
-        String result = invokePrivateMethod("extractRequestBody", new Class<?>[]{HttpServletRequest.class}, request);
+        String result = invokePrivateMethod("extractRequestBody", new Class<?>[] {HttpServletRequest.class}, request);
 
         assertEquals("param=value", result);
     }
@@ -292,7 +293,7 @@ class RestLoggingInterceptorTest {
         when(request.getMethod()).thenReturn("GET");
         when(request.getQueryString()).thenReturn(null);
 
-        String result = invokePrivateMethod("extractRequestBody", new Class<?>[]{HttpServletRequest.class}, request);
+        String result = invokePrivateMethod("extractRequestBody", new Class<?>[] {HttpServletRequest.class}, request);
 
         assertEquals("N/A", result);
     }
@@ -303,7 +304,8 @@ class RestLoggingInterceptorTest {
         when(requestWrapper.getContentAsByteArray()).thenReturn("requestBody".getBytes(StandardCharsets.UTF_8));
         when(requestWrapper.getCharacterEncoding()).thenReturn("UTF-8");
 
-        String result = invokePrivateMethod("extractRequestBody", new Class<?>[]{HttpServletRequest.class}, requestWrapper);
+        String result =
+            invokePrivateMethod("extractRequestBody", new Class<?>[] {HttpServletRequest.class}, requestWrapper);
 
         assertEquals("requestBody", result);
     }
@@ -313,7 +315,8 @@ class RestLoggingInterceptorTest {
         when(requestWrapper.getMethod()).thenReturn("POST");
         when(requestWrapper.getContentAsByteArray()).thenReturn(new byte[0]);
 
-        String result = invokePrivateMethod("extractRequestBody", new Class<?>[]{HttpServletRequest.class}, requestWrapper);
+        String result =
+            invokePrivateMethod("extractRequestBody", new Class<?>[] {HttpServletRequest.class}, requestWrapper);
 
         assertEquals("N/A", result);
     }
@@ -324,7 +327,8 @@ class RestLoggingInterceptorTest {
         when(requestWrapper.getContentAsByteArray()).thenReturn("requestBody".getBytes(StandardCharsets.UTF_8));
         when(requestWrapper.getCharacterEncoding()).thenThrow(new RuntimeException("Invalid encoding"));
 
-        String result = invokePrivateMethod("extractRequestBody", new Class<?>[]{HttpServletRequest.class}, requestWrapper);
+        String result =
+            invokePrivateMethod("extractRequestBody", new Class<?>[] {HttpServletRequest.class}, requestWrapper);
 
         assertEquals("N/A", result);
         assertEquals(1, listAppender.list.size());
@@ -337,7 +341,8 @@ class RestLoggingInterceptorTest {
         when(responseWrapper.getContentAsByteArray()).thenReturn("responseBody".getBytes(StandardCharsets.UTF_8));
         when(responseWrapper.getCharacterEncoding()).thenReturn("UTF-8");
 
-        String result = invokePrivateMethod("extractResponseBody", new Class<?>[]{HttpServletResponse.class}, responseWrapper);
+        String result =
+            invokePrivateMethod("extractResponseBody", new Class<?>[] {HttpServletResponse.class}, responseWrapper);
 
         assertEquals("responseBody", result);
     }
@@ -346,7 +351,8 @@ class RestLoggingInterceptorTest {
     void extractResponseBodyWithEmptyBodyTest() throws Exception {
         when(responseWrapper.getContentAsByteArray()).thenReturn(new byte[0]);
 
-        String result = invokePrivateMethod("extractResponseBody", new Class<?>[]{HttpServletResponse.class}, responseWrapper);
+        String result =
+            invokePrivateMethod("extractResponseBody", new Class<?>[] {HttpServletResponse.class}, responseWrapper);
 
         assertEquals("N/A", result);
     }
@@ -356,7 +362,8 @@ class RestLoggingInterceptorTest {
         when(responseWrapper.getContentAsByteArray()).thenReturn("responseBody".getBytes(StandardCharsets.UTF_8));
         when(responseWrapper.getCharacterEncoding()).thenThrow(new RuntimeException("Invalid encoding"));
 
-        String result = invokePrivateMethod("extractResponseBody", new Class<?>[]{HttpServletResponse.class}, responseWrapper);
+        String result =
+            invokePrivateMethod("extractResponseBody", new Class<?>[] {HttpServletResponse.class}, responseWrapper);
 
         assertEquals("N/A", result);
         assertEquals(1, listAppender.list.size());

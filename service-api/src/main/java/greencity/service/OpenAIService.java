@@ -1,15 +1,38 @@
 package greencity.service;
 
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.openai.OpenAIResponseDTO;
+import greencity.enums.OpenAIResponseFormat;
+import greencity.exception.exceptions.OpenAIRequestException;
+import java.util.List;
+
 /**
  * Interface for interacting with the OpenAI API. The purpose of this interface
  * is to send requests to the OpenAI service and receive responses.
  */
 public interface OpenAIService {
     /**
-     * Sends a request to the OpenAI API and returns the response as a string.
+     * Makes a request to the OpenAI API using the provided language and request.
      *
-     * @param request The request as a string to be sent to the OpenAI API.
+     * @param language     the language settings for the request
+     * @param request      the prompt to send to the OpenAI API
+     * @param responseType the format of the response
      * @return The response from the service as a string.
+     * @throws OpenAIRequestException If the request is invalid or the OpenAI
+     *                                service is unavailable.
      */
-    String makeRequest(String request);
+    OpenAIResponseDTO makeRequest(LanguageDTO language, String request, OpenAIResponseFormat responseType);
+
+    /**
+     * Makes a request to the OpenAI Embedding API to generate embeddings for the
+     * provided title.
+     *
+     * @param title the text title to generate embeddings for
+     * @return The embedding response from the OpenAI service
+     * @throws OpenAIRequestException If the request is invalid or the OpenAI
+     *                                service is unavailable
+     */
+    OpenAIResponseDTO makeRequestEmbedding(String title);
+
+    List<OpenAIResponseDTO> makeRequestEmbeddings(List<String> titles);
 }

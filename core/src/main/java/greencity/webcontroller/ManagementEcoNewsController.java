@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserClaims;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -10,9 +11,11 @@ import greencity.dto.econews.*;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.tag.TagDto;
+import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
+import greencity.util.SortingUtil;
 import java.util.Set;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -81,18 +84,9 @@ public class ManagementEcoNewsController {
             model.addAttribute("query", query);
         }
         Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder();
-        if (!sort.isEmpty()) {
-            boolean isFirstSortProperty = true;
-            for (Sort.Order order : sort) {
-                if (isFirstSortProperty) {
-                    orderUrl.append(order.getProperty()).append(",").append(order.getDirection());
-                    isFirstSortProperty = false;
-                } else {
-                    orderUrl.append("&sort=").append(order.getProperty()).append(",").append(order.getDirection());
-                }
-            }
-            model.addAttribute("sortModel", orderUrl.toString());
+        String sortUrl = SortingUtil.buildSortingUrl(sort);
+        if (!sortUrl.isEmpty()) {
+            model.addAttribute("sortModel", sortUrl);
         }
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags(locale.getLanguage()));
         model.addAttribute("pageSize", pageable.getPageSize());
@@ -131,7 +125,7 @@ public class ManagementEcoNewsController {
      * @param id of {@link EcoNewsVO}.
      * @return {@link EcoNewsDto}.
      */
-    @Operation(summary = "Find econews by id.")
+    @Operation(summary = "Find eco-news by id.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = EcoNewsDto.class))),
@@ -152,7 +146,7 @@ public class ManagementEcoNewsController {
      * @param id of {@link EcoNewsVO}.
      * @return {@link EcoNewsDto}.
      */
-    @Operation(summary = "Find econew's page by id.")
+    @Operation(summary = "Find eco-new's page by id.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = EcoNewsDto.class))),
@@ -163,9 +157,9 @@ public class ManagementEcoNewsController {
     @GetMapping("/{id}")
     public String getEcoNewsPage(@PathVariable("id") Long id,
         @Parameter(hidden = true) Locale locale, Model model) {
-        EcoNewsDto econew = ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage());
-        model.addAttribute("econew", econew);
-        ZonedDateTime time = econew.getCreationDate();
+        EcoNewsDto ecoNews = ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage());
+        model.addAttribute("ecoNews", ecoNews);
+        ZonedDateTime time = ecoNews.getCreationDate();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd , yyyy");
         model.addAttribute("time", time.format(format));
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
@@ -173,7 +167,7 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method for getting all econews tag.
+     * Method for getting all eco-news tag.
      *
      * @return {@link TagDto} instance.
      */
@@ -214,7 +208,7 @@ public class ManagementEcoNewsController {
      * @param file                 of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @Operation(summary = "Update Econews.")
+    @Operation(summary = "Update Eco-news.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
@@ -274,8 +268,8 @@ public class ManagementEcoNewsController {
      */
     @PatchMapping("/hide")
     public ResponseEntity<Long> hide(@RequestParam("id") Long id,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        ecoNewsService.setHiddenValue(id, user, true);
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims) {
+        ecoNewsService.setHiddenValue(id, userClaims, true);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
@@ -287,8 +281,8 @@ public class ManagementEcoNewsController {
      */
     @PatchMapping("/show")
     public ResponseEntity<Long> show(@RequestParam("id") Long id,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
-        ecoNewsService.setHiddenValue(id, user, false);
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims) {
+        ecoNewsService.setHiddenValue(id, userClaims, false);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 }

@@ -1,7 +1,9 @@
 package greencity.controller;
 
+import greencity.annotations.CurrentUserClaims;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievementcategory.AchievementCategoryTranslationDto;
+import greencity.dto.user.UserClaims;
 import greencity.service.AchievementCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -36,8 +37,9 @@ public class AchievementCategoryController {
     })
     @GetMapping
     public ResponseEntity<List<AchievementCategoryTranslationDto>> getAchievementCategories(
-        @Parameter(hidden = true) Principal principal) {
+        @Parameter(hidden = true) @CurrentUserClaims UserClaims userClaims) {
         return ResponseEntity.ok()
-            .body(achievementCategoryService.findAllWithAtLeastOneAchievement(principal.getName()));
+            .body(achievementCategoryService.findAllWithAtLeastOneAchievement(userClaims.userId(),
+                userClaims.userEmail()));
     }
 }

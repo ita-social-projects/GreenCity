@@ -103,7 +103,7 @@ class PlaceCommentServiceImplTest {
         when(ratingPointsRepo.findByNameOrThrow("LIKE_COMMENT_OR_REPLY")).thenReturn(ratingPoints);
         when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlaceVO());
         UserVO userVO = ModelUtils.getUserVO();
-        userVO.setUserStatus(UserStatus.ACTIVATED);
+        userVO.setStatus(UserStatus.ACTIVATED);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(placeCommentRequestDto, PlaceComment.class)).thenReturn(comment);
         when(httpServletRequest.getHeader("Authorization")).thenReturn(token);

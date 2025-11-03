@@ -126,7 +126,6 @@ class RatingStatisticsSpecificationTest {
 
         RatingStatistics_.user = user;
         User_.id = id;
-        User_.email = email;
         ratingStatisticsSpecification = new RatingStatisticsSpecification(criteriaList);
     }
 

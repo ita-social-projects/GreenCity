@@ -27,8 +27,7 @@ public interface TagTranslationRepo extends JpaRepository<TagTranslation, Long> 
     @Query(nativeQuery = true,
         value = "SELECT DISTINCT tt.* FROM tag_translations AS tt "
             + "INNER JOIN tags AS t ON tt.tag_id = t.id "
-            + "INNER JOIN languages AS l ON l.id = tt.language_id "
             + "WHERE t.type LIKE 'ECO_NEWS' "
-            + "AND l.code = :languageCode ORDER BY tt.tag_id")
+            + "AND tt.language_code = :languageCode ORDER BY tt.tag_id")
     List<TagTranslation> findAllEcoNewsTags(String languageCode);
 }

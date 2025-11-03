@@ -12,10 +12,7 @@ pr: none
 variables:
   agentOS: ubuntu-latest
   
-  azKeyVault: key-vault-greencity
-  jsonSecret: google-credentials
-  jsonFile: google-creds.json
-  jsonLocation: /site/wwwroot
+  azKeyVault: greencity-values
   
   artifactName: drop
   coreRepoName: core
@@ -32,6 +29,26 @@ stages:
     pool:
       vmImage: $(agentOS)
     steps:
+    - task: AzureKeyVault@1
+      displayName: Get LOGGING-ITA-TOKEN from Azure Key Vault
+      inputs:
+        azureSubscription: '$(azureSub)'
+        KeyVaultName: '$(azKeyVault)'
+        SecretsFilter: 'LOGGING-ITA-TOKEN'
+        RunAsPreJob: false
+
+    - script: |
+        echo "<settings>" > $(Build.SourcesDirectory)/settings.xml
+        echo "  <servers>" >> $(Build.SourcesDirectory)/settings.xml
+        echo "    <server>" >> $(Build.SourcesDirectory)/settings.xml
+        echo "      <id>github</id>" >> $(Build.SourcesDirectory)/settings.xml
+        echo "      <username>ita-social-projects</username>" >> $(Build.SourcesDirectory)/settings.xml
+        echo "      <password>$(LOGGING-ITA-TOKEN)</password>" >> $(Build.SourcesDirectory)/settings.xml
+        echo "    </server>" >> $(Build.SourcesDirectory)/settings.xml
+        echo "  </servers>" >> $(Build.SourcesDirectory)/settings.xml
+        echo "</settings>" >> $(Build.SourcesDirectory)/settings.xml
+      displayName: "Create temporary settings.xml"
+
     - task: Maven@3
       displayName: Maven package
       inputs:
@@ -39,11 +56,15 @@ stages:
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.21'
         mavenVersionOption: 'Default'
-        options: '-Dmaven.test.skip=true'
+        options: '-Dmaven.test.skip=true -s $(Build.SourcesDirectory)/settings.xml'
 
         
     - script: mv $(coreRepoName)/target/*.jar $(coreRepoName)/target/$(onbootJarName)
       displayName: Rename core jar to app
+
+    - script: |
+        rm -f $(Build.SourcesDirectory)/settings.xml
+      displayName: "Delete temporary settings.xml"
 
     - task: CopyFiles@2
       displayName: Copy Files

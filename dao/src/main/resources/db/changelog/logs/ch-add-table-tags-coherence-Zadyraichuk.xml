@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="crateTableTagsCoherenceZadyraichuk" author="Rostyslav Zadyraichuk">
+        <createTable tableName="tags_coherence">
+            <column name="source_tag_id" type="BIGINT"/>
+            <column name="destination_tag_id" type="BIGINT"/>
+            <column name="coherence" type="REAL"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="tags_coherence"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="addConstraintsForTagsCoherenceTableZadyraichuk" author="Rostyslav Zadyraichuk">
+        <addPrimaryKey tableName="tags_coherence" columnNames="source_tag_id, destination_tag_id"/>
+        <addForeignKeyConstraint baseColumnNames="source_tag_id"
+                                 baseTableName="tags_coherence"
+                                 constraintName="fk_tags_coherence_source_tag"
+                                 referencedColumnNames="id"
+                                 referencedTableName="tags"/>
+        <addForeignKeyConstraint baseColumnNames="destination_tag_id"
+                                 baseTableName="tags_coherence"
+                                 constraintName="fk_tags_coherence_destination_tag"
+                                 referencedColumnNames="id"
+                                 referencedTableName="tags"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="tags_coherence" constraintName="fk_tags_coherence_source_tag"/>
+            <dropForeignKeyConstraint baseTableName="tags_coherence" constraintName="fk_tags_coherence_destination_tag"/>
+            <dropPrimaryKey tableName="tags_coherence"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

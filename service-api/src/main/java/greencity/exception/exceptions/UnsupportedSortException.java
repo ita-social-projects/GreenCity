@@ -3,10 +3,9 @@ package greencity.exception.exceptions;
 import lombok.experimental.StandardException;
 
 /**
- * Exception that get if user write not supported sorting operation.
- *
- * @version 1.0
+ * Exception thrown when a client requests sorting by a field that is not
+ * allowed for the targeted resource.
  */
 @StandardException
-public class UnsupportedSortException extends UnsupportedOperationException {
+public class UnsupportedSortException extends RuntimeException {
 }

@@ -13,16 +13,14 @@ import greencity.entity.HabitAssign;
 import greencity.entity.ToDoListItem;
 import greencity.entity.User;
 import greencity.entity.UserToDoListItem;
-import greencity.enums.EmailNotification;
-import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
-import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomToDoListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomToDoListItemRepo;
 import greencity.repository.HabitAssignRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.UserToDoListItemRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,7 +31,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,6 +66,9 @@ class CustomToDoListItemServiceImplTest {
     @Mock
     private UserToDoListItemRepo userToDoListItemRepo;
 
+    @Mock
+    private UserRepo userRepo;
+
     @InjectMocks
     private CustomToDoListItemServiceImpl customToDoListItemService;
 
@@ -77,11 +77,6 @@ class CustomToDoListItemServiceImplTest {
             .id(1L)
             .name("Test Testing")
             .email("test@gmail.com")
-            .role(Role.ROLE_USER)
-            .userStatus(UserStatus.ACTIVATED)
-            .emailNotification(EmailNotification.DISABLED)
-            .lastActivityTime(LocalDateTime.now())
-            .dateOfRegistration(LocalDateTime.now())
             .customToDoListItems(new ArrayList<>())
             .build();
 
@@ -141,6 +136,19 @@ class CustomToDoListItemServiceImplTest {
         }.getType())).thenReturn(items);
 
         assertEquals(items, customToDoListItemService.findAllAvailableCustomToDoListItems(1L, 1L));
+    }
+
+    @Test
+    void findAllAvailableCustomToDoListItemsExternal() {
+        List<CustomToDoListItem> items = new ArrayList<>();
+        items.add(item);
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(customToDoListItemRepo.findAllAvailableCustomToDoListItemsForUserId(anyLong(), anyLong()))
+            .thenReturn(items);
+        when(modelMapper.map(items, new TypeToken<List<CustomToDoListItemResponseDto>>() {
+        }.getType())).thenReturn(items);
+
+        assertEquals(items, customToDoListItemService.findAllAvailableCustomToDoListItems(user.getEmail(), 1L));
     }
 
     @Test

@@ -15,8 +15,8 @@ public class AppConstant {
     public static final String AUTHORIZATION = "Authorization";
     public static final String ROLE = "role";
     public static final String DEFAULT_LANGUAGE_CODE = "en";
-    public static final String LANGUAGE_CODE_UA = "ua";
-    public static final String DEFAULT_SOCIAL_NETWORK_IMAGE_HOST_PATH = "img/default_social_network_icon.png";
+    public static final String DEFAULT_LANGUAGE_NAME = "English";
+    public static final String LANGUAGE_CODE_UA = "uk";
     public static final Integer MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER = 6;
     public static final int MIN_DAYS_DURATION = 7;
     public static final int MAX_DAYS_DURATION = 56;
@@ -29,14 +29,15 @@ public class AppConstant {
     public static final String USER_PLACEHOLDER = "{user}";
     public static final String TWO_USERS = "TWO_USERS";
     public static final String THREE_OR_MORE_USERS = "THREE_OR_MORE_USERS";
-    public static final String DOTENV_FILENAME = "secretKeys.env";
-    public static final int SQL_ROW_LIMIT = 10_000;
     public static final String TABLE = "TABLE";
-    public static final String TABLE_NAME = "TABLE_NAME";
-    public static final String COLUMN_NAME = "COLUMN_NAME";
-    public static final String SELECT_FROM_WITH_LIMIT_AND_OFFSET = "SELECT * FROM %s LIMIT %d OFFSET %d;";
     public static final Set<String> supportedLanguages = Set.of(
         DEFAULT_LANGUAGE_CODE,
         LANGUAGE_CODE_UA);
     public static final String EMPTY_STRING = "";
+    public static final String GOOGLE_API = "Google API";
+    public static final Double DEFAULT_RATING = 0.0;
+    public static final String MESSAGE = "message";
+    public static final String USER_SERVICE_UNAVAILABLE_LOG = "User service is unavailable: {}";
+    public static final String LOGS_LINKS = "/logs/**";
+    public static final String EXPORT_SETTINGS_LINKS = "/export/settings/**";
 }

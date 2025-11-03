@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubscriptionRequestDto {
     @NotBlank
-    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP)
+    @Email(regexp = ServiceValidationConstants.EMAIL_REGEXP, message = ServiceValidationConstants.INVALID_EMAIL)
     private String email;
 
     @NotNull
