@@ -2,10 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.ratingstatistics.RatingStatisticsDto;
-import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
-import greencity.dto.ratingstatistics.RatingStatisticsVO;
-import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
+import greencity.dto.ratingstatistics.*;
 import greencity.filters.SearchCriteria;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +35,7 @@ public interface RatingStatisticsService {
      * @return a list of {@link RatingStatisticsDto}.
      * @author Dovganyuk Taras
      */
-    List<RatingStatisticsDto> getAllRatingStatistics();
+    List<RatingStatisticsExportDto> getAllRatingStatistics();
 
     /**
      * Find {@link RatingStatisticsVO} for export to excel file.
