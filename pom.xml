@@ -89,7 +89,7 @@
         <net.java.dev.jna.version>5.18.1</net.java.dev.jna.version>
 
         <!-- starters -->
-        <ldm.version>0.0.5</ldm.version>
+        <ldm.version>0.0.6</ldm.version>
 
         <!-- testing -->
         <testcontainers.version>1.21.3</testcontainers.version>
