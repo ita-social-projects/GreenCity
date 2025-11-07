@@ -4,7 +4,6 @@ import com.softserve.ldm.service.ExportToFileService;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
-import greencity.dto.ratingstatistics.RatingStatisticsExportDto;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
@@ -24,9 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
