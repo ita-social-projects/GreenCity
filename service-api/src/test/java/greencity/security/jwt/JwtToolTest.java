@@ -46,7 +46,7 @@ class JwtToolTest {
     private JwtTool jwtTool;
 
     @BeforeEach
-    public void init() {
+    void init() {
         ReflectionTestUtils.setField(jwtTool, "accessTokenValidTimeInMinutes", 15);
         ReflectionTestUtils.setField(jwtTool, "accessTokenKey", "123123123123123123123123123123123123");
     }
