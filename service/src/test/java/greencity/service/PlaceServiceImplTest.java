@@ -1,14 +1,11 @@
 package greencity.service;
 
 import com.google.maps.model.GeocodingResult;
-import com.google.maps.model.Geometry;
-import com.google.maps.model.LatLng;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.client.UserRemoteClient;
 import greencity.dto.PageableDto;
-import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
@@ -16,21 +13,17 @@ import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.filter.FilterPlacesApiDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
-import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.UpdatePlaceStatusWithUserEmailDto;
 import greencity.dto.place.AddPlaceDto;
-import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.FilterAdminPlaceDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchPlacesDto;
@@ -48,7 +41,6 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceAlreadyExistsException;
 import greencity.exception.exceptions.PlaceStatusException;
-import greencity.exception.exceptions.UserBlockedException;
 import greencity.mapping.CategoryDtoToVOMapper;
 import greencity.mapping.CategoryVOMapper;
 import greencity.mapping.LocationDtoMapper;
@@ -64,7 +56,6 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -76,7 +67,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import static greencity.ModelUtils.getPlace;
-import static greencity.ModelUtils.getPlaceUpdateDto;
 import static greencity.ModelUtils.getSearchPlacesDto;
 import static greencity.ModelUtils.getFilterPlacesApiDto;
 import static greencity.ModelUtils.getPlacesSearchResultEn;
@@ -86,7 +76,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,18 +83,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -118,7 +104,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
@@ -186,8 +171,6 @@ class PlaceServiceImplTest {
     @Spy
     private ModelMapper modelMapper;
     @Mock
-    private ProposePlaceServiceImpl proposePlaceMapper;
-    @Mock
     private SpecificationService specificationService;
     @Mock
     private DiscountService discountService;
@@ -220,52 +203,87 @@ class PlaceServiceImplTest {
         modelMapper.addConverter(new CategoryDtoToVOMapper());
         modelMapper.addConverter(new LocationDtoMapper());
 
-        placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
+        placeService = new PlaceServiceImpl(placeRepo, modelMapper, locationService,
             specificationService, openingHoursService, userService, discountService, zoneId,
-            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo,
+            categoryRepo, googleApiService, userRepo, favoritePlaceRepo,
             userNotificationService, restClient, photoRepo, userRemoteClient);
     }
 
     @Test
-    void saveTest() {
-        Place place = getPlace();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
-        PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
-        when(userService.findNotDeactivatedByEmail(TestConst.EMAIL)).thenReturn(userVOAdmin);
-        when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
-        when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
-        when(categoryRepo.findByNameEn(anyString())).thenReturn(new Category());
-        when(placeRepo.save(any())).thenReturn(place);
-        when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
-        when(userService.getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
-            EmailPreferencePeriodicity.IMMEDIATELY)).thenReturn(List.of(userVO));
+    void save_successfullySavesPlace() {
+        AddPlaceDto dto = AddPlaceDto.builder()
+            .name("My Cafe")
+            .categoryId(category.getId())
+            .address("Kyiv")
+            .openingHoursList(Set.of(ModelUtils.getOpeningHoursDto()))
+            .build();
 
-        PlaceVO saved = placeService.save(placeAddDto, TestConst.EMAIL);
-        assertEquals(placeVO, saved);
+        MultipartFile[] images = new MultipartFile[0];
 
-        verify(userService).getUsersIdByEmailPreferenceAndEmailPeriodicity(EmailPreference.PLACES,
-            EmailPreferencePeriodicity.IMMEDIATELY);
-        verify(userNotificationService).createNewNotificationForPlaceAdded(List.of(userVO), placeVO.getId(),
-            placeVO.getCategory().getName(), placeVO.getName());
+        GeocodingResult geo1 = ModelUtils.getGeocodingResult().getFirst();
+        GeocodingResult geo2 = ModelUtils.getGeocodingResult().getLast();
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(categoryRepo.findById(category.getId())).thenReturn(Optional.of(category));
+        when(googleApiService.getResultFromGeoCode("Kyiv"))
+            .thenReturn(List.of(geo1, geo2));
+        when(locationService.existsByLatAndLng(50.45, 30.52)).thenReturn(false);
+
+        placeService.save(dto, 1L, images);
+
+        verify(placeRepo).save(argThat(place -> {
+            System.out.println(place.getLocation());
+            return place.getName().equals("My Cafe") &&
+                place.getAuthor().equals(user) &&
+                place.getCategory().equals(category) &&
+                place.getOpeningHoursList().size() == 1;
+        }));
     }
 
     @Test
-    void savePlaceWithValidDataSucceedsTest() {
-        PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
-        Place place = getPlace();
-        when(userService.findNotDeactivatedByEmail(TestConst.EMAIL)).thenReturn(userVOAdmin);
-        when(modelMapper.map(placeAddDto, PlaceVO.class)).thenReturn(placeVO);
-        when(modelMapper.map(placeVO, Place.class)).thenReturn(place);
-        when(categoryRepo.findByNameEn(placeAddDto.getCategory().getNameEn())).thenReturn(category);
-        when(placeRepo.save(place)).thenReturn(place);
-        when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);
-        PlaceVO savedPlace = placeService.save(placeAddDto, TestConst.EMAIL);
-        assertEquals(placeVO, savedPlace);
-        verify(userService).findNotDeactivatedByEmail(TestConst.EMAIL);
-        verify(proposePlaceMapper).checkLocationValues(placeAddDto.getLocation());
-        verify(categoryRepo).findByNameEn(placeAddDto.getCategory().getNameEn());
-        verify(placeRepo).save(place);
+    void save_throwsIfUserNotFound() {
+        AddPlaceDto dto = AddPlaceDto.builder().build();
+        when(userRepo.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> placeService.save(dto, 1L, new MultipartFile[0]));
+    }
+
+    @Test
+    void save_throwsIfCategoryNotFound() {
+        AddPlaceDto dto = AddPlaceDto.builder().categoryId(99L).build();
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(categoryRepo.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> placeService.save(dto, 1L, new MultipartFile[0]));
+    }
+
+    @Test
+    void save_throwsIfGeocodingEmpty() {
+        AddPlaceDto dto = AddPlaceDto.builder().categoryId(category.getId()).address("Nowhere").build();
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(categoryRepo.findById(category.getId())).thenReturn(Optional.of(category));
+        when(googleApiService.getResultFromGeoCode("Nowhere")).thenReturn(List.of());
+
+        assertThrows(NotFoundException.class,
+            () -> placeService.save(dto, 1L, new MultipartFile[0]));
+    }
+
+    @Test
+    void save_throwsIfPlaceAlreadyExists() {
+        AddPlaceDto dto = AddPlaceDto.builder().categoryId(category.getId()).address("Kyiv").build();
+
+        GeocodingResult geo1 = ModelUtils.getGeocodingResult().getFirst();
+        GeocodingResult geo2 = ModelUtils.getGeocodingResult().getLast();
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(categoryRepo.findById(category.getId())).thenReturn(Optional.of(category));
+        when(googleApiService.getResultFromGeoCode("Kyiv")).thenReturn(List.of(geo1, geo2));
+        when(locationService.existsByLatAndLng(any(), any())).thenReturn(true);
+
+        assertThrows(PlaceAlreadyExistsException.class,
+            () -> placeService.save(dto, 1L, new MultipartFile[0]));
     }
 
     @Test
@@ -351,19 +369,6 @@ class PlaceServiceImplTest {
     @Test
     void findByIdGivenIdNullThenThrowException() {
         assertThrows(NotFoundException.class, () -> placeService.findById(null));
-    }
-
-    @Test
-    void findPlaceUpdateDtoTest() {
-        Place genericEntity = new Place();
-        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
-        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity));
-        when(modelMapper.map(genericEntity, PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
-        PlaceUpdateDto foundEntity = placeService.getInfoForUpdatingById(1L);
-        assertEquals(placeUpdateDto, foundEntity);
-
-        verify(placeRepo).findById(1L);
-        verify(modelMapper).map(genericEntity, PlaceUpdateDto.class);
     }
 
     @Test
@@ -578,21 +583,6 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void getInfoForUpdatingByIdTest() {
-        Place place = getPlace();
-        PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
-        placeUpdateDto.setId(place.getId());
-        when(placeRepo.findById(place.getId())).thenReturn(Optional.of(place));
-        when(modelMapper.map(place, PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
-
-        placeUpdateDto = placeService.getInfoForUpdatingById(place.getId());
-
-        assertEquals(place.getId(), placeUpdateDto.getId());
-        verify(placeRepo).findById(place.getId());
-        verify(modelMapper).map(place, PlaceUpdateDto.class);
-    }
-
-    @Test
     void getInfoForUpdatingThrowingExceptionTest() {
         Place place = getPlace();
         when(placeRepo.findById(place.getId())).thenReturn(Optional.empty());
@@ -732,89 +722,6 @@ class PlaceServiceImplTest {
         verify(categoryRepo).findAll();
         verify(modelMapper).map(categoryRepo.findAll(), new TypeToken<List<FilterPlaceCategory>>() {
         }.getType());
-    }
-
-    @Test
-    void addPlaceFromUi() {
-        AddPlaceDto dto = ModelUtils.getAddPlaceDto();
-        PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        Place place = getPlace();
-        User placeUser = ModelUtils.getUser();
-
-        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(userRepo.findById(placeUser.getId())).thenReturn(Optional.of(placeUser));
-        when(modelMapper.map(placeUser, UserVO.class)).thenReturn(ModelUtils.getUserVO());
-        when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
-        when(modelMapper.map(placeResponse, Place.class)).thenReturn(place);
-        when(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class))
-            .thenReturn(ModelUtils.getLocation());
-        when(placeRepo.save(place)).thenReturn(place);
-        when(modelMapper.map(place, PlaceResponse.class)).thenReturn(placeResponse);
-
-        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, placeUser.getId(), null));
-
-        verify(modelMapper).map(dto, PlaceResponse.class);
-        verify(userRepo).findById(placeUser.getId());
-        verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
-        verify(modelMapper).map(placeResponse, Place.class);
-        verify(modelMapper).map(placeResponse.getLocationAddressAndGeoDto(), Location.class);
-        verify(placeRepo).save(place);
-        verify(modelMapper).map(place, PlaceResponse.class);
-
-        MultipartFile multipartFile = ModelUtils.getMultipartFile();
-        when(userRemoteClient.uploadFile(multipartFile)).thenReturn("/url1");
-        assertEquals(placeResponse,
-            placeService.addPlaceFromUi(dto, placeUser.getId(),
-                new MultipartFile[] {multipartFile}));
-
-        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
-        when(userRemoteClient.uploadFile(multipartFiles[0])).thenReturn("/url1");
-        when(userRemoteClient.uploadFile(multipartFiles[1])).thenReturn("/url2");
-        assertEquals(placeResponse,
-            placeService.addPlaceFromUi(dto, placeUser.getId(), multipartFiles));
-        verify(userRemoteClient, times(3)).uploadFile(any(MultipartFile.class));
-    }
-
-    @Test
-    void addPlaceFromUiThrowsException() {
-        AddPlaceDto dto = ModelUtils.getAddPlaceDto();
-        PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        User user = ModelUtils.getUser();
-        Long userId = user.getId();
-
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getBlockedUserVO());
-        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-
-        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, userId, null));
-
-        verify(userRepo).findById(user.getId());
-    }
-
-    @Test
-    void addPlaceFromUiSaveAlreadyExistingLocation() {
-        AddPlaceDto dto = ModelUtils.getAddPlaceDto();
-        PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        Long userId = user.getId();
-
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(modelMapper.map(user, UserVO.class)).thenReturn(ModelUtils.getUserVO());
-        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
-        when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
-
-        double lat = ModelUtils.getGeocodingResult().getFirst().geometry.location.lat;
-        double lng = ModelUtils.getGeocodingResult().getFirst().geometry.location.lng;
-
-        when(locationService.existsByLatAndLng(lat, lng)).thenReturn(true);
-
-        assertThrows(PlaceAlreadyExistsException.class, () -> placeService.addPlaceFromUi(dto, userId, null));
-
-        verify(modelMapper).map(dto, PlaceResponse.class);
-        verify(userRepo).findById(userId);
-        verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
-        verify(locationService).existsByLatAndLng(lat, lng);
-
-        verify(modelMapper, times(0)).map(placeResponse, Place.class);
     }
 
     @Test
@@ -1093,79 +1000,96 @@ class PlaceServiceImplTest {
     }
 
     @Test
-    void updateFromUISucceedsForValidPlaceTest() {
-        PlaceUpdateDto dto = new PlaceUpdateDto();
-        dto.setId(1L);
-        dto.setName("Updated Place");
-        dto.setCategory(new CategoryDto("Test Category", "Test Category Ua", 1L));
-        dto.setLocation(new LocationAddressAndGeoForUpdateDto("New Address", 50.45, 30.52, "New Address Ua"));
-
-        MultipartFile[] images = new MultipartFile[] {
-            new MockMultipartFile("image1.jpg", "image1.jpg", "image/jpeg", new byte[0])
-        };
-        LocationVO locationVO = LocationVO.builder()
-            .id(1L)
-            .addressEn("New Address")
-            .lat(50.45)
-            .lng(30.52)
-            .addressUk("New Address Ua")
-            .build();
-        when(categoryService.findByName("Test Category")).thenReturn(categoryDtoResponse);
-        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
-        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
-        when(locationService.findById(1L)).thenReturn(locationVO);
-        List<GeocodingResult> geocodingResults = new ArrayList<>();
-        GeocodingResult ukrLang = new GeocodingResult();
-        ukrLang.formattedAddress = "New Address";
-        ukrLang.geometry = new Geometry();
-        ukrLang.geometry.location = new LatLng(50.45, 30.52);
-        GeocodingResult engLang = new GeocodingResult();
-        engLang.formattedAddress = "New Address Ua";
-        engLang.geometry = new Geometry();
-        engLang.geometry.location = new LatLng(50.45, 30.52);
-        geocodingResults.add(ukrLang);
-        geocodingResults.add(engLang);
-        when(googleApiService.getResultFromGeoCode("New Address")).thenReturn(geocodingResults);
-        PlaceVO result = placeServiceImpl.updateFromUI(dto, images, user.getId());
-
-        assertNotNull(result);
-        assertEquals("Updated Place", result.getName());
-        verify(placeRepo, atLeastOnce()).save(any(Place.class));
-        verify(photoRepo, times(1)).save(any(Photo.class));
-        verify(locationService, times(1)).update(anyLong(), any(LocationVO.class));
-    }
-
-    @Test
-    void updateFromUIThrowsNotFoundExceptionForUserTest() {
-        PlaceUpdateDto dto = getPlaceUpdateDto();
-        when(userRepo.findById(anyLong())).thenReturn(Optional.empty());
-
-        assertThrows(IllegalArgumentException.class,
-            () -> placeService.updateFromUI(dto, null, TestConst.USER_ID));
-    }
-
-    @Test
     void updateFromUIThrowsNotFoundExceptionForCategoryTest() {
         PlaceUpdateDto dto = new PlaceUpdateDto();
         dto.setId(1L);
-        dto.setCategory(new CategoryDto("Nonexistent Category", "Nonexistent Category", 1L));
+        dto.setCategoryId(1L);
 
         when(categoryService.findByName("Nonexistent Category"))
             .thenThrow(new NotFoundException("Category not found"));
-        assertThrows(NotFoundException.class, () -> placeServiceImpl.updateFromUI(dto, null, TestConst.USER_ID));
+        assertThrows(NotFoundException.class, () -> placeServiceImpl.update(dto, null, TestConst.USER_ID));
     }
 
     @Test
-    void updateCategoryThrowsNotFoundExceptionTest() {
-        PlaceUpdateDto dto = new PlaceUpdateDto();
-        dto.setId(1L);
-        dto.setCategory(new CategoryDto("Non-existent Category", "Non-existent Category Ua", 2L));
-        when(placeRepo.findById(1L)).thenReturn(Optional.of(genericEntity1));
-        when(categoryService.findByName("Non-existent Category"))
-            .thenThrow(new NotFoundException("Category not found"));
+    void update_successfullyUpdatesPlace() {
+        Place existingPlace = ModelUtils.getPlace();
+        // given
+        PlaceUpdateDto dto = PlaceUpdateDto.builder()
+            .id(existingPlace.getId())
+            .name("New Place")
+            .address("New Address")
+            .categoryId(category.getId())
+            .openingHoursList(Set.of(ModelUtils.getOpeningHoursDto()))
+            .build();
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> placeServiceImpl.update(dto));
-        assertEquals("Category not found", exception.getMessage());
-        verify(placeRepo, never()).save(any(Place.class));
+        MultipartFile[] images = new MultipartFile[0];
+
+        GeocodingResult geo1 = ModelUtils.getGeocodingResult().getFirst();
+        GeocodingResult geo2 = ModelUtils.getGeocodingResult().getLast();
+
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(placeRepo.findById(existingPlace.getId())).thenReturn(Optional.of(existingPlace));
+        when(categoryRepo.findById(category.getId())).thenReturn(Optional.of(category));
+        when(googleApiService.getResultFromGeoCode(dto.getAddress()))
+            .thenReturn(List.of(geo1, geo2));
+
+        placeService.update(dto, images, 1L);
+
+        verify(placeRepo).save(argThat(place -> place.getId().equals(place.getId()) &&
+            place.getName().equals(place.getName()) &&
+            place.getOpeningHoursList().size() == 1));
+    }
+
+    @Test
+    void update_throwsIfUserNotFound() {
+        when(userRepo.findById(1L)).thenReturn(Optional.empty());
+        PlaceUpdateDto dto = PlaceUpdateDto.builder().id(100L).build();
+
+        assertThrows(NotFoundException.class,
+                () -> placeService.update(dto, new MultipartFile[0], 1L));
+    }
+
+    @Test
+    void update_throwsIfPlaceNotFound() {
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(placeRepo.findById(100L)).thenReturn(Optional.empty());
+        PlaceUpdateDto dto = PlaceUpdateDto.builder().id(100L).build();
+
+        assertThrows(NotFoundException.class,
+                () -> placeService.update(dto, new MultipartFile[0], 1L));
+    }
+
+    @Test
+    void update_throwsIfCategoryNotFound() {
+        Place existingPlace = ModelUtils.getPlace();
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(placeRepo.findById(existingPlace.getId())).thenReturn(Optional.of(existingPlace));
+        when(categoryRepo.findById(999L)).thenReturn(Optional.empty());
+
+        PlaceUpdateDto dto = PlaceUpdateDto.builder()
+            .id(existingPlace.getId())
+            .categoryId(999L)
+            .build();
+
+        assertThrows(NotFoundException.class,
+            () -> placeService.update(dto, new MultipartFile[0], 1L));
+    }
+
+    @Test
+    void update_throwsIfGeocodingEmpty() {
+        Place existingPlace = ModelUtils.getPlace();
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(placeRepo.findById(existingPlace.getId())).thenReturn(Optional.of(existingPlace));
+        when(categoryRepo.findById(category.getId())).thenReturn(Optional.of(category));
+        when(googleApiService.getResultFromGeoCode("Bad Place")).thenReturn(List.of());
+
+        PlaceUpdateDto dto = PlaceUpdateDto.builder()
+            .id(existingPlace.getId())
+            .categoryId(category.getId())
+            .name("Bad Place")
+            .build();
+
+        assertThrows(NotFoundException.class,
+            () -> placeService.update(dto, new MultipartFile[0], 1L));
     }
 }

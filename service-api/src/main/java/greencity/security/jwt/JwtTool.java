@@ -11,14 +11,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -129,7 +125,22 @@ public class JwtTool {
     public String extractJwtFromNativeWebRequest(NativeWebRequest nativeWebRequest) throws NoJwtException {
         String authorizationHeader = nativeWebRequest.getHeader(HttpHeaders.AUTHORIZATION);
         if (authorizationHeader == null || !authorizationHeader.startsWith(AppConstant.TOKEN_PREFIX)) {
-            throw new NoJwtException(ErrorMessage.NO_JWT_TOKEN_FOUND);
+            HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
+            if (request == null) {
+                throw new NoJwtException(ErrorMessage.NO_JWT_TOKEN_FOUND);
+            }
+            Cookie[] cookies = request.getCookies();
+
+            String accessToken = Optional.ofNullable(request.getCookies()).stream().flatMap(Arrays::stream)
+                .filter(c -> c.getName().equals("accessToken"))
+                .findFirst()
+                .map(Cookie::getValue).orElse(null);
+
+            if (accessToken == null) {
+                throw new NoJwtException(ErrorMessage.NO_JWT_TOKEN_FOUND);
+            }
+
+            return accessToken;
         }
         return authorizationHeader.substring(AppConstant.TOKEN_PREFIX.length());
     }

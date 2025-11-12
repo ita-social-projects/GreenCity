@@ -317,9 +317,6 @@
                         <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
                     </div>
                     <input id="id" name="id" style="display: none">
-                    <input type="hidden" id="lat" name="lat" value="">
-                    <input type="hidden" id="lng" name="lng" value="">
-                    <input type="hidden" id="addressUa" name="addressUa" value="">
                     <div class="modal-body">
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.address}]]</label>
@@ -335,22 +332,18 @@
                             <span class="errorSpan" th:id="errorModalSavename"></span>
                         </div>
                         <div class="form-group">
-                            <label>[[#{greenCity.pages.table.status}]]</label>
-                            <input class="form-control" name="status" readonly required type="text" value="APPROVED">
+                            <label for="status">[[#{greenCity.pages.table.status}]]</label>
+                            <input id="status" class="form-control" name="status" readonly required type="text" value="APPROVED">
                         </div>
                         <div class="form-group">
-                            <label>[[#{greenCity.pages.table.category}]]</label>
+                            <label for="category">[[#{greenCity.pages.table.category}]]</label>
                             <select class="form-control" id="category" name="category">
-                                <option id="empty-category" selected="selected"></option>
-                                <th:block th:each="category : ${categoryList}">
-                                    <tr>
-                                        <option>
-                                            <td th:text="${category.getNameEn()}"></td>
-                                        </option>
-                                    </tr>
-                                </th:block>
+                                <option
+                                    th:each="category : ${categoryList}"
+                                    th:text="${category.getNameEn()}"
+                                    th:value="${category.getId()}">
+                                </option>
                             </select>
-                            <span class="errorSpan" th:id="errorModalSavecategory"></span>
                         </div>
 
                         <div class="form-group">
@@ -401,12 +394,6 @@
                                 </div>
                             </div>
                             <span class="errorSpan" th:id="errorModalSaveopeningHoursList"></span>
-                        </div>
-                        <div class="form-group">
-                            <div id="discounts"></div>
-                            <button class="btn btn-secondary" id="addDiscount">
-                                [[#{greenCity.pages.table.delete.add.discount}]]
-                            </button>
                         </div>
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.image}]]</label>
@@ -488,10 +475,6 @@
         "greenCity.places.page.add.day.hours": [[#{greenCity.places.page.add.day.hours}]],
         "greenCity.places.page.hours.is.incorrect": [[#{greenCity.places.page.hours.is.incorrect}]]
     };
-</script>
-
-<script th:inline="javascript">
-    let discountSpecifications = /*[[${discountSpecifications}]]*/ [];
 </script>
 </body>
 </html>

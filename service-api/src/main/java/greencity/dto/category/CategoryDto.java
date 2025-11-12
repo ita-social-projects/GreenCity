@@ -14,6 +14,8 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @Builder
 public class CategoryDto {
+    private Long id;
+
     @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ServiceValidationConstants.CATEGORY_NAME_BAD_FORMED)
     @Length(
         min = ServiceValidationConstants.CATEGORY_NAME_MIN_LENGTH,

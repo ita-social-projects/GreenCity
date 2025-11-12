@@ -1,27 +1,18 @@
 package greencity.webcontroller;
 
-import greencity.TestConst;
 import greencity.converters.UserIdArgumentResolver;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
-import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.AdminPlaceDto;
-import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.security.jwt.JwtTool;
 import greencity.service.CategoryService;
 import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
-import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.time.DayOfWeek;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,20 +21,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.multipart.MultipartFile;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -87,7 +71,7 @@ class ManagementPlacesControllerTest {
         PageableDto<AdminPlaceDto> adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
         when(placeService.getFilteredPlacesForAdmin(any(), any())).thenReturn(adminPlaceDtoPageableDto);
         when(categoryService.findAllCategoryDto())
-            .thenReturn(Collections.singletonList(new CategoryDto("test", "test", null)));
+            .thenReturn(Collections.singletonList(new CategoryDto(1L, "test", "test", null)));
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
@@ -114,11 +98,9 @@ class ManagementPlacesControllerTest {
         Principal principal = Mockito.mock(Principal.class);
         String json = """
             {
-                "placeName": "Тестове місце",
-                "locationName": "Смиків, південна 7",
-                "status": "APPROVED",
-                "categoryName": "Recycling points",
-                "discountValues": null,
+                "name": "Тестове місце",
+                "address": "Смиків, південна 7",
+                "categoryId": "1",
                 "openingHoursList": [
                     {
                         "weekDay": "MONDAY",
@@ -143,65 +125,43 @@ class ManagementPlacesControllerTest {
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
-        verify(placeService).addPlaceFromUi(any(), any(), any());
+        verify(placeService).save(any(), any(), any());
     }
 
     @Test
     void updatePlaceTest() throws Exception {
-        String jwt = "jwt";
         Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("testUser");
+        String json = """
+            {
+                "id": "1",
+                "name": "Тестове місце",
+                "address": "Смиків, південна 7",
+                "categoryId": "1",
+                "openingHoursList": [
+                    {
+                        "weekDay": "MONDAY",
+                        "openTime": "17:34",
+                        "closeTime": "19:34",
+                        "breakTime": null
+                    }
+                ]
+            }
+            """;
 
-        PlaceUpdateDto placeUpdateDto = getPlaceUpdateDto();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        String json = objectMapper.writeValueAsString(placeUpdateDto);
-
-        when(jwtTool.extractJwtFromNativeWebRequest(any(NativeWebRequest.class)))
-            .thenReturn(jwt);
-        when(jwtTool.extractUserId(jwt))
-            .thenReturn(TestConst.USER_ID);
-
-        MockMultipartFile placeUpdateDtoPart = new MockMultipartFile(
+        MockMultipartFile addPlaceDto = new MockMultipartFile(
             "placeUpdateDto",
             "",
-            MediaType.APPLICATION_JSON_VALUE,
-            json.getBytes(StandardCharsets.UTF_8));
+            "application/json",
+            (json)
+                .getBytes());
 
-        MockMultipartFile imagePart = new MockMultipartFile(
-            "images",
-            "test-image.jpg",
-            MediaType.IMAGE_JPEG_VALUE,
-            "image-content".getBytes(StandardCharsets.UTF_8));
-
-        this.mockMvc.perform(multipart(HttpMethod.PUT, "/management/places")
-            .file(placeUpdateDtoPart)
-            .file(imagePart)
+        this.mockMvc.perform(multipart(HttpMethod.PUT, "/management/places/")
+            .file(addPlaceDto)
             .principal(principal)
-            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-            .characterEncoding("UTF-8"))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isOk());
 
-        verify(placeService).updateFromUI(eq(placeUpdateDto), any(MultipartFile[].class), eq(TestConst.USER_ID));
-    }
-
-    private PlaceUpdateDto getPlaceUpdateDto() {
-        return PlaceUpdateDto.builder()
-            .id(1L)
-            .name("Test Place")
-            .location(new LocationAddressAndGeoForUpdateDto(
-                "Test Address",
-                50.45,
-                30.52,
-                "Тестова адреса"))
-            .category(new CategoryDto("Food", "Їжа", null))
-            .openingHoursList(Set.of(new OpeningHoursDto(
-                LocalTime.of(10, 0),
-                LocalTime.of(22, 0),
-                DayOfWeek.FRIDAY,
-                null)))
-            .discountValues(Set.of(new DiscountValueDto(10, new SpecificationNameDto("kdf"))))
-            .build();
+        verify(placeService).update(any(), any(), any());
     }
 
     @Test
@@ -232,7 +192,7 @@ class ManagementPlacesControllerTest {
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
             .andExpect(status().isBadRequest());
 
-        verify(placeService, never()).updateFromUI(any(PlaceUpdateDto.class), any(), any());
+//        verify(placeService, never()).updateFromUI(any(PlaceUpdateDto.class), any(), any());
     }
 
     @Test

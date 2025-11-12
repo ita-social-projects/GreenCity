@@ -1,12 +1,8 @@
 package greencity.dto.place;
 
 import greencity.constant.ServiceValidationConstants;
-import greencity.dto.category.CategoryDto;
-import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import java.util.Set;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -32,17 +28,12 @@ public class PlaceUpdateDto {
     @Length(max = ServiceValidationConstants.PLACE_NAME_MAX_LENGTH)
     private String name;
 
-    @Valid
-    private LocationAddressAndGeoForUpdateDto location;
+    @NotBlank
+    private String address;
 
-    @Valid
-    private CategoryDto category;
+    @NotNull
+    private Long categoryId;
 
-    @Valid
     @Size(min = 1, message = ServiceValidationConstants.BAD_OPENING_HOURS_LIST_REQUEST)
     private Set<OpeningHoursDto> openingHoursList;
-
-    @Valid
-    @Size(min = 1, message = ServiceValidationConstants.BAD_DISCOUNT_VALUES_LIST_REQUEST)
-    private Set<DiscountValueDto> discountValues;
 }
