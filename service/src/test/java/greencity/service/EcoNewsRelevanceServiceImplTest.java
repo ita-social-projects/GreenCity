@@ -38,11 +38,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.lang.reflect.Field;
 import java.time.format.DateTimeFormatter;
@@ -56,7 +54,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -168,18 +165,10 @@ class EcoNewsRelevanceServiceImplTest {
 
         UserVO user = new UserVO();
         user.setId(userId);
-
-        List<Long> newsIds = List.of(100L, 101L);
-        List<EcoNews> ecoNewsList = newsIds.stream()
-            .map(id -> EcoNews.builder().id(id).build())
-            .toList();
         CachedUserRelevanceProfile cachedUserRelevanceProfile = new CachedUserRelevanceProfile(
             new Float[0], new Float[0]);
 
         when(cacheService.getUserProfileFromCache(anyLong())).thenReturn(cachedUserRelevanceProfile);
-
-        EcoNewsGenericDto dto1 = mock(EcoNewsGenericDto.class);
-        EcoNewsGenericDto dto2 = mock(EcoNewsGenericDto.class);
 
         assertThrows(EcoNewsRelevanceCalculationException.class, () -> ecoNewsRelevanceService.findRelevantEcoNews(
             pageable, tags, title, author, user));
