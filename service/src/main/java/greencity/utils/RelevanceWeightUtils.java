@@ -90,15 +90,26 @@ public class RelevanceWeightUtils {
         double[] normalized = normalizeWeights(weights);
         int[] poolsNewsCounts = new int[] {pools.relevantStrongNewsIds().size(), pools.relevantWeakNewsIds().size(),
             pools.nonRelevantNewsIds().size()};
+        double weightForRedistribution = 0;
+        int presentedPoolsCount = normalized.length;
+
         for (int i = 0; i < normalized.length; i++) {
             if (poolsNewsCounts[i] == 0) {
-                double dividedWeight = normalized[i] / (normalized.length - i - 1);
-                for (int j = i + 1; j < normalized.length; j++) {
-                    normalized[j] += dividedWeight;
-                }
+                weightForRedistribution += normalized[i];
+                presentedPoolsCount--;
                 normalized[i] = 0;
             }
         }
+
+        if (weightForRedistribution > 0) {
+            weightForRedistribution /= presentedPoolsCount;
+            for (int i = 0; i < normalized.length; i++) {
+                if (normalized[i] != 0) {
+                    normalized[i] += weightForRedistribution;
+                }
+            }
+        }
+
         return normalized;
     }
 
