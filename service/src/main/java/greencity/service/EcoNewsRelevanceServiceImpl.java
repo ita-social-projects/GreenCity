@@ -200,7 +200,8 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
         CachedRelevancePools pools,
         CachedUserRelevanceProfile userProfile,
         CachedTagsWithCoherence tags) {
-        while (ecoNewsRepo.countEcoNewsBeforeDate(cachedUserNews.getLastRequestedDate()) != 0
+        while (ecoNewsRepo.countEcoNewsBetweenDates(cachedUserNews.getMinimumAvailableDate(),
+            cachedUserNews.getLastRequestedDate()) != 0
             && !hasEnoughNews(requestMetadata, pools)
             && cachedUserNews.getLastGeneratedPage() < cachedUserNews.getTotalPagesCount() - 1) {
             loadMoreNews(requestMetadata, cachedUserNews, pools, userProfile, tags);

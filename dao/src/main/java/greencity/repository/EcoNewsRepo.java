@@ -216,13 +216,14 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     List<EcoNews> findAll(Specification<EcoNews> spec, Sort sort);
 
     /**
-     * Method to count all EcoNews before a specified date.
+     * Method to count all EcoNews between specified dates.
      *
-     * @param date the specified {@link ZonedDateTime}.
+     * @param startDate the lower bound of date range {@link ZonedDateTime}.
+     * @param endDate the upper bound of date range {@link ZonedDateTime}.
      * @return the count of EcoNews.
      */
-    @Query("SELECT COUNT(e) FROM EcoNews e WHERE e.creationDate < :date")
-    long countEcoNewsBeforeDate(@Param("date") ZonedDateTime date);
+    @Query("SELECT COUNT(e) FROM EcoNews e WHERE e.creationDate BETWEEN :startDate AND :endDate")
+    long countEcoNewsBetweenDates(@Param("startDate") ZonedDateTime startDate, @Param("endDate") ZonedDateTime endDate);
 
     /**
      * Finds IDs of {@link EcoNews} created on or after the given date.

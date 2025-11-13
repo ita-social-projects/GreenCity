@@ -21,5 +21,6 @@ public class CachedUserRelevantNews {
     private Integer lastGeneratedPage;
     private Integer totalPagesCount;
     private Long totalNewsCount;
+    private ZonedDateTime minimumAvailableDate;
     private ZonedDateTime lastRequestedDate;
 }
