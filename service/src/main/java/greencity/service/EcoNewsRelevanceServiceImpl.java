@@ -126,6 +126,8 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             totalEcoNewsCount = cachedUserRelevantNews.getTotalNewsCount();
             if (totalEcoNewsCount == 0) {
                 throw new NotFoundException(ErrorMessage.RELEVANT_NEWS_FOR_MONTH_NOT_FOUND);
+            } else if (pageable.getPageNumber() >= cachedUserRelevantNews.getTotalPagesCount()) {
+                throw new NotFoundException(ErrorMessage.NO_MORE_RELEVANT_NEWS);
             }
 
             Map<Integer, List<Long>> relevantNewsPages = cachedUserRelevantNews.getRelevantNewsPages();
