@@ -197,7 +197,7 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
             loadMoreNews(requestMetadata, cachedUserNews, pools, userProfile, tags);
         }
         cachedUserNews.setLastGeneratedPage(cachedUserNews.getLastGeneratedPage() + 1);
-        double[] normalized = RelevanceWeightUtils.normalizeWeights(relevancePoolsRatio);
+        double[] normalized = RelevanceWeightUtils.normalizeWeights(relevancePoolsRatio, pools);
         int[] ratioForPages = RelevanceWeightUtils.distributeCounts(requestMetadata.pageSize(), normalized);
         return getNewsFromPoolsByRatio(pools, ratioForPages);
     }

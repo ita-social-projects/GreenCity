@@ -3,6 +3,7 @@ package greencity.utils;
 import static greencity.constant.ErrorMessage.INVALID_RATIO_FORMAT;
 import static greencity.constant.ErrorMessage.INVALID_RATIO_SUM;
 import static greencity.constant.ErrorMessage.INVALID_RATIO_VALUE;
+import greencity.dto.cache.CachedRelevancePools;
 import java.util.Arrays;
 import java.util.Collections;
 import lombok.experimental.UtilityClass;
@@ -76,6 +77,29 @@ public class RelevanceWeightUtils {
             return new double[weights.length];
         }
         return Arrays.stream(weights).map(w -> w / sum).toArray();
+    }
+
+    /**
+     * Rescale weights to sum up to 1, considering pools content.
+     *
+     * @param weights weights to normalize (sum of elements may be less than 1)
+     * @param pools collections of news with different relevance strength
+     * @return normalized weights (sum of elements is always equal to 1)
+     */
+    public static double[] normalizeWeights(double[] weights, CachedRelevancePools pools) {
+        double[] normalized = normalizeWeights(weights);
+        int[] poolsNewsCounts = new int[] {pools.relevantStrongNewsIds().size(), pools.relevantWeakNewsIds().size(),
+            pools.nonRelevantNewsIds().size()};
+        for (int i = 0; i < normalized.length; i++) {
+            if (poolsNewsCounts[i] == 0) {
+                double dividedWeight = normalized[i] / (normalized.length - i - 1);
+                for (int j = i + 1; j < normalized.length; j++) {
+                    normalized[j] += dividedWeight;
+                }
+                normalized[i] = 0;
+            }
+        }
+        return normalized;
     }
 
     /**
