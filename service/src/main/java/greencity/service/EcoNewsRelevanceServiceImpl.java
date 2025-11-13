@@ -3,9 +3,10 @@ package greencity.service;
 import static greencity.constant.ErrorMessage.INVALID_RELEVANCE_POOLS;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_STRENGTH;
 import static greencity.constant.ErrorMessage.INVALID_SCORES_WEIGHTS;
+import greencity.constant.ErrorMessage;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.entity.EcoNews_;
 import greencity.entity.Tag;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EcoNewsRelevanceRepo;
 import greencity.repository.EcoNewsRepo;
 import greencity.utils.RelevanceWeightUtils;
@@ -37,7 +38,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -120,30 +120,20 @@ public class EcoNewsRelevanceServiceImpl implements EcoNewsRelevanceService {
 
         if (userProfile.tagsPreferencesVector().length == 0
             && userProfile.titlePreferencesVector().length == 0) {
-            EcoNewsViewDto filter = EcoNewsViewDto.builder()
-                .title(title)
-                .author(author)
-                .tags(tagsString)
-                .build();
-            Pageable pageableForFindAll = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by(Sort.Direction.DESC, EcoNews_.CREATION_DATE));
-            Page<EcoNews> findResultPage = ecoNewsRepo.findAll(ecoNewsService.getSpecification(filter),
-                pageableForFindAll);
-            findResult = findResultPage.getContent();
-            totalEcoNewsCount = findResultPage.getTotalElements();
+            throw new EcoNewsRelevanceCalculationException(ErrorMessage.USER_HAS_NO_INTERACTIONS_YET);
         } else {
             CachedUserRelevantNews cachedUserRelevantNews = cacheService.getUserRelevantNewsFromCache(key);
             totalEcoNewsCount = cachedUserRelevantNews.getTotalNewsCount();
+            if (totalEcoNewsCount == 0) {
+                throw new NotFoundException(ErrorMessage.RELEVANT_NEWS_FOR_MONTH_NOT_FOUND);
+            }
+
             Map<Integer, List<Long>> relevantNewsPages = cachedUserRelevantNews.getRelevantNewsPages();
             int page = pageable.getPageNumber();
 
             if (page > cachedUserRelevantNews.getLastGeneratedPage() + 1) {
                 throw new EcoNewsRelevanceCalculationException(String.format(
-                    "Requested page hasn't been generated yet."
-                        + " Relevant news should be generated one by one to ensure consistent relevance."
-                        + " Available pages 0-%d.",
+                    ErrorMessage.INCONSISTENT_ORDER_OF_RELEVANT_NEWS,
                     cachedUserRelevantNews.getLastGeneratedPage() + 1));
             } else if (relevantNewsPages.containsKey(page)) {
                 findResult = ecoNewsRepo.findAllById(relevantNewsPages.get(page));
