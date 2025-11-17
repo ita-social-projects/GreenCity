@@ -24,6 +24,7 @@ import greencity.enums.Role;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.util.Collections;
@@ -39,6 +40,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -62,6 +65,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class RestClientTest {
     @Mock
     private RestTemplate restTemplate;
@@ -81,15 +85,21 @@ class RestClientTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private RemoteWebClientProperties remoteWebClientProperties;
+
     private RestClient restClient;
 
     private static final String USER_EMAIL = "email";
 
     @BeforeEach
     void init() {
-        restClient = new RestClient(restTemplate, GREEN_CITY_USER_ADDRESS, GREEN_CITY_UBS_ADDRESS, userService,
-            httpServletRequest, jwtTool, SYSTEM_EMAIL);
+        restClient = new RestClient(restTemplate, userService,
+            httpServletRequest, jwtTool, remoteWebClientProperties);
         RequestContextHolder.setRequestAttributes(requestAttributes);
+        when(remoteWebClientProperties.getGreencityUbsServerAddress()).thenReturn(GREEN_CITY_UBS_ADDRESS);
+        when(remoteWebClientProperties.getGreencityUserServerAddress()).thenReturn(GREEN_CITY_USER_ADDRESS);
+        when(remoteWebClientProperties.getSystemEmailAddress()).thenReturn(SYSTEM_EMAIL);
     }
 
     @Test

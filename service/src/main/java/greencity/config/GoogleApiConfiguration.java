@@ -1,14 +1,15 @@
 package greencity.config;
 
 import com.google.maps.GeoApiContext;
-import org.springframework.beans.factory.annotation.Value;
+import greencity.properties.GoogleProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class GoogleApiConfiguration {
-    @Value("${greencity.authorization.googleApiKey}")
-    private String googleApiKey;
+    private final GoogleProperties googleProperties;
 
     /**
      * Method create ApiContext.
@@ -17,6 +18,6 @@ public class GoogleApiConfiguration {
      */
     @Bean
     GeoApiContext context() {
-        return new GeoApiContext.Builder().apiKey(googleApiKey).build();
+        return new GeoApiContext.Builder().apiKey(googleProperties.getGoogleApiKey()).build();
     }
 }
