@@ -1,6 +1,5 @@
 package greencity.webcontroller;
 
-import com.softserve.ldm.service.ExportToFileService;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
@@ -45,9 +44,6 @@ class ManagementRatingStatisticsControllerTest {
     private RatingStatisticsService ratingStatisticsService;
 
     @Mock
-    private ExportToFileService exportToFileService;
-
-    @Mock
     private RatingExcelExporter ratingExcelExporter;
 
     @InjectMocks
@@ -77,22 +73,6 @@ class ManagementRatingStatisticsControllerTest {
 
         verify(ratingStatisticsService).getRatingStatisticsForManagementByPage(pageable);
     }
-
-//    @Test
-//    void exportToExcelTest() throws Exception {
-//        List<RatingStatisticsExportDto> list =
-//                List.of(RatingStatisticsExportDto.builder().build());
-//
-//        when(ratingStatisticsService.getAllRatingStatistics()).thenReturn(list);
-//        InputStream mockStream = new ByteArrayInputStream(new byte[]{1,2,3});
-//        when(exportToFileService.exportTableDataToExcel(any())).thenReturn(mockStream);
-//
-//        mockMvc.perform(get(managementRatingStatisticsLink + "/export"))
-//                .andExpect(status().isOk());
-//
-//        verify(ratingStatisticsService).getAllRatingStatistics();
-//        verify(exportToFileService).exportTableDataToExcel(any());
-//    }
 
     @Test
     void exportFilteredToExcelTest() throws Exception {
