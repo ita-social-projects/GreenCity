@@ -12,11 +12,11 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.ErrorParsingException;
 import greencity.exception.exceptions.GreenCityUserServiceException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.security.jwt.JwtTool;
 import io.netty.channel.ChannelOption;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -35,23 +35,13 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class UserRemoteClientConfig {
-    @Value("${greencityuser.server.address}")
-    private String greenCityUserBaseUrl;
-
-    @Value("${spring.liquibase.parameters.service-email}")
-    private String systemEmail;
-
-    @Value("${webclient.connection-timeout-millis}")
-    private Integer connectionTimeoutMillis;
-
-    @Value("${webclient.response-timeout-millis}")
-    private Integer responseTimeoutMillis;
+    private final RemoteWebClientProperties remoteWebClientProperties;
 
     private final JwtTool jwtTool;
 
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
-        return builder.baseUrl(greenCityUserBaseUrl)
+        return builder.baseUrl(remoteWebClientProperties.getGreencityUserServerAddress())
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .filter(authorizationHeaderFilter())
             .filter(handlingWebClientExceptions())
@@ -59,8 +49,8 @@ public class UserRemoteClientConfig {
             .clientConnector(
                 new ReactorClientHttpConnector(
                     HttpClient.create()
-                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeoutMillis)
-                        .responseTimeout(Duration.ofMillis(responseTimeoutMillis))))
+                        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, remoteWebClientProperties.getConnectionTimeout())
+                        .responseTimeout(Duration.ofMillis(remoteWebClientProperties.getResponseTimeout()))))
             .build();
     }
 
@@ -68,7 +58,7 @@ public class UserRemoteClientConfig {
         List<Role> roles = List.of(Role.ROLE_USER, Role.ROLE_ADMIN);
 
         return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-            String jwt = jwtTool.createAccessToken(systemEmail, roles);
+            String jwt = jwtTool.createAccessToken(remoteWebClientProperties.getSystemEmailAddress(), roles);
             String authHeader = AppConstant.TOKEN_PREFIX + jwt;
 
             ClientRequest authorizedRequest = ClientRequest.from(clientRequest)
