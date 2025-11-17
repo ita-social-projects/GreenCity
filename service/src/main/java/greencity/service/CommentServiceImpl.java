@@ -36,6 +36,7 @@ import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CommentRepo;
 import greencity.repository.EcoNewsRepo;
@@ -85,8 +86,6 @@ public class CommentServiceImpl implements CommentService {
     private final UserNotificationService userNotificationService;
     private final UserRemoteClient userRemoteClient;
     private final NotificationService notificationService;
-    @Value("${client.address}")
-    private String clientAddress;
 
     /**
      * {@inheritDoc}
