@@ -27,6 +27,7 @@ import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.properties.OpenAiProperties;
 import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
@@ -42,7 +43,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -67,9 +67,7 @@ public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
     private final EcoNewsRelevanceService ecoNewsRelevanceService;
-
-    @Value("${greencity.relevance.enabled}")
-    private String relevanceServiceStatus;
+    private final OpenAiProperties openAiProperties;
 
     /**
      * Method for creating {@link EcoNewsVO}.
@@ -225,7 +223,7 @@ public class EcoNewsController {
     })
     @GetMapping("/relevance-enabled")
     public ResponseEntity<Boolean> isRelevanceEnabled() {
-        boolean isRelevanceEnabled = relevanceServiceStatus.equals("enabled");
+        boolean isRelevanceEnabled = openAiProperties.getRelevance().equals("enabled");
         return ResponseEntity.status(HttpStatus.OK).body(isRelevanceEnabled);
     }
 

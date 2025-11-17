@@ -6,6 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.entity.DataBaseBackUpFiles;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.properties.AzureProperties;
 import greencity.repository.DataBaseBackUpFilesRepo;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DatabaseBackupServiceImpl implements DataBaseBackUpService {
     private final DataBaseBackUpFilesRepo dataBaseBackUpFilesRepo;
+    private final AzureProperties azureProperties;
 
     @Value("${spring.datasource.url}")
     private String datasourceUrl;
@@ -47,12 +49,6 @@ public class DatabaseBackupServiceImpl implements DataBaseBackUpService {
 
     @Value("${spring.datasource.password}")
     private String datasourcePassword;
-
-    @Value("${azure.connection.string}")
-    private String azureStorageConnectionString;
-
-    @Value("${azure.container.name}")
-    private String containerName;
 
     @Value("${pg.dump.path}")
     private String path;
@@ -167,8 +163,8 @@ public class DatabaseBackupServiceImpl implements DataBaseBackUpService {
         byte[] backupData = byteArrayOutputStream.toByteArray();
         try (InputStream inputStream = new ByteArrayInputStream(backupData)) {
             BlobClient blobClient = new BlobClientBuilder()
-                .connectionString(azureStorageConnectionString)
-                .containerName(containerName)
+                .connectionString(azureProperties.getAzureConnectionString())
+                .containerName(azureProperties.getAzureContainerName())
                 .blobName("backup-" + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE) + ".sql")
                 .buildClient();
 

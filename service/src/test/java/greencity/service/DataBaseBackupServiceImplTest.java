@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.entity.DataBaseBackUpFiles;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.properties.AzureProperties;
 import greencity.repository.DataBaseBackUpFilesRepo;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -23,6 +24,8 @@ import static org.mockito.Mockito.*;
 class DataBaseBackupServiceImplTest {
     @Mock
     private DataBaseBackUpFilesRepo dataBaseBackUpFilesRepo;
+    @Mock
+    private AzureProperties azureProperties;
 
     @Spy
     @InjectMocks
@@ -37,18 +40,14 @@ class DataBaseBackupServiceImplTest {
     @Value("${spring.datasource.password}")
     private String datasourcePassword;
 
-    @Value("${azure.connection.string}")
-    private String azureStorageConnectionString;
-
-    @Value("${azure.container.name}")
-    private String containerName;
-
     @Value("${pg.dump.path}")
     private String path;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(azureProperties.getAzureConnectionString()).thenReturn("mock-connection-string");
+        when(azureProperties.getAzureContainerName()).thenReturn("mock-container");
     }
 
     @Test

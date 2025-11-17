@@ -13,6 +13,7 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailPreference;
 import greencity.enums.Role;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.service.UserService;
 import java.security.Principal;
 import java.util.Arrays;
@@ -26,7 +27,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import greencity.security.jwt.JwtTool;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -49,13 +49,11 @@ import static greencity.constant.AppConstant.AUTHORIZATION;
 @Slf4j
 public class RestClient {
     private final RestTemplate restTemplate;
-    private final String greenCityUserServerAddress;
-    private final String greenCityUbsServerAddress;
     private final UserService userService;
+    private final RemoteWebClientProperties remoteWebClientProperties;
 
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
-    private final String systemEmail;
     private static final String PAGE_QUERY_PARAM = "page";
     private static final String PAGE_SIZE_QUERY_PARAM = "size";
     private static final String USER_EMAIL_QUERY_PARAM = "email";
@@ -65,32 +63,29 @@ public class RestClient {
     /**
      * Constructs a new instance of the RestClient class.
      *
-     * @param restTemplate               The RestTemplate to be used for making HTTP
-     *                                   requests to GreenCityUser.
-     * @param greenCityUserServerAddress The address of the GreenCityUser server.
-     * @param greenCityUbsServerAddress  The address of the GreenCityUBS server.
-     * @param httpServletRequest         The HttpServletRequest object contains data
-     *                                   related to the current http request.
-     * @param jwtTool                    The JwtTool is used to create JWT tokens
-     *                                   for system requests to GreenCityUser.
-     * @param systemEmail                The system email address used to creat JWT
-     *                                   tokens for system requests to
-     *                                   GreenCityUser.
+     * @param restTemplate              The RestTemplate to be used for making HTTP
+     *                                  requests to GreenCityUser.
+     * @param httpServletRequest        The HttpServletRequest object contains data
+     *                                  related to the current http request.
+     * @param jwtTool                   The JwtTool is used to create JWT tokens for
+     *                                  system requests to GreenCityUser.
+     * @param remoteWebClientProperties The RemoteWebClient is used to get
+     *                                  properties from Environmet such as
+     *                                  systemEmail used to creat JWT tokens for
+     *                                  system requests to GreenCityUser,
+     *                                  greenCityUserServerAddress,
+     *                                  greenCityUbsServerAddress
      */
     public RestClient(RestTemplate restTemplate,
-        @Value("${greencityuser.server.address}") String greenCityUserServerAddress,
-        @Value("${greencityubs.server.address}") String greenCityUbsServerAddress,
         UserService userService,
         HttpServletRequest httpServletRequest,
         JwtTool jwtTool,
-        @Value("${spring.liquibase.parameters.service-email}") String systemEmail) {
+        RemoteWebClientProperties remoteWebClientProperties) {
         this.restTemplate = restTemplate;
-        this.greenCityUserServerAddress = greenCityUserServerAddress;
         this.httpServletRequest = httpServletRequest;
         this.userService = userService;
         this.jwtTool = jwtTool;
-        this.systemEmail = systemEmail;
-        this.greenCityUbsServerAddress = greenCityUbsServerAddress;
+        this.remoteWebClientProperties = remoteWebClientProperties;
     }
 
     public PageableAdvancedDto<UbsNotificationDto> findAllNotificationsForUserFromUbs(Principal principal,
@@ -100,7 +95,7 @@ public class RestClient {
         String userEmail = principal.getName();
 
         UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromHttpUrl(
-            greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS);
+            remoteWebClientProperties.getGreencityUbsServerAddress() + RestTemplateLinks.NOTIFICATIONS);
 
         String url = ubsNotificationsUrlBuilder
             .queryParam(PAGE_QUERY_PARAM, pageable.getPageNumber())
@@ -134,9 +129,10 @@ public class RestClient {
      */
     public List<UserVO> findAllByEmailNotification(EmailNotification emailNotification) {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
-        ResponseEntity<List<UserVO>> exchange = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
-            + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
+        ResponseEntity<List<UserVO>> exchange = restTemplate.exchange(
+            remoteWebClientProperties.getGreencityUserServerAddress()
+                + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
+                + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
             HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
             });
         List<UserVO> users = exchange.getBody();
@@ -153,8 +149,9 @@ public class RestClient {
      */
     public List<String> findAllUsersCities() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        ResponseEntity<List<String>> exchange = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.FIND_ALL_USERS_CITIES,
+        ResponseEntity<List<String>> exchange = restTemplate.exchange(
+            remoteWebClientProperties.getGreencityUserServerAddress()
+                + RestTemplateLinks.FIND_ALL_USERS_CITIES,
             HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
             });
         return exchange.getBody();
@@ -167,8 +164,9 @@ public class RestClient {
      */
     public Map<Integer, Long> findAllRegistrationMonthsMap() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        ResponseEntity<Map<Integer, Long>> exchange = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
+        ResponseEntity<Map<Integer, Long>> exchange = restTemplate.exchange(
+            remoteWebClientProperties.getGreencityUserServerAddress()
+                + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
             HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
             });
         return exchange.getBody();
@@ -181,8 +179,9 @@ public class RestClient {
      */
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
+        UriComponentsBuilder url =
+            UriComponentsBuilder.fromUriString(remoteWebClientProperties.getGreencityUserServerAddress()
+                + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
         UserVO user = restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();
         if (user != null) {
@@ -211,7 +210,7 @@ public class RestClient {
     public UserManagementVO findUserForManagement(Long id) {
         UserVO user = userService.findById(id);
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        UserManagementVO dto = restTemplate.exchange(greenCityUserServerAddress
+        UserManagementVO dto = restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.EMAIL + user.getEmail(),
             HttpMethod.GET, entity,
             new ParameterizedTypeReference<UserManagementVO>() {
@@ -232,7 +231,7 @@ public class RestClient {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserManagementUpdateDto> entity = new HttpEntity<>(updateDto, headers);
-        restTemplate.exchange(greenCityUserServerAddress
+        restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class);
         log.info("User with id {} has been updated", userDto.getId());
     }
@@ -254,7 +253,7 @@ public class RestClient {
      */
     public void updateRole(Long id, Role role) {
         String email = userService.findById(id).getEmail();
-        String url = greenCityUserServerAddress
+        String url = remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.USER + "/role" + RestTemplateLinks.EMAIL + email;
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -270,8 +269,9 @@ public class RestClient {
      */
     public List<UserVO> findAll() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        ResponseEntity<UserVO[]> exchange = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_ALL, HttpMethod.GET, entity, UserVO[].class);
+        ResponseEntity<UserVO[]> exchange =
+            restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
+                + RestTemplateLinks.USER_FIND_ALL, HttpMethod.GET, entity, UserVO[].class);
         UserVO[] responseDtos = exchange.getBody();
         if (responseDtos != null) {
             List<UserVO> users = Arrays.asList(responseDtos);
@@ -289,8 +289,10 @@ public class RestClient {
     public List<UserManagementVO> findUserFriendsByUserId(Long id) {
         String email = userService.findById(id).getEmail();
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        ResponseEntity<UserManagementVO[]> exchange = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER + RestTemplateLinks.FRIENDS + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
+        ResponseEntity<UserManagementVO[]> exchange = restTemplate.exchange(
+            remoteWebClientProperties.getGreencityUserServerAddress()
+                + RestTemplateLinks.USER + RestTemplateLinks.FRIENDS + RestTemplateLinks.EMAIL + email,
+            HttpMethod.GET,
             entity, UserManagementVO[].class);
         UserManagementVO[] responseDtos = exchange.getBody();
         if (responseDtos != null) {
@@ -310,8 +312,10 @@ public class RestClient {
     public String getUserLang(Long userId) {
         String email = userService.findById(userId).getEmail();
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        String body = restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_LANG
-            + RestTemplateLinks.EMAIL + email, HttpMethod.GET, entity, String.class).getBody();
+        String body = restTemplate
+            .exchange(remoteWebClientProperties.getGreencityUserServerAddress() + RestTemplateLinks.USER_LANG
+                + RestTemplateLinks.EMAIL + email, HttpMethod.GET, entity, String.class)
+            .getBody();
         assert body != null;
         return body;
     }
@@ -325,7 +329,7 @@ public class RestClient {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserManagementCreateDto> entity = new HttpEntity<>(userDto, headers);
-        restTemplate.exchange(greenCityUserServerAddress
+        restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class);
     }
 
@@ -338,7 +342,7 @@ public class RestClient {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<InterestingEcoNewsDto> entity = new HttpEntity<>(message, headers);
-        restTemplate.exchange(greenCityUserServerAddress
+        restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.SEND_INTERESTING_ECO_NEWS, HttpMethod.POST, entity, Object.class);
     }
 
@@ -346,7 +350,7 @@ public class RestClient {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UpdatePlaceStatusWithUserEmailDto> entity = new HttpEntity<>(message, headers);
-        restTemplate.exchange(greenCityUserServerAddress
+        restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.SEND_NOTIFICATION_STATUS_PLACE, HttpMethod.POST, entity, Object.class);
     }
 
@@ -360,7 +364,7 @@ public class RestClient {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(reportEmailMessage, headers);
-        restTemplate.exchange(greenCityUserServerAddress
+        restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class);
     }
 
@@ -374,7 +378,7 @@ public class RestClient {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, headers);
-        restTemplate.exchange(greenCityUserServerAddress
+        restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 
@@ -395,7 +399,8 @@ public class RestClient {
         }
 
         if (!StringUtils.hasLength(accessToken)) {
-            accessToken = AppConstant.TOKEN_PREFIX + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
+            accessToken = AppConstant.TOKEN_PREFIX + jwtTool
+                .createAccessToken(remoteWebClientProperties.getSystemEmailAddress(), Role.ROLE_ADMIN);
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -420,7 +425,7 @@ public class RestClient {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ScheduledEmailMessage> entity = new HttpEntity<>(message, headers);
-        restTemplate.exchange(greenCityUserServerAddress
+        restTemplate.exchange(remoteWebClientProperties.getGreencityUserServerAddress()
             + RestTemplateLinks.SEND_SCHEDULED_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 
