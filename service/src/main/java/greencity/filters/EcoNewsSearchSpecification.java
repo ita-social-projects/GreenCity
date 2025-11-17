@@ -28,7 +28,7 @@ public class EcoNewsSearchSpecification implements MySpecification<EcoNews> {
 
     @Override
     public Predicate toPredicate(@NotNull Root<EcoNews> root,
-        @NotNull CriteriaQuery<?> criteriaQuery,
+        CriteriaQuery<?> criteriaQuery,
         @NotNull CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
         criteriaQuery.distinct(true);

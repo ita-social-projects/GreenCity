@@ -29,7 +29,7 @@ public class NotificationSpecification implements MySpecification<Notification> 
 
     @Override
     public Predicate toPredicate(@NotNull Root<Notification> root,
-        @NotNull CriteriaQuery<?> criteriaQuery,
+        CriteriaQuery<?> criteriaQuery,
         @NotNull CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
         criteriaQuery.orderBy(criteriaBuilder.desc(root.get(Notification_.TIME)));
