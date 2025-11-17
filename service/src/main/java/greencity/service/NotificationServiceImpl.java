@@ -20,6 +20,7 @@ import greencity.enums.NotificationType;
 import greencity.enums.PlaceStatus;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
 import lombok.RequiredArgsConstructor;
@@ -58,8 +59,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserRemoteClient userRemoteClient;
     private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
     private final UserService userService;
-    @Value("${client.address}")
-    private String clientAddress;
+    private final RemoteWebClientProperties remoteWebClientProperties;
 
     /**
      * {@inheritDoc}
@@ -407,8 +407,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String createBaseLink(Notification notification) {
         if (notification.getNotificationType() == NotificationType.EVENT_COMMENT) {
-            return clientAddress + "/#/events/" + notification.getTargetId();
+            return remoteWebClientProperties.getClientAddress() + "/#/events/" + notification.getTargetId();
         }
-        return clientAddress + "/#/profile/" + notification.getTargetUser().getId() + "/notifications";
+        return remoteWebClientProperties.getClientAddress() + "/#/profile/" + notification.getTargetUser().getId()
+            + "/notifications";
     }
 }
