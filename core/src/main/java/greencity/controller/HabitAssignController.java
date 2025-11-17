@@ -21,6 +21,7 @@ import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.habit.HabitWorkingDaysDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.service.HabitAssignService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -63,8 +64,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HabitAssignController {
     private final HabitAssignService habitAssignService;
 
-    @Value("${client.address}")
-    private String redirectUrl;
+    private final RemoteWebClientProperties remoteWebClientProperties;
 
     /**
      * Method which assigns habit for {@link UserVO} with default props.
@@ -747,7 +747,7 @@ public class HabitAssignController {
     public ResponseEntity<Void> confirmInvitation(@PathVariable Long habitAssignId) {
         habitAssignService.confirmHabitInvitation(habitAssignId);
         return ResponseEntity.status(HttpStatus.FOUND)
-            .location(URI.create(redirectUrl + "/#/profile"))
+            .location(URI.create(remoteWebClientProperties.getClientAddress() + "/#/profile"))
             .build();
     }
 

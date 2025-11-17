@@ -10,6 +10,7 @@ import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.security.jwt.JwtTool;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
@@ -53,6 +54,9 @@ class HabitAssignControllerTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private RemoteWebClientProperties remoteWebClientProperties;
 
     @Mock
     JwtTool jwtTool;
