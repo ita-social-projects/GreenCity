@@ -3673,7 +3673,7 @@ public class ModelUtils {
         HashMap<Integer, List<Long>> pagesIds = new HashMap<>();
         pagesIds.put(0, newsIds);
         return new CachedUserRelevantNews(getCachedRelevancePools(), pagesIds, 0, 3,
-            9L, ZonedDateTime.now().plusDays(1));
+            9L, ZonedDateTime.now().minusMonths(1), ZonedDateTime.now().plusDays(1));
     }
 
     public static CachedTagsWithCoherence getCachedTagsWithCoherence() {

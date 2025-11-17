@@ -14,6 +14,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsRelevance;
 import greencity.exception.exceptions.EcoNewsRelevanceCalculationException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.mapping.PageableAdvancedDtoMapper;
 import greencity.repository.EcoNewsRelevanceRepo;
@@ -37,11 +38,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.lang.reflect.Field;
 import java.time.format.DateTimeFormatter;
@@ -50,11 +49,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
@@ -165,40 +165,16 @@ class EcoNewsRelevanceServiceImplTest {
 
         UserVO user = new UserVO();
         user.setId(userId);
-
-        List<Long> newsIds = List.of(100L, 101L);
-        List<EcoNews> ecoNewsList = newsIds.stream()
-            .map(id -> EcoNews.builder().id(id).build())
-            .toList();
         CachedUserRelevanceProfile cachedUserRelevanceProfile = new CachedUserRelevanceProfile(
             new Float[0], new Float[0]);
 
         when(cacheService.getUserProfileFromCache(anyLong())).thenReturn(cachedUserRelevanceProfile);
-        when(ecoNewsRepo.findAll(nullable(Specification.class), any(Pageable.class)))
-            .thenReturn(new PageImpl<>(ecoNewsList));
 
-        EcoNewsGenericDto dto1 = mock(EcoNewsGenericDto.class);
-        EcoNewsGenericDto dto2 = mock(EcoNewsGenericDto.class);
-
-        Mockito.doAnswer(invocation -> {
-            EcoNews source = invocation.getArgument(0);
-            return source.getId().equals(100L) ? dto1 : dto2;
-        }).when(modelMapper).map(Mockito.any(EcoNews.class), Mockito.<Class<EcoNewsGenericDto>>any());
-
-        PageableAdvancedDto<EcoNewsGenericDto> expected = mock(PageableAdvancedDto.class);
-        when(pageableAdvancedDtoMapper.convert(any(Page.class))).thenReturn(expected);
-
-        PageableAdvancedDto<EcoNewsGenericDto> actual = ecoNewsRelevanceService.findRelevantEcoNews(
-            pageable, tags, title, author, user);
-
-        assertEquals(expected, actual);
+        assertThrows(EcoNewsRelevanceCalculationException.class, () -> ecoNewsRelevanceService.findRelevantEcoNews(
+            pageable, tags, title, author, user));
 
         verify(cacheService).getUserProfileFromCache(anyLong());
         verify(cacheService, never()).getUserRelevantNewsFromCache(any());
-        verify(ecoNewsRepo).findAll(nullable(Specification.class), any(Pageable.class));
-        verify(modelMapper, times(2))
-            .map(any(EcoNews.class), (Class<EcoNewsGenericDto>) any(Class.class));
-        verify(pageableAdvancedDtoMapper).convert(any(Page.class));
     }
 
     @Test
@@ -220,9 +196,8 @@ class EcoNewsRelevanceServiceImplTest {
 
         when(cacheService.getUserProfileFromCache(anyLong())).thenReturn(cachedUserRelevanceProfile);
         when(cacheService.getUserRelevantNewsFromCache(any())).thenReturn(cachedUserRelevantNews);
-        when(cachedUserRelevantNews.getRelevantNewsPages()).thenReturn(new HashMap<>());
 
-        assertThrows(EcoNewsRelevanceCalculationException.class, () -> ecoNewsRelevanceService.findRelevantEcoNews(
+        assertThrows(NotFoundException.class, () -> ecoNewsRelevanceService.findRelevantEcoNews(
             pageable, tags, title, author, user));
 
         verify(cacheService).getUserProfileFromCache(anyLong());
@@ -257,8 +232,11 @@ class EcoNewsRelevanceServiceImplTest {
 
         when(cacheService.getUserProfileFromCache(anyLong())).thenReturn(cachedUserRelevanceProfile);
         when(cacheService.getUserRelevantNewsFromCache(any())).thenReturn(cachedUserRelevantNews);
-        when(cachedUserRelevantNews.getRelevantNewsPages()).thenReturn(relevantNewsPages);
         when(ecoNewsRepo.findAllById(newsIds)).thenReturn(ecoNewsList);
+        when(cachedUserRelevantNews.getRelevantNewsPages()).thenReturn(relevantNewsPages);
+        when(cachedUserRelevantNews.getLastGeneratedPage()).thenReturn(-1);
+        when(cachedUserRelevantNews.getTotalNewsCount()).thenReturn(10L);
+        when(cachedUserRelevantNews.getTotalPagesCount()).thenReturn(1);
 
         EcoNewsGenericDto dto1 = mock(EcoNewsGenericDto.class);
         EcoNewsGenericDto dto2 = mock(EcoNewsGenericDto.class);
@@ -299,15 +277,15 @@ class EcoNewsRelevanceServiceImplTest {
 
         CachedUserRelevantNews cachedUserRelevantNews = mock(CachedUserRelevantNews.class);
         Map<Integer, List<Long>> relevantNewsPages = mock(Map.class);
-        when(cachedUserRelevantNews.getRelevantNewsPages()).thenReturn(relevantNewsPages);
-        when(cachedUserRelevantNews.getTotalPagesCount()).thenReturn(2);
-        when(cachedUserRelevantNews.getLastGeneratedPage()).thenReturn(0);
-        when(cachedUserRelevantNews.getLastRequestedDate()).thenReturn(ZonedDateTime.now());
-
         CachedRelevancePools pools = new CachedRelevancePools(
             new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
+        when(cachedUserRelevantNews.getRelevantNewsPages()).thenReturn(relevantNewsPages);
+        when(cachedUserRelevantNews.getLastGeneratedPage()).thenReturn(-1);
+        when(cachedUserRelevantNews.getMinimumAvailableDate()).thenReturn(ZonedDateTime.now().minusMonths(1));
+        when(cachedUserRelevantNews.getLastRequestedDate()).thenReturn(ZonedDateTime.now());
         when(cachedUserRelevantNews.getNewsRelevancePools()).thenReturn(pools);
-
+        when(cachedUserRelevantNews.getTotalNewsCount()).thenReturn(10L);
+        when(cachedUserRelevantNews.getTotalPagesCount()).thenReturn(1);
         when(cacheService.getUserRelevantNewsFromCache(any())).thenReturn(cachedUserRelevantNews);
 
         CachedUserRelevanceProfile userProfile = ModelUtils.getCachedUserRelevanceProfile();
@@ -347,7 +325,7 @@ class EcoNewsRelevanceServiceImplTest {
 
         when(ecoNewsRepo.findAll(eq(mockSpecification), any(Sort.class)))
             .thenReturn(initialFilteredNews);
-        when(ecoNewsRepo.countEcoNewsBeforeDate(any(ZonedDateTime.class)))
+        when(ecoNewsRepo.countEcoNewsBetweenDates(any(ZonedDateTime.class), any(ZonedDateTime.class)))
             .thenReturn((long) initialFilteredNews.size());
 
         when(ecoNewsRelevanceRepo.findAllByEcoNewsIdIn(anyList()))
@@ -407,6 +385,8 @@ class EcoNewsRelevanceServiceImplTest {
             assertEquals(expectedDto, actual);
 
             verify(cacheService).getUserRelevantNewsFromCache(any(RelevantEcoNewsCacheKey.class));
+            verify(cachedUserRelevantNews).getTotalNewsCount();
+            verify(cachedUserRelevantNews, times(2)).getTotalPagesCount();
             verify(cachedUserRelevantNews).getRelevantNewsPages();
             verify(cacheService).getUserProfileFromCache(userId);
             verify(cacheService).getTagsCoherenceFromCache();
@@ -418,7 +398,7 @@ class EcoNewsRelevanceServiceImplTest {
 
             assertEquals(initialFilteredNews.size(), mockedConstruction.constructed().size());
 
-            verify(cachedUserRelevantNews).setLastGeneratedPage(1);
+            verify(cachedUserRelevantNews, atLeastOnce()).setLastGeneratedPage(anyInt());
             verify(ecoNewsRepo).findAllById(expectedNewsIdsInPage);
             verify(relevantNewsPages).put(pageNumber, expectedNewsIdsInPage);
 

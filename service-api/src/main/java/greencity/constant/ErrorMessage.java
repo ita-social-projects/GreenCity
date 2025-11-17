@@ -108,6 +108,12 @@ public class ErrorMessage {
     public static final String ECO_NEW_NOT_IN_FAVORITES = "This eco new is not in favorites.";
     public static final String USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES =
         "User has already added this eco new to favorites.";
+    public static final String USER_HAS_NO_INTERACTIONS_YET =
+        "User has no interactions yet. User's preferences cannot be calculated.";
+    public static final String INCONSISTENT_ORDER_OF_RELEVANT_NEWS = "Requested page hasn't been generated yet."
+        + " Relevant news should be generated one by one to ensure consistent relevance. Available pages 0-%d.";
+    public static final String RELEVANT_NEWS_FOR_MONTH_NOT_FOUND = "Relevant news for the last month not found.";
+    public static final String NO_MORE_RELEVANT_NEWS = "There is no more relevant news for the last month.";
     public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
         "User cannot add more than 5 social network links";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";

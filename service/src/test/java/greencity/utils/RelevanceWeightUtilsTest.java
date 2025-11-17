@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import greencity.dto.cache.CachedRelevancePools;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -163,6 +166,37 @@ class RelevanceWeightUtilsTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("normalizeWeightsProvider")
+    void testNormalizeWeights(double[] inputWeights, long[] strongNews, long[] weakNews, long[] nonRelevantNews,
+        double[] expected, double[] assertions) {
+        LinkedList<Long> strongNewsList = new LinkedList<>(Arrays.stream(strongNews).boxed().toList());
+        LinkedList<Long> weakNewsList = new LinkedList<>(Arrays.stream(weakNews).boxed().toList());
+        LinkedList<Long> nonRelevantNewsList = new LinkedList<>(Arrays.stream(nonRelevantNews).boxed().toList());
+        CachedRelevancePools pools = new CachedRelevancePools(strongNewsList, weakNewsList, nonRelevantNewsList);
+        double[] result = RelevanceWeightUtils.normalizeWeights(inputWeights, pools);
+
+        if (expected != null) {
+            assertArrayEquals(expected, result, PRECISION);
+        } else if (assertions != null) {
+            assertEquals(assertions[0], result[0], PRECISION);
+            assertEquals(assertions[1], result[1], PRECISION);
+            if (result.length > 2)
+                assertEquals(assertions[2], result[2], PRECISION);
+        } else {
+            assertEquals(1.0, Arrays.stream(result).sum(), PRECISION);
+            if (result.length == 3) {
+                assertTrue(result[0] < result[1]);
+                assertTrue(result[1] < result[2]);
+            }
+        }
+
+        if (inputWeights == null) {
+            assertNotNull(result);
+            assertEquals(0, result.length);
+        }
+    }
+
     private static Stream<Arguments> prepareForValidRatios() {
         return Stream.of(
             Arguments.of("0.4:0.6", 2, true),
@@ -180,5 +214,25 @@ class RelevanceWeightUtilsTest {
             Arguments.of("0.6:0.5", 2, false),
             Arguments.of("0.3:0.3", 2, false),
             Arguments.of("", 0, false));
+    }
+
+    private static Stream<Arguments> normalizeWeightsProvider() {
+        return Stream.of(
+            Arguments.of(new double[] {2, 3, 5}, new long[] {1L, 2L}, new long[] {3L, 4L, 5L},
+                new long[] {6L, 7L}, new double[] {0.2, 0.3, 0.5}, null),
+            Arguments.of(new double[] {0.2, 0.3, 0.5}, new long[] {1L, 2L}, new long[] {},
+                new long[] {6L, 7L}, null, new double[] {0.35, 0.0, 0.65}),
+            Arguments.of(new double[] {0.2, 0.3, 0.5}, new long[] {}, new long[] {}, new long[] {6L, 7L},
+                new double[] {0.0, 0.0, 1.0}, null),
+            Arguments.of(new double[] {0.2, 0.3, 0.5}, new long[] {}, new long[] {}, new long[] {},
+                new double[] {0.0, 0.0, 0.0}, null),
+            Arguments.of(new double[] {0.4, 0.3, 0.3}, new long[] {}, new long[] {3L}, new long[] {6L},
+                new double[] {0.0, 0.5, 0.5}, null),
+            Arguments.of(new double[] {0.5, 0.5, 0.0}, new long[] {1L}, new long[] {3L}, new long[] {},
+                new double[] {0.5, 0.5, 0.0}, null),
+            Arguments.of(new double[] {1, 2, 3}, new long[] {1L}, new long[] {3L}, new long[] {6L},
+                null, null),
+            Arguments.of(new double[] {0, 0, 0}, new long[] {1L}, new long[] {3L}, new long[] {6L},
+                new double[] {0.0, 0.0, 0.0}, null));
     }
 }
