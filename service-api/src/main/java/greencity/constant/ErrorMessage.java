@@ -255,7 +255,7 @@ public class ErrorMessage {
     public static final String AI_USER_NOT_FOUND = "AI-generated user not found";
     public static final String GREENCITY_SERVER_ADDRESS_NOT_SET = "greencity server address not set.";
     public static final String GREENCITY_UBS_SERVER_ADDRESS_NOT_SET = "greencity ubs server address not set.";
-    public static final String GREENCITY_USER_SERVICE_ADDRESS_NOT_SET = "greencity user service address not set.";
+    public static final String GREENCITY_USER_SERVER_ADDRESS_NOT_SET = "greencity user service address not set.";
     public static final String WEBCLIENT_CONNECTION_TIMEOUT_NOT_SET = "webclient connection timeout not set.";
     public static final String WEBCLIENT_RESPONSE_TIMEOUT_NOT_SET = "webclient response timeout not set.";
     public static final String CLIENT_ADDRESS_NOT_SET = "client address not set.";

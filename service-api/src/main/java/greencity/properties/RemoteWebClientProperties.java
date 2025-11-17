@@ -54,8 +54,8 @@ public class RemoteWebClientProperties {
     public String getGreencityUserServerAddress() {
         String greencityUserServerAddress = environment.getProperty("greencityuser.server.address");
         if (!StringUtils.hasText(greencityUserServerAddress)) {
-            log.error(ErrorMessage.GREENCITY_USER_SERVICE_ADDRESS_NOT_SET);
-            throw new IllegalStateException(ErrorMessage.GREENCITY_USER_SERVICE_ADDRESS_NOT_SET);
+            log.error(ErrorMessage.GREENCITY_USER_SERVER_ADDRESS_NOT_SET);
+            throw new IllegalStateException(ErrorMessage.GREENCITY_USER_SERVER_ADDRESS_NOT_SET);
         }
         return greencityUserServerAddress;
     }
