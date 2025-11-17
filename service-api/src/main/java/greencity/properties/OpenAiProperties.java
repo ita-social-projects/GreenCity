@@ -18,7 +18,7 @@ public class OpenAiProperties {
     public void validateProperties() {
         getOpenAiKey();
         getRelevance();
-        log.info("All OpneAi properties validated successfully.");
+        log.info("All OpenAI properties validated successfully.");
     }
 
     public String getOpenAiKey() {

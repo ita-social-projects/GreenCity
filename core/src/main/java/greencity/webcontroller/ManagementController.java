@@ -12,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 @RequestMapping
 public class ManagementController {
-    private RemoteWebClientProperties remoteWebClientProperties;
+    private final RemoteWebClientProperties remoteWebClientProperties;
 
     /**
      * Returns index page.

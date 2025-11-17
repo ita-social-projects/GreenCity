@@ -46,6 +46,8 @@ class DataBaseBackupServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(azureProperties.getAzureConnectionString()).thenReturn("mock-connection-string");
+        when(azureProperties.getAzureContainerName()).thenReturn("mock-container");
     }
 
     @Test

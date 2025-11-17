@@ -89,6 +89,10 @@ class ManagementEventControllerTest {
     void setUp() {
         defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.ENGLISH);
+        when(remoteWebClientProperties.getGreencityUserServerAddress())
+            .thenReturn("http://localhost:8060/");
+        when(googleProperties.getGoogleApiKey())
+            .thenReturn("mock-api-key");
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEventController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .setValidator(mockValidator)

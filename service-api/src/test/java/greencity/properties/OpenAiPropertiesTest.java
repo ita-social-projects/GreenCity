@@ -92,6 +92,6 @@ class OpenAiPropertiesTest {
         openAiProperties.validateProperties();
 
         assertTrue(logCaptor.getInfoLogs()
-            .contains("All OpneAi properties validated successfully."));
+            .contains("All OpenAI properties validated successfully."));
     }
 }

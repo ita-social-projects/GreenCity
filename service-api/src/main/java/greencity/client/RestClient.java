@@ -180,7 +180,7 @@ public class RestClient {
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         UriComponentsBuilder url =
-            UriComponentsBuilder.fromHttpUrl(remoteWebClientProperties.getGreencityUserServerAddress()
+            UriComponentsBuilder.fromUriString(remoteWebClientProperties.getGreencityUserServerAddress()
                 + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
         UserVO user = restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();

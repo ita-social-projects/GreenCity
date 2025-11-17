@@ -83,6 +83,8 @@ class HabitAssignControllerTest {
             .thenReturn(jwt);
         lenient().when(jwtTool.extractUserId(jwt))
             .thenReturn(TestConst.USER_ID);
+        lenient().when(remoteWebClientProperties.getClientAddress())
+            .thenReturn("http://localhost:4200/");
     }
 
     @Test

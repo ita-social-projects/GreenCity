@@ -117,6 +117,8 @@ class EcoNewsControllerTest {
             .thenReturn(jwt);
         when(jwtTool.extractUserId(jwt))
             .thenReturn(TestConst.USER_ID);
+        when(openAiProperties.getRelevance())
+            .thenReturn("enabled");
     }
 
     @Test
