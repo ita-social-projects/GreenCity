@@ -39,7 +39,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

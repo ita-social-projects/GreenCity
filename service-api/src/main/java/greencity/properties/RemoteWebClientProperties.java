@@ -95,5 +95,4 @@ public class RemoteWebClientProperties {
         }
         return systemEmailAddres;
     }
-
 }
