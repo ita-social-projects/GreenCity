@@ -5,6 +5,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.openai.OpenAIResponseDTO;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.exception.exceptions.OpenAIRequestException;
+import greencity.properties.OpenAiProperties;
 import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
@@ -45,6 +48,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class OpenAIServiceImplTest {
 
     private final String apiKey = "mock-api-key";
@@ -62,12 +66,14 @@ class OpenAIServiceImplTest {
     private RestClient.RequestBodyUriSpec requestBodyUriSpec;
     @Mock
     private RestClient.ResponseSpec responseSpec;
+    @Mock
+    private OpenAiProperties openAiProperties;
     @InjectMocks
     private OpenAIServiceImpl openAIService;
 
     @BeforeEach
     void setUp() throws Exception {
-        ReflectionTestUtils.setField(openAIService, "apiKey", apiKey);
+        when(openAiProperties.getOpenAiKey()).thenReturn(apiKey);
         ReflectionTestUtils.setField(openAIService, "apiUrl", apiUrl);
         ReflectionTestUtils.setField(openAIService, "model", model);
         ReflectionTestUtils.setField(openAIService, "maxCompletionTokens", maxCompletionTokens);

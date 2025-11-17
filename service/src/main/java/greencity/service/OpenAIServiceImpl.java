@@ -7,6 +7,7 @@ import greencity.enums.EcoNewsLocation;
 import greencity.enums.OpenAIResponseFormat;
 import greencity.exception.exceptions.OpenAIRequestException;
 import greencity.exception.exceptions.OpenAIResponseException;
+import greencity.properties.OpenAiProperties;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -30,8 +31,6 @@ import static greencity.constant.OpenAIConstants.*;
 @Slf4j
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
-    @Value("${openai.api.key}")
-    private String apiKey;
     @Value("${openai.api.model}")
     private String model;
     @Value("${openai.api.model.embedding}")
@@ -48,15 +47,18 @@ public class OpenAIServiceImpl implements OpenAIService {
     private final SecureRandom random;
     private final DateTimeFormatter monthYearFormat;
     private final DateTimeFormatter fullDateTimeFormat;
+    private OpenAiProperties openAiProperties;
 
     public OpenAIServiceImpl(@Value("${openai.api.url}") String apiUrl,
         @Value("${openai.api.url.embedding}") String embeddingApiUrl,
-        RestClient restClient) {
+        RestClient restClient,
+        OpenAiProperties openAiProperties) {
         this.apiUrl = apiUrl;
         this.restClient = restClient;
         this.random = new SecureRandom();
         this.monthYearFormat = DateTimeFormatter.ofPattern("yyyy-MM");
         this.fullDateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.openAiProperties = openAiProperties;
         OpenAIRequestType.initializeUrls(apiUrl, embeddingApiUrl);
     }
 
@@ -234,7 +236,7 @@ public class OpenAIServiceImpl implements OpenAIService {
      */
     private HttpHeaders createHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(OPENAI_AUTH_HEADER, OPENAI_BEARER_PREFIX + apiKey);
+        headers.add(OPENAI_AUTH_HEADER, OPENAI_BEARER_PREFIX + openAiProperties.getOpenAiKey());
         headers.add(OPENAI_CONTENT_TYPE_HEADER, OPENAI_APPLICATION_JSON);
         return headers;
     }
@@ -255,7 +257,7 @@ public class OpenAIServiceImpl implements OpenAIService {
      */
     private String validateRequestParameters(String prompt) {
         Map<Object, String> validationResults = new HashMap<>();
-        validationResults.put(apiKey, ERROR_API_KEY_MISSING);
+        validationResults.put(openAiProperties.getOpenAiKey(), ERROR_API_KEY_MISSING);
         validationResults.put(apiUrl, ERROR_API_URL_MISSING);
         validationResults.put(prompt, ERROR_PROMPT_MISSING);
 
