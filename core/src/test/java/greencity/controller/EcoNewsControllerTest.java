@@ -19,6 +19,7 @@ import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
+import greencity.properties.OpenAiProperties;
 import greencity.security.jwt.JwtTool;
 import greencity.service.EcoNewsRelevanceService;
 import greencity.service.EcoNewsService;
@@ -85,6 +86,8 @@ class EcoNewsControllerTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
+    private OpenAiProperties openAiProperties;
+    @Mock
     JwtTool jwtTool;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -99,7 +102,7 @@ class EcoNewsControllerTest {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(ecoNewsController)
             .setCustomArgumentResolvers(
