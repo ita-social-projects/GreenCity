@@ -99,7 +99,7 @@ public class RestClient {
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
         String userEmail = principal.getName();
 
-        UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromHttpUrl(
+        UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromUriString(
             greenCityUbsServerAddress + RestTemplateLinks.NOTIFICATIONS);
 
         String url = ubsNotificationsUrlBuilder
@@ -181,7 +181,7 @@ public class RestClient {
      */
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
+        UriComponentsBuilder url = UriComponentsBuilder.fromUriString(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam(USER_EMAIL_QUERY_PARAM, email);
         UserVO user = restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();

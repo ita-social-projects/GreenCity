@@ -17,8 +17,8 @@ import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
-import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.tag.TagUkEnDto;
+import greencity.dto.todolistitem.CustomToDoListItemResponseDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.SubscriberDto;
 import greencity.dto.user.UserActivationDto;
@@ -31,22 +31,21 @@ import greencity.enums.Role;
 import greencity.enums.ToDoListItemStatus;
 import greencity.enums.UserStatus;
 import greencity.message.ScheduledEmailMessage;
-import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import greencity.message.SendReportEmailMessage;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class ModelUtils {
     public static UserVO getUserVO() {
@@ -188,7 +187,7 @@ public class ModelUtils {
     }
 
     public static URL getUrl() throws MalformedURLException {
-        return new URL(TestConst.SITE);
+        return URI.create(TestConst.SITE).toURL();
     }
 
     public static ScheduledEmailMessage getScheduledEmailMessage() {

@@ -48,7 +48,7 @@ public class ManagementController {
     @GetMapping("/management/login")
     public String login() {
         if (!SecurityUtils.isAuthenticated()) {
-            String managementLoginUrl = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress)
+            String managementLoginUrl = UriComponentsBuilder.fromUriString(greenCityUserServerAddress)
                 .path("/management/login")
                 .build()
                 .toUriString();

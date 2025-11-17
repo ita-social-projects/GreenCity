@@ -61,7 +61,7 @@ class ManagementControllerTest {
             .setAuthentication(new AnonymousAuthenticationToken("GUEST", "anonymousUser", AuthorityUtils
                 .createAuthorityList("ROLE_ANONYMOUS")));
 
-        String expectedUrl = UriComponentsBuilder.fromHttpUrl(TestConst.GREENCITY_USER_SERVER_ADDRESS)
+        String expectedUrl = UriComponentsBuilder.fromUriString(TestConst.GREENCITY_USER_SERVER_ADDRESS)
             .path(link + loginLink)
             .build()
             .toUriString();
