@@ -13,6 +13,8 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.event.Event;
 import greencity.enums.TagType;
+import greencity.properties.GoogleProperties;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.repository.EventRepo;
 import greencity.service.EventService;
 import greencity.service.TagsService;
@@ -78,11 +80,19 @@ class ManagementEventControllerTest {
     private Validator mockValidator;
     @Mock
     private Locale defaultLocale;
+    @Mock
+    private RemoteWebClientProperties remoteWebClientProperties;
+    @Mock
+    private GoogleProperties googleProperties;
 
     @BeforeEach
     void setUp() {
         defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.ENGLISH);
+        when(remoteWebClientProperties.getGreencityUserServerAddress())
+            .thenReturn("http://localhost:8060/");
+        when(googleProperties.getGoogleApiKey())
+            .thenReturn("mock-api-key");
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEventController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .setValidator(mockValidator)

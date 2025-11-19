@@ -9,6 +9,7 @@ import greencity.dto.user.UserClaims;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NoJwtException;
+import greencity.properties.SecurityProperties;
 import greencity.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -29,7 +30,6 @@ import static org.mockito.Mockito.when;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
@@ -41,14 +41,16 @@ class JwtToolTest {
     HttpServletRequest request;
     @Mock
     UserService userService;
+    @Mock
+    SecurityProperties securityProperties;
 
     @InjectMocks
     private JwtTool jwtTool;
 
     @BeforeEach
     void init() {
-        ReflectionTestUtils.setField(jwtTool, "accessTokenValidTimeInMinutes", 15);
-        ReflectionTestUtils.setField(jwtTool, "accessTokenKey", "123123123123123123123123123123123123");
+        when(securityProperties.getJwtAccessTokenExpiration()).thenReturn(15);
+        when(securityProperties.getAccessTokenKey()).thenReturn("123123123123123123123123123123123123");
     }
 
     @Test

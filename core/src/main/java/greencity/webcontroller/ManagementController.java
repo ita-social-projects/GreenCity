@@ -1,8 +1,8 @@
 package greencity.webcontroller;
 
+import greencity.properties.RemoteWebClientProperties;
 import greencity.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 @RequestMapping
 public class ManagementController {
-    @Value("${greencityuser.server.address}")
-    private String greenCityUserServerAddress;
+    private final RemoteWebClientProperties remoteWebClientProperties;
 
     /**
      * Returns index page.
@@ -48,10 +47,11 @@ public class ManagementController {
     @GetMapping("/management/login")
     public String login() {
         if (!SecurityUtils.isAuthenticated()) {
-            String managementLoginUrl = UriComponentsBuilder.fromUriString(greenCityUserServerAddress)
-                .path("/management/login")
-                .build()
-                .toUriString();
+            String managementLoginUrl =
+                UriComponentsBuilder.fromUriString(remoteWebClientProperties.getGreencityUserServerAddress())
+                    .path("/management/login")
+                    .build()
+                    .toUriString();
             return "redirect:" + managementLoginUrl;
         } else {
             return "redirect:/management";

@@ -28,6 +28,7 @@ import greencity.repository.TagsRepo;
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,15 +81,18 @@ public class CacheServiceImpl implements CacheService {
     public CachedUserRelevantNews getUserRelevantNewsFromCache(RelevantEcoNewsCacheKey key) {
         CachedUserRelevantNews cachedUserRelevantNews = userRelevanceNewsCache.getIfPresent(key);
         if (cachedUserRelevantNews == null) {
-            long totalEcoNewsCount = ecoNewsRepo.count();
             ZoneId zoneId = ZoneId.systemDefault();
+            ZonedDateTime startDate = LocalDate.now().minusMonths(1).atStartOfDay(zoneId);
+            ZonedDateTime endDate = LocalDate.now().plusDays(1).atStartOfDay(zoneId);
+            long totalEcoNewsCount = ecoNewsRepo.countEcoNewsBetweenDates(startDate, endDate);
             cachedUserRelevantNews = new CachedUserRelevantNews(
                 new CachedRelevancePools(new LinkedList<>(), new LinkedList<>(), new LinkedList<>()),
                 new HashMap<>(),
                 -1,
                 (int) Math.ceil((double) totalEcoNewsCount / key.pageSize()),
                 totalEcoNewsCount,
-                LocalDate.now().plusDays(1).atStartOfDay(zoneId));
+                startDate,
+                endDate);
             userRelevanceNewsCache.put(key, cachedUserRelevantNews);
         }
         return cachedUserRelevantNews;
