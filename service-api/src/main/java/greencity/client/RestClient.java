@@ -94,7 +94,7 @@ public class RestClient {
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders);
         String userEmail = principal.getName();
 
-        UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromHttpUrl(
+        UriComponentsBuilder ubsNotificationsUrlBuilder = UriComponentsBuilder.fromUriString(
             remoteWebClientProperties.getGreencityUbsServerAddress() + RestTemplateLinks.NOTIFICATIONS);
 
         String url = ubsNotificationsUrlBuilder

@@ -36,7 +36,7 @@ public class PlaceSearchSpecification implements MySpecification<Place> {
 
     @Override
     public Predicate toPredicate(@NotNull Root<Place> root,
-        @NotNull CriteriaQuery<?> criteriaQuery,
+        CriteriaQuery<?> criteriaQuery,
         @NotNull CriteriaBuilder criteriaBuilder) {
         Predicate allPredicates = toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
         criteriaQuery.distinct(true);

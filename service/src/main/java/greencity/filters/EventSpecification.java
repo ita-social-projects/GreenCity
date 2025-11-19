@@ -48,7 +48,7 @@ public class EventSpecification implements MySpecification<Event> {
 
     @Override
     public Predicate toPredicate(@NotNull Root<Event> root,
-        @NotNull CriteriaQuery<?> criteriaQuery,
+        CriteriaQuery<?> criteriaQuery,
         @NotNull CriteriaBuilder criteriaBuilder) {
         return toPredicateFromMap(root, criteriaBuilder, searchCriteriaList, pred);
     }

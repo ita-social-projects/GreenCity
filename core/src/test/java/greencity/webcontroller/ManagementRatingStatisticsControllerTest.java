@@ -1,10 +1,8 @@
 package greencity.webcontroller;
 
-import com.softserve.ldm.service.ExportToFileService;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
-import greencity.dto.ratingstatistics.RatingStatisticsExportDto;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
@@ -24,9 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -47,9 +42,6 @@ class ManagementRatingStatisticsControllerTest {
 
     @Mock
     private RatingStatisticsService ratingStatisticsService;
-
-    @Mock
-    private ExportToFileService exportToFileService;
 
     @Mock
     private RatingExcelExporter ratingExcelExporter;
@@ -81,22 +73,6 @@ class ManagementRatingStatisticsControllerTest {
 
         verify(ratingStatisticsService).getRatingStatisticsForManagementByPage(pageable);
     }
-
-//    @Test
-//    void exportToExcelTest() throws Exception {
-//        List<RatingStatisticsExportDto> list =
-//                List.of(RatingStatisticsExportDto.builder().build());
-//
-//        when(ratingStatisticsService.getAllRatingStatistics()).thenReturn(list);
-//        InputStream mockStream = new ByteArrayInputStream(new byte[]{1,2,3});
-//        when(exportToFileService.exportTableDataToExcel(any())).thenReturn(mockStream);
-//
-//        mockMvc.perform(get(managementRatingStatisticsLink + "/export"))
-//                .andExpect(status().isOk());
-//
-//        verify(ratingStatisticsService).getAllRatingStatistics();
-//        verify(exportToFileService).exportTableDataToExcel(any());
-//    }
 
     @Test
     void exportFilteredToExcelTest() throws Exception {
