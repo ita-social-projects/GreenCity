@@ -377,7 +377,6 @@ public class UserRemoteClient {
             .block();
     }
 
-    // TODO: add caching
     /**
      * Method to get all languages as {@link LanguageDTO}.
      *
@@ -392,7 +391,6 @@ public class UserRemoteClient {
             .toList();
     }
 
-    // TODO: add caching
     /**
      * Find language {@link LanguageDTO} by code.
      *

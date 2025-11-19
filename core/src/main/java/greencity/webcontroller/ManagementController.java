@@ -48,7 +48,7 @@ public class ManagementController {
     public String login() {
         if (!SecurityUtils.isAuthenticated()) {
             String managementLoginUrl =
-                UriComponentsBuilder.fromHttpUrl(remoteWebClientProperties.getGreencityUserServerAddress())
+                UriComponentsBuilder.fromUriString(remoteWebClientProperties.getGreencityUserServerAddress())
                     .path("/management/login")
                     .build()
                     .toUriString();

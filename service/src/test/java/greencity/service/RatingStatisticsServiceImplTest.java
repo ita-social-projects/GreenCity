@@ -1,8 +1,19 @@
 package greencity.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.ratingstatistics.*;
-import greencity.dto.user.UserVO;
+import greencity.dto.ratingstatistics.RatingPointsDto;
+import greencity.dto.ratingstatistics.RatingStatisticsDto;
+import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsExportDto;
+import greencity.dto.ratingstatistics.RatingStatisticsVO;
+import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingPoints;
 import greencity.entity.RatingStatistics;
 import greencity.filters.RatingStatisticsSpecification;
@@ -19,13 +30,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -40,26 +47,62 @@ class RatingStatisticsServiceImplTest {
     private final ZonedDateTime defaultTime = ZonedDateTime.now();
 
     private final Pageable pageable = PageRequest.of(3, 5);
-    private final RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("CREATE_NEWS").points(1).build();
-    private final RatingPointsDto ratingPointsDto =
-        RatingPointsDto.builder().id(1L).name("CREATE_NEWS").points(1).build();
-    private final RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO
-        .builder().id(1L).createDate(defaultTime).pointsChanged(1.0).rating(5.0)
-        .ratingPoints(ratingPointsDto).build();
 
-    private final RatingStatistics ratingStatistics = RatingStatistics
-        .builder().id(1L).createDate(defaultTime).pointsChanged(1.0).rating(5.0)
-        .ratingPoints(ratingPoints).build();
+    private final RatingPoints ratingPoints = RatingPoints.builder()
+        .id(1L)
+        .name("CREATE_NEWS")
+        .points(1)
+        .build();
 
-    private final RatingStatisticsDto ratingStatisticsDto = new RatingStatisticsDto(1L, defaultTime,
-        ratingPointsDto,
-        1.0f, 5.0f, UserVO.builder().build());
+    private final RatingPointsDto ratingPointsDto = RatingPointsDto.builder()
+        .id(1L)
+        .name("CREATE_NEWS")
+        .points(1)
+        .build();
+
+    private final RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO.builder()
+        .id(1L)
+        .createDate(defaultTime)
+        .pointsChanged(1.0)
+        .rating(5.0)
+        .ratingPoints(ratingPointsDto)
+        .build();
+
+    private final RatingStatistics ratingStatistics = RatingStatistics.builder()
+        .id(1L)
+        .createDate(defaultTime)
+        .pointsChanged(1.0)
+        .rating(5.0)
+        .ratingPoints(ratingPoints)
+        .user(ModelUtils.testUser)
+        .build();
+
+    private final RatingStatisticsDto ratingStatisticsDto = RatingStatisticsDto.builder()
+        .id(1L)
+        .createDate(defaultTime)
+        .ratingPoints(ratingPointsDto)
+        .pointsChanged(1.0f)
+        .rating(5.0f)
+        .user(ModelUtils.testUserVo)
+        .build();
+
+    private final RatingStatisticsExportDto ratingStatisticsExportDto = RatingStatisticsExportDto.builder()
+        .id(1L)
+        .event("CREATE_NEWS")
+        .date(defaultTime)
+        .userId(1L)
+        .pointsChanged(1.0f)
+        .currentRating(5.0f)
+        .build();
 
     private final Page<RatingStatistics> ratingStatisticsPage = Page.empty(pageable);
 
     private final List<RatingStatistics> ratingStatisticsList = Collections.singletonList(ratingStatistics);
 
     private final List<RatingStatisticsDto> ratingStatisticsDtoList = Collections.singletonList(ratingStatisticsDto);
+
+    private final List<RatingStatisticsExportDto> ratingStatisticsExportDtoList =
+        Collections.singletonList(ratingStatisticsExportDto);
 
     private SearchCriteria generateSearchCriteria(String key, String type) {
         return SearchCriteria.builder()
@@ -94,15 +137,14 @@ class RatingStatisticsServiceImplTest {
         assertEquals(expected, actual);
     }
 
-//    @Test
-//    void getAllRatingStatistics() {
-//        when(ratingStatisticsRepo.findAll()).thenReturn(ratingStatisticsList);
-//        when(modelMapper.map(ratingStatistics, RatingStatisticsDto.class)).thenReturn(ratingStatisticsDto);
-//
-//        List<RatingStatisticsExportDto> expected = ratingStatisticsService.getAllRatingStatistics();
-//
-//        assertEquals(expected, ratingStatisticsDtoList);
-//    }
+    @Test
+    void getAllRatingStatistics() {
+        when(ratingStatisticsRepo.findAllForExport()).thenReturn(ratingStatisticsList);
+
+        List<RatingStatisticsExportDto> actual = ratingStatisticsService.getAllRatingStatistics();
+
+        assertEquals(ratingStatisticsExportDtoList, actual);
+    }
 
     @Test
     void getFilteredRatingStatisticsForExcel() {

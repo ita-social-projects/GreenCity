@@ -25,7 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import static greencity.constant.AppConstant.ADMIN;
 import static greencity.constant.AppConstant.USER;
@@ -495,7 +495,8 @@ public class SecurityConfig {
                 .hasAnyRole(ADMIN)
                 .anyRequest().permitAll())
             .logout(logout -> logout.logoutUrl("/logout")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", HttpMethod.GET.name()))
+                .logoutRequestMatcher(PathPatternRequestMatcher.withDefaults()
+                    .matcher(HttpMethod.GET, "/management/logout"))
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .deleteCookies("accessToken")
