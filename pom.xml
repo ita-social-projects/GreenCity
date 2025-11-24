@@ -8,6 +8,13 @@
         <version>3.5.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub Repository</name>
+            <url>https://maven.pkg.github.com/ita-social-projects/LDM-spring-boot-starter</url>
+        </repository>
+    </repositories>
 
     <groupId>Lv-427.Java</groupId>
     <artifactId>greencity</artifactId>
