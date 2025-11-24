@@ -22,6 +22,19 @@ public interface RatingStatisticsRepo extends JpaRepository<RatingStatistics, Lo
         value = "DELETE FROM rating_statistics WHERE create_date + interval '2 year' < current_date")
     void scheduledDeleteOlderThan();
 
+    /**
+     * Retrieves all {@link RatingStatistics} entities for export.
+     *
+     * <p>
+     * This query loads all rating statistics together with their associated
+     * {@code user} and {@code ratingPoints} using {@code join fetch} to avoid the
+     * N+1 problem and ensure all related data is initialized. This method is used
+     * for export functionality where complete entity data is required.
+     * </p>
+     *
+     * @return a list of fully initialized {@link RatingStatistics} entities
+     */
+
     @Query("""
             select r from RatingStatistics r
             join fetch r.user u
