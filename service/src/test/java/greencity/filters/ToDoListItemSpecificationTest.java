@@ -56,7 +56,7 @@ class ToDoListItemSpecificationTest {
     private List<SearchCriteria> searchCriteriaList;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
 
         ToDoListItemDto toDoListItemDto = new ToDoListItemDto();

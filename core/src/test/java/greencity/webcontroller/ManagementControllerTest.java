@@ -1,10 +1,12 @@
 package greencity.webcontroller;
 
 import greencity.TestConst;
+import greencity.properties.RemoteWebClientProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -12,11 +14,11 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -24,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ManagementControllerTest {
     private MockMvc mockMvc;
+
+    @Mock
+    private RemoteWebClientProperties remoteWebClientProperties;
 
     private static final String link = "/management";
     private static final String loginLink = "/login";
@@ -54,14 +59,14 @@ class ManagementControllerTest {
 
     @Test
     void loginTest() throws Exception {
-        ReflectionTestUtils.setField(managementController,
-            "greenCityUserServerAddress", TestConst.GREENCITY_USER_SERVER_ADDRESS);
+        when(remoteWebClientProperties.getGreencityUserServerAddress())
+            .thenReturn(TestConst.GREENCITY_USER_SERVER_ADDRESS);
 
         SecurityContextHolder.getContext()
             .setAuthentication(new AnonymousAuthenticationToken("GUEST", "anonymousUser", AuthorityUtils
                 .createAuthorityList("ROLE_ANONYMOUS")));
 
-        String expectedUrl = UriComponentsBuilder.fromHttpUrl(TestConst.GREENCITY_USER_SERVER_ADDRESS)
+        String expectedUrl = UriComponentsBuilder.fromUriString(TestConst.GREENCITY_USER_SERVER_ADDRESS)
             .path(link + loginLink)
             .build()
             .toUriString();

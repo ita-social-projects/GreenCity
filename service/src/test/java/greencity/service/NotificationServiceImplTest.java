@@ -25,6 +25,7 @@ import greencity.enums.EmailPreferencePeriodicity;
 import greencity.enums.NotificationType;
 import greencity.message.ScheduledEmailMessage;
 import greencity.message.SendReportEmailMessage;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.repository.NotificationRepo;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -77,6 +78,9 @@ class NotificationServiceImplTest {
 
     @Mock
     UserRemoteClient userRemoteClient;
+
+    @Mock
+    private RemoteWebClientProperties remoteWebClientProperties;
 
     @Test
     void sendDailyReportTest() {

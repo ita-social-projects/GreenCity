@@ -56,7 +56,6 @@ import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -85,8 +84,6 @@ public class CommentServiceImpl implements CommentService {
     private final UserNotificationService userNotificationService;
     private final UserRemoteClient userRemoteClient;
     private final NotificationService notificationService;
-    @Value("${client.address}")
-    private String clientAddress;
 
     /**
      * {@inheritDoc}

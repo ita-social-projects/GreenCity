@@ -14,6 +14,8 @@ import greencity.dto.event.UpdateEventRequestDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.enums.TagType;
+import greencity.properties.GoogleProperties;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.service.EventService;
 import greencity.service.TagsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +28,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -87,12 +88,8 @@ public class ManagementEventController {
     private final TagsService tagsService;
     private final RestClient restClient;
     private final ModelMapper getModelMapper;
-
-    @Value("${google.maps.api.key}")
-    private String googleMapApiKey;
-
-    @Value("${address}")
-    private String backendAddress;
+    private final RemoteWebClientProperties remoteWebClientProperties;
+    private final GoogleProperties googleProperties;
 
     /**
      * Method that returns management page with all {@link EventDto}.
@@ -129,7 +126,7 @@ public class ManagementEventController {
         model.addAttribute(SORT_MODEL, orderUrl.toString());
         model.addAttribute(EVENT_TAGS, tagsService.findByTypeAndLanguageCode(TagType.EVENT, locale.getLanguage()));
         model.addAttribute(PAGE_SIZE, pageable.getPageSize());
-        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
+        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, remoteWebClientProperties.getGreencityServerAddress());
         model.addAttribute(CITIES,
             eventService.getAllEventsAddresses().stream()
                 .map(e -> "en".equals(locale.getLanguage()) ? e.getCityEn() : e.getCityUk())
@@ -193,9 +190,9 @@ public class ManagementEventController {
     public String getEventCreatePage(Model model, Principal principal) {
         model.addAttribute(ADD_EVENT_DTO_REQUEST, new AddEventDtoRequest());
         model.addAttribute(IMAGES, new MultipartFile[] {});
-        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
+        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, remoteWebClientProperties.getGreencityServerAddress());
         model.addAttribute(AUTHOR, restClient.findByEmail(principal.getName()).getName());
-        model.addAttribute(GOOGLE_MAP_API_KEY, googleMapApiKey);
+        model.addAttribute(GOOGLE_MAP_API_KEY, googleProperties.getGoogleMapApiKey());
         return "core/management_create_event";
     }
 
@@ -245,10 +242,10 @@ public class ManagementEventController {
 
     @GetMapping("/edit/{id}")
     public String editEvent(@PathVariable("id") Long id, Model model, Principal principal) {
-        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, backendAddress);
+        model.addAttribute(BACKEND_ADDRESS_ATTRIBUTE, remoteWebClientProperties.getGreencityServerAddress());
         model.addAttribute(AUTHOR, restClient.findByEmail(principal.getName()).getName());
         model.addAttribute(EVENT_DTO, eventService.getEvent(id, principal));
-        model.addAttribute(GOOGLE_MAP_API_KEY, googleMapApiKey);
+        model.addAttribute(GOOGLE_MAP_API_KEY, googleProperties.getGoogleMapApiKey());
         return "core/management_edit_event";
     }
 

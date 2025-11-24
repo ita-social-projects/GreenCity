@@ -37,7 +37,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @author Anton Bondar
      */
     @NonNull
-    Page<User> findAll(@NonNull Specification<User> filter, @NonNull Pageable pageable);
+    Page<User> findAll(Specification<User> filter, @NonNull Pageable pageable);
 
     /**
      * Updates user rating as event organizer.

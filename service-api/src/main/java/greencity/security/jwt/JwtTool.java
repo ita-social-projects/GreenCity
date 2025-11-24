@@ -6,6 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserClaims;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NoJwtException;
+import greencity.properties.SecurityProperties;
 import greencity.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
@@ -21,7 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -36,19 +36,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 @Slf4j
 @Component
 public class JwtTool {
-    private final Integer accessTokenValidTimeInMinutes;
-    private final String accessTokenKey;
+    private final SecurityProperties securityProperties;
     private final UserService userService;
 
     /**
      * Constructor.
      */
-    public JwtTool(
-        @Value("${security.jwt.access-token.expiration-minutes}") Integer accessTokenValidTimeInMinutes,
-        @Value("${security.jwt.secret-key}") String accessTokenKey,
+    public JwtTool(SecurityProperties securityProperties,
         @Lazy UserService userService) {
-        this.accessTokenValidTimeInMinutes = accessTokenValidTimeInMinutes;
-        this.accessTokenKey = accessTokenKey;
+        this.securityProperties = securityProperties;
         this.userService = userService;
     }
 
@@ -86,13 +82,13 @@ public class JwtTool {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
-        calendar.add(Calendar.MINUTE, accessTokenValidTimeInMinutes);
+        calendar.add(Calendar.MINUTE, securityProperties.getJwtAccessTokenExpiration());
         return Jwts.builder()
             .claims(claims.build())
             .issuedAt(now)
             .expiration(calendar.getTime())
             .signWith(Keys.hmacShaKeyFor(
-                accessTokenKey.getBytes(StandardCharsets.UTF_8)),
+                securityProperties.getAccessTokenKey().getBytes(StandardCharsets.UTF_8)),
                 Jwts.SIG.HS256)
             .compact();
     }
@@ -103,7 +99,7 @@ public class JwtTool {
      * @return accessTokenKey
      */
     public String getAccessTokenKey() {
-        return accessTokenKey;
+        return securityProperties.getAccessTokenKey();
     }
 
     /**
@@ -171,7 +167,7 @@ public class JwtTool {
 
     private Claims extractClaims(String jwt) {
         return Jwts.parser()
-            .verifyWith(Keys.hmacShaKeyFor(accessTokenKey.getBytes()))
+            .verifyWith(Keys.hmacShaKeyFor(securityProperties.getAccessTokenKey().getBytes()))
             .build()
             .parseSignedClaims(jwt)
             .getPayload();

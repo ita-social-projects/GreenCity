@@ -108,6 +108,12 @@ public class ErrorMessage {
     public static final String ECO_NEW_NOT_IN_FAVORITES = "This eco new is not in favorites.";
     public static final String USER_HAS_ALREADY_ADDED_ECO_NEW_TO_FAVORITES =
         "User has already added this eco new to favorites.";
+    public static final String USER_HAS_NO_INTERACTIONS_YET =
+        "User has no interactions yet. User's preferences cannot be calculated.";
+    public static final String INCONSISTENT_ORDER_OF_RELEVANT_NEWS = "Requested page hasn't been generated yet."
+        + " Relevant news should be generated one by one to ensure consistent relevance. Available pages 0-%d.";
+    public static final String RELEVANT_NEWS_FOR_MONTH_NOT_FOUND = "Relevant news for the last month not found.";
+    public static final String NO_MORE_RELEVANT_NEWS = "There is no more relevant news for the last month.";
     public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
         "User cannot add more than 5 social network links";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
@@ -253,4 +259,19 @@ public class ErrorMessage {
     public static final String ADMIN_CANNOT_DEACTIVATE_OTHER_ADMIN = "ADMIN cannot deactivate other ADMIN users";
     public static final String USER_DEACTIVATION_REASON_IS_EMPTY = "The User deactivation reasons list is empty";
     public static final String AI_USER_NOT_FOUND = "AI-generated user not found";
+    public static final String GREENCITY_SERVER_ADDRESS_NOT_SET = "greencity server address not set.";
+    public static final String GREENCITY_UBS_SERVER_ADDRESS_NOT_SET = "greencity ubs server address not set.";
+    public static final String GREENCITY_USER_SERVER_ADDRESS_NOT_SET = "greencity user service address not set.";
+    public static final String WEBCLIENT_CONNECTION_TIMEOUT_NOT_SET = "webclient connection timeout not set.";
+    public static final String WEBCLIENT_RESPONSE_TIMEOUT_NOT_SET = "webclient response timeout not set.";
+    public static final String CLIENT_ADDRESS_NOT_SET = "client address not set.";
+    public static final String SYSTEM_EMAIL_ADDRESS_NOT_SET = "system email address not set.";
+    public static final String AZURE_CONNECTION_STRING_NOT_SET = "azure connection string not set.";
+    public static final String AZURE_CONTAINER_NAME_NOT_SET = "azure container name not set.";
+    public static final String ACCESS_TOKEN_NOT_SET = "access token key not set.";
+    public static final String JWT_ACCESS_TOKEN_EXPIRATION_NOT_SET = "jwt access token expiration not set.";
+    public static final String OPENAI_TOKEN_KEY_NOT_SET = "openai token key not set.";
+    public static final String RELEVANCE_NOT_SET = "relevance not set.";
+    public static final String GOOGLE_API_KEY_NOT_SET = "google api key not set.";
+    public static final String GOOGLE_MAP_API_KEY_NOT_SET = "google map api key not set.";
 }

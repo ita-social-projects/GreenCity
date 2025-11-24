@@ -10,6 +10,7 @@ import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UserToDoAndCustomToDoListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.security.jwt.JwtTool;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
@@ -55,6 +56,9 @@ class HabitAssignControllerTest {
     private UserService userService;
 
     @Mock
+    private RemoteWebClientProperties remoteWebClientProperties;
+
+    @Mock
     JwtTool jwtTool;
 
     @InjectMocks
@@ -79,6 +83,8 @@ class HabitAssignControllerTest {
             .thenReturn(jwt);
         lenient().when(jwtTool.extractUserId(jwt))
             .thenReturn(TestConst.USER_ID);
+        lenient().when(remoteWebClientProperties.getClientAddress())
+            .thenReturn("http://localhost:4200/");
     }
 
     @Test

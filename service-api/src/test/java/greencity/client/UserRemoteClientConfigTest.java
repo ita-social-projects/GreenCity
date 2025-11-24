@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import greencity.client.config.UserRemoteClientConfig;
+import greencity.properties.RemoteWebClientProperties;
 import greencity.security.jwt.JwtTool;
 import java.io.IOException;
 import okhttp3.mockwebserver.MockResponse;
@@ -29,6 +30,9 @@ class UserRemoteClientConfigTest {
     @Mock
     JwtTool jwtTool;
 
+    @Mock
+    RemoteWebClientProperties remoteWebClientProperties;
+
     @InjectMocks
     UserRemoteClientConfig config;
 
@@ -50,10 +54,11 @@ class UserRemoteClientConfigTest {
         when(jwtTool.createAccessToken(anyString(), anyList()))
             .thenReturn("mocked-jwt-token");
 
-        setField(config, "greenCityUserBaseUrl", mockWebServer.url("/").toString());
-        setField(config, "systemEmail", "test@greencity.com");
-        setField(config, "connectionTimeoutMillis", 1000);
-        setField(config, "responseTimeoutMillis", 1000);
+        when(remoteWebClientProperties.getGreencityUserServerAddress())
+            .thenReturn(mockWebServer.url("/").toString());
+        when(remoteWebClientProperties.getConnectionTimeout()).thenReturn(1000);
+        when(remoteWebClientProperties.getResponseTimeout()).thenReturn(1000);
+        when(remoteWebClientProperties.getSystemEmailAddress()).thenReturn("test@greencity.com");
 
         webClient = config.webClient(WebClient.builder());
     }
@@ -148,15 +153,5 @@ class UserRemoteClientConfigTest {
         String response = webClient.get().uri("/").retrieve().bodyToMono(String.class).block();
 
         Assertions.assertEquals("Success", response);
-    }
-
-    private void setField(Object target, String name, Object value) {
-        try {
-            var field = target.getClass().getDeclaredField(name);
-            field.setAccessible(true);
-            field.set(target, value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

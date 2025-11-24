@@ -2,8 +2,19 @@ package greencity.service;
 
 import com.softserve.ldm.dto.TableRowsDto;
 import com.softserve.ldm.service.ExportToFileService;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.ratingstatistics.*;
+import greencity.dto.ratingstatistics.RatingPointsDto;
+import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
+import greencity.dto.ratingstatistics.RatingStatisticsVO;
+import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingPoints;
 import greencity.entity.RatingStatistics;
 import greencity.entity.User;
@@ -33,9 +44,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class RatingStatisticsServiceImplTest {
@@ -51,16 +59,35 @@ class RatingStatisticsServiceImplTest {
     private final ZonedDateTime defaultTime = ZonedDateTime.now();
 
     private final Pageable pageable = PageRequest.of(3, 5);
-    private final RatingPoints ratingPoints = RatingPoints.builder().id(1L).name("CREATE_NEWS").points(1).build();
-    private final RatingPointsDto ratingPointsDto =
-        RatingPointsDto.builder().id(1L).name("CREATE_NEWS").points(1).build();
-    private final RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO
-        .builder().id(1L).createDate(defaultTime).pointsChanged(1.0).rating(5.0)
-        .ratingPoints(ratingPointsDto).build();
 
-    private final RatingStatistics ratingStatistics = RatingStatistics
-        .builder().id(1L).createDate(defaultTime).pointsChanged(1.0).rating(5.0)
-        .ratingPoints(ratingPoints).build();
+    private final RatingPoints ratingPoints = RatingPoints.builder()
+        .id(1L)
+        .name("CREATE_NEWS")
+        .points(1)
+        .build();
+
+    private final RatingPointsDto ratingPointsDto = RatingPointsDto.builder()
+        .id(1L)
+        .name("CREATE_NEWS")
+        .points(1)
+        .build();
+
+    private final RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO.builder()
+        .id(1L)
+        .createDate(defaultTime)
+        .pointsChanged(1.0)
+        .rating(5.0)
+        .ratingPoints(ratingPointsDto)
+        .build();
+
+    private final RatingStatistics ratingStatistics = RatingStatistics.builder()
+        .id(1L)
+        .createDate(defaultTime)
+        .pointsChanged(1.0)
+        .rating(5.0)
+        .ratingPoints(ratingPoints)
+        .user(ModelUtils.testUser)
+        .build();
 
     private final Page<RatingStatistics> ratingStatisticsPage = Page.empty(pageable);
 

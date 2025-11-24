@@ -128,7 +128,8 @@ class CacheServiceImplTest {
     @Test
     void testGetUserRelevantNewsFromCacheWhenNotCached() {
         when(userRelevanceNewsCache.getIfPresent(relevantEcoNewsCacheKey)).thenReturn(null);
-        when(ecoNewsRepo.count()).thenReturn(9L);
+        when(ecoNewsRepo.countEcoNewsBetweenDates(any(ZonedDateTime.class), any(ZonedDateTime.class)))
+            .thenReturn(9L);
 
         CachedUserRelevantNews result = cacheService.getUserRelevantNewsFromCache(relevantEcoNewsCacheKey);
         assertNotNull(result);

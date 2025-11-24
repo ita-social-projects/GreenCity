@@ -779,7 +779,6 @@ class PlaceServiceImplTest {
     void addPlaceFromUiThrowsException() {
         AddPlaceDto dto = ModelUtils.getAddPlaceDto();
         PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
-        User user = ModelUtils.getUser();
         Long userId = user.getId();
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
