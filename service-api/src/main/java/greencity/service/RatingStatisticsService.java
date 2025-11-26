@@ -4,6 +4,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.ratingstatistics.*;
 import greencity.filters.SearchCriteria;
+import java.io.InputStream;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
@@ -38,12 +39,21 @@ public interface RatingStatisticsService {
     List<RatingStatisticsExportDto> getAllRatingStatistics();
 
     /**
-     * Find {@link RatingStatisticsVO} for export to excel file.
+     * Exports all rating statistics to an Excel file.
      *
-     * @return a list of {@link RatingStatisticsDto}.
-     * @author Dovganyuk Taras
+     * @return an InputStream representing the Excel file
      */
-    List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(RatingStatisticsViewDto ratingStatisticsViewDto);
+    InputStream exportStatisticsToExcel();
+
+    /**
+     * Exports filtered rating statistics to an Excel file based on provided filter
+     * criteria.
+     *
+     * @param dto DTO containing filter criteria (e.g., user ID, event name, date
+     *            range)
+     * @return an InputStream representing the Excel file
+     */
+    InputStream exportFilteredStatisticsToExcel(RatingStatisticsViewDto dto);
 
     /**
      * Find {@link RatingStatisticsVO} for management.

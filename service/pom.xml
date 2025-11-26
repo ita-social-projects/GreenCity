@@ -133,5 +133,10 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.softserve.ldm</groupId>
+            <artifactId>ldm-spring-boot-starter</artifactId>
+            <version>${ldm.version}</version>
+        </dependency>
     </dependencies>
 </project>

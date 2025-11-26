@@ -1,10 +1,8 @@
 package greencity.webcontroller;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
-import greencity.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,14 +17,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import jakarta.servlet.http.HttpServletResponse;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,15 +36,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ManagementRatingStatisticsControllerTest {
 
     private static final String managementRatingStatisticsLink = "/management/rating";
-    private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private MockMvc mockMvc;
 
     @Mock
     private RatingStatisticsService ratingStatisticsService;
-
-    @Mock
-    private RatingExcelExporter ratingExcelExporter;
 
     @InjectMocks
     private ManagementRatingStatisticsController managementRatingStatisticsController;
@@ -75,38 +71,78 @@ class ManagementRatingStatisticsControllerTest {
     }
 
     @Test
+    void exportToExcelTest() throws Exception {
+        byte[] excelBytes = "test_excel_data".getBytes();
+        InputStream excelStream = new ByteArrayInputStream(excelBytes);
+
+        when(ratingStatisticsService.exportStatisticsToExcel())
+            .thenReturn(excelStream);
+
+        MockHttpServletResponse response = mockMvc.perform(get(managementRatingStatisticsLink + "/export"))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse();
+
+        assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", response.getContentType());
+        assertTrue(response.getHeader("Content-Disposition").contains("user_rating_statistics_"));
+        assertArrayEquals(excelBytes, response.getContentAsByteArray());
+
+        verify(ratingStatisticsService).exportStatisticsToExcel();
+    }
+
+    @Test
     void exportFilteredToExcelTest() throws Exception {
-        RatingStatisticsViewDto ratingStatisticsViewDto = new RatingStatisticsViewDto();
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        List<RatingStatisticsDto> list = Collections.singletonList(new RatingStatisticsDto());
-        when(ratingStatisticsService.getFilteredRatingStatisticsForExcel(ratingStatisticsViewDto)).thenReturn(list);
-        this.mockMvc.perform(post(managementRatingStatisticsLink + "/exportFiltered")
-            .accept(MediaType.APPLICATION_OCTET_STREAM)
-            .header("Content-Disposition",
-                "attachment; filename=user_rating_statistics" + dateFormat.format(new Date()) + ".xlsx")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-            .andExpect(status().isOk());
-        verify(ratingExcelExporter, never()).export(response.getOutputStream(), list);
+        RatingStatisticsViewDto dto = new RatingStatisticsViewDto();
+        dto.setId("1");
+
+        byte[] excelBytes = "filtered_excel_data".getBytes();
+        InputStream excelStream = new ByteArrayInputStream(excelBytes);
+
+        when(ratingStatisticsService.exportFilteredStatisticsToExcel(any()))
+            .thenReturn(excelStream);
+
+        MockHttpServletResponse response = mockMvc.perform(
+            post(managementRatingStatisticsLink + "/exportFiltered")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .param("id", "1"))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse();
+
+        assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            response.getContentType());
+        assertTrue(response.getHeader("Content-Disposition").contains("user_rating_statistics_"));
+        assertArrayEquals(excelBytes, response.getContentAsByteArray());
+
+        verify(ratingStatisticsService).exportFilteredStatisticsToExcel(any());
     }
 
     @Test
     void filterDataTest() throws Exception {
         RatingStatisticsViewDto ratingStatisticsViewDto = new RatingStatisticsViewDto();
-        Pageable pageable = PageRequest.of(0, 3);
-        List<RatingStatisticsDtoForTables> list = Collections.singletonList(new RatingStatisticsDtoForTables());
-        PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto = new PageableAdvancedDto<>(list,
-            3, 0, 3, 1, false, true, true, false);
-        when(ratingStatisticsService.getFilteredDataForManagementByPage(pageable, ratingStatisticsViewDto))
+
+        Pageable paging = PageRequest.of(0, 3, Sort.by("createDate").descending());
+
+        List<RatingStatisticsDtoForTables> list =
+            Collections.singletonList(new RatingStatisticsDtoForTables());
+
+        PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
+            new PageableAdvancedDto<>(list, 3, 0, 3, 1, false, true, true, false);
+
+        when(ratingStatisticsService.getFilteredDataForManagementByPage(paging, ratingStatisticsViewDto))
             .thenReturn(pageableDto);
+
         this.mockMvc.perform(post(managementRatingStatisticsLink)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("page", "0")
             .param("size", "3"))
+            .andExpect(status().isOk())
             .andExpect(model().attribute("ratings", pageableDto))
             .andExpect(model().attribute("fields", ratingStatisticsViewDto))
-            .andExpect(view().name("core/management_user_rating"))
-            .andExpect(status().isOk());
-        verify(ratingStatisticsService).getFilteredDataForManagementByPage(pageable, ratingStatisticsViewDto);
+            .andExpect(view().name("core/management_user_rating"));
+
+        verify(ratingStatisticsService)
+            .getFilteredDataForManagementByPage(paging, ratingStatisticsViewDto);
     }
 
 }

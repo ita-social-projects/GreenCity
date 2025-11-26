@@ -1,11 +1,8 @@
 package greencity.webcontroller;
 
-import com.softserve.ldm.dto.TableRowsDto;
-import com.softserve.ldm.service.ExportToFileService;
 import greencity.annotations.ApiPageable;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.*;
-import greencity.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,17 +27,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class ManagementRatingStatisticsController {
     private final RatingStatisticsService ratingStatisticsService;
-    private final RatingExcelExporter ratingExcelExporter;
-    private final ExportToFileService exportToFileService;
     private static final DateTimeFormatter FILE_DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
-     * Returns management page with User rating statistics.
+     * Returns the management page displaying a paginated list of user rating
+     * statistics.
      *
-     * @param model ModelAndView that will be configured and returned to user
-     * @return model
-     * @author Dovganyuk Taras
+     * <p>
+     * Retrieves all rating statistics from the service and sorts them by creation
+     * date in descending order.
+     * </p>
+     *
+     * @param model    Model object to which the paginated rating statistics will be
+     *                 added
+     * @param pageable Pageable object for pagination (page number, page size,
+     *                 sorting)
+     * @return the name of the view template "core/management_user_rating"
      */
+
     @ApiPageable(clazz = RatingStatisticsDtoForTables.class)
     @Operation(summary = "Get management page with User rating statistics.")
     @GetMapping
@@ -57,80 +59,105 @@ public class ManagementRatingStatisticsController {
     }
 
     /**
-     * Export {@link RatingStatisticsVO} to Excel file.
+     * Exports all user rating statistics to an Excel file.
      *
-     * @author Dovganyuk Taras
+     * <p>
+     * The file will be named in the format
+     * "user_rating_statistics_YYYY-MM-DD.xlsx". The method sets the appropriate
+     * content type and headers for file download.
+     * </p>
+     *
+     * @param response HttpServletResponse to which the Excel file will be written.
+     * @throws IOException if an I/O error occurs during writing to the response
+     *                     output stream.
      */
     @GetMapping("/export")
     public void exportToExcel(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-
         String fileName = "user_rating_statistics_" + LocalDate.now().format(FILE_DATE_FMT) + ".xlsx";
         response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
-        List<RatingStatisticsExportDto> stats = ratingStatisticsService.getAllRatingStatistics();
-
-        List<Map<String, String>> rows = stats.stream()
-            .map(s -> Map.of(
-                "Id", String.valueOf(s.getId()),
-                "Event", s.getEvent(),
-                "Date", s.getDate().toString(),
-                "UserId", String.valueOf(s.getUserId()),
-                "User email", s.getUserEmail(),
-                "Points changed", String.valueOf(s.getPointsChanged()),
-                "Current rating", String.valueOf(s.getCurrentRating())))
-            .toList();
-
-        TableRowsDto table = new TableRowsDto("rating_statistics", rows);
-
-        try (InputStream excel = exportToFileService.exportTableDataToExcel(table)) {
+        try (InputStream excel = ratingStatisticsService.exportStatisticsToExcel()) {
             excel.transferTo(response.getOutputStream());
             response.flushBuffer();
         }
     }
 
     /**
-     * Export filtered {@link RatingStatisticsVO} to Excel file.
+     * Exports filtered user rating statistics to an Excel file based on filter
+     * criteria provided by the user.
      *
-     * @author Dovganyuk Taras
+     * <p>
+     * The file will be named in the format
+     * "user_rating_statistics_YYYY-MM-DD.xlsx". The method sets the appropriate
+     * content type and headers for file download.
+     * </p>
+     *
+     * @param response                HttpServletResponse to which the Excel file
+     *                                will be written.
+     * @param ratingStatisticsViewDto DTO containing filter criteria from the UI
+     *                                (e.g., user ID, event name, date range).
+     * @throws IOException if an I/O error occurs during writing to the response
+     *                     output stream.
      */
     @PostMapping(value = "/exportFiltered", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public void exportFilteredToExcel(HttpServletResponse response,
         RatingStatisticsViewDto ratingStatisticsViewDto)
         throws IOException {
-        response.setContentType("application/octet-stream");
-        String headerKey = "Content-Disposition";
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String fileName = "user_rating_statistics_" + LocalDate.now().format(FILE_DATE_FMT) + ".xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
-        String currentDate = LocalDate.now().format(FILE_DATE_FMT);
-        String fileName = "user_rating_statistics" + currentDate + ".xlsx";
-        String headerValue = "attachment; filename=" + fileName;
-
-        response.setHeader(headerKey, headerValue);
-
-        List<RatingStatisticsDto> ratingStatisticsList =
-            ratingStatisticsService
-                .getFilteredRatingStatisticsForExcel(ratingStatisticsViewDto);
-        ratingExcelExporter.export(response.getOutputStream(), ratingStatisticsList);
+        try (InputStream excel = ratingStatisticsService.exportFilteredStatisticsToExcel(ratingStatisticsViewDto)) {
+            excel.transferTo(response.getOutputStream());
+            response.flushBuffer();
+        }
     }
 
     /**
-     * Returns management page with User rating statistics with filtered data.
+     * Returns the management page with filtered User rating statistics.
      *
-     * @param model                   ModelAndView that will be configured and
-     *                                returned to user.
-     * @param ratingStatisticsViewDto used for receive parameters for filters from
-     *                                UI.
+     * <p>
+     * Applies filter criteria provided by the user and retrieves a paginated,
+     * automatically sorted (by creation date in descending order) list of rating
+     * statistics. The sorting is applied explicitly to ensure consistent ordering
+     * of results regardless of filter usage.
+     * </p>
+     *
+     * <p>
+     * The method adds the filtered results to the model, as well as the filter
+     * fields themselves so that the user's input persists on the UI after
+     * submission.
+     * </p>
+     *
+     * @param model                   Model object to which filtered rating
+     *                                statistics and filter fields will be added.
+     * @param pageable                Pageable object representing pagination
+     *                                settings (page number and size). Sorting is
+     *                                ignored and overridden with a predefined
+     *                                descending sort on createDate.
+     * @param ratingStatisticsViewDto DTO containing filter criteria submitted by
+     *                                the user.
+     * @return the name of the view template "core/management_user_rating".
      */
     @ApiPageable(clazz = RatingStatisticsDtoForTables.class)
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
         @Parameter(hidden = true) Pageable pageable,
         RatingStatisticsViewDto ratingStatisticsViewDto) {
+        Pageable paging = PageRequest.of(
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            Sort.by("createDate").descending());
+
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
-            ratingStatisticsService.getFilteredDataForManagementByPage(pageable,
+            ratingStatisticsService.getFilteredDataForManagementByPage(
+                paging,
                 ratingStatisticsViewDto);
+
         model.addAttribute("ratings", pageableDto);
         model.addAttribute("fields", ratingStatisticsViewDto);
+
         return "core/management_user_rating";
     }
 }

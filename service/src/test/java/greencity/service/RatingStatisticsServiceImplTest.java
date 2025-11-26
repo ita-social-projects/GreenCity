@@ -1,6 +1,9 @@
 package greencity.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.softserve.ldm.dto.TableRowsDto;
+import com.softserve.ldm.service.ExportToFileService;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
@@ -9,18 +12,18 @@ import static org.mockito.Mockito.when;
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingPointsDto;
-import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
-import greencity.dto.ratingstatistics.RatingStatisticsExportDto;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingPoints;
 import greencity.entity.RatingStatistics;
+import greencity.entity.User;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,9 +33,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -41,6 +51,8 @@ class RatingStatisticsServiceImplTest {
     private RatingStatisticsRepo ratingStatisticsRepo;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private ExportToFileService exportToFileService;
     @InjectMocks
     private RatingStatisticsServiceImpl ratingStatisticsService;
 
@@ -77,32 +89,7 @@ class RatingStatisticsServiceImplTest {
         .user(ModelUtils.testUser)
         .build();
 
-    private final RatingStatisticsDto ratingStatisticsDto = RatingStatisticsDto.builder()
-        .id(1L)
-        .createDate(defaultTime)
-        .ratingPoints(ratingPointsDto)
-        .pointsChanged(1.0f)
-        .rating(5.0f)
-        .user(ModelUtils.testUserVo)
-        .build();
-
-    private final RatingStatisticsExportDto ratingStatisticsExportDto = RatingStatisticsExportDto.builder()
-        .id(1L)
-        .event("CREATE_NEWS")
-        .date(defaultTime)
-        .userId(1L)
-        .pointsChanged(1.0f)
-        .currentRating(5.0f)
-        .build();
-
     private final Page<RatingStatistics> ratingStatisticsPage = Page.empty(pageable);
-
-    private final List<RatingStatistics> ratingStatisticsList = Collections.singletonList(ratingStatistics);
-
-    private final List<RatingStatisticsDto> ratingStatisticsDtoList = Collections.singletonList(ratingStatisticsDto);
-
-    private final List<RatingStatisticsExportDto> ratingStatisticsExportDtoList =
-        Collections.singletonList(ratingStatisticsExportDto);
 
     private SearchCriteria generateSearchCriteria(String key, String type) {
         return SearchCriteria.builder()
@@ -138,27 +125,91 @@ class RatingStatisticsServiceImplTest {
     }
 
     @Test
-    void getAllRatingStatistics() {
-        when(ratingStatisticsRepo.findAllForExport()).thenReturn(ratingStatisticsList);
+    void exportStatisticsToExcel() {
+        RatingPoints rp = RatingPoints.builder().name("EV").build();
+        User user = new User();
+        user.setId(44L);
+        user.setEmail("u@test.com");
 
-        List<RatingStatisticsExportDto> actual = ratingStatisticsService.getAllRatingStatistics();
+        RatingStatistics rs = RatingStatistics.builder()
+            .id(1L)
+            .ratingPoints(rp)
+            .user(user)
+            .createDate(LocalDate.of(2024, 1, 1).atStartOfDay(ZoneId.systemDefault()))
+            .pointsChanged(3)
+            .rating(20)
+            .build();
 
-        assertEquals(ratingStatisticsExportDtoList, actual);
+        when(ratingStatisticsRepo.findAllForExport()).thenReturn(List.of(rs));
+
+        InputStream fakeExcel = new ByteArrayInputStream("excel".getBytes());
+        when(exportToFileService.exportTableDataToExcel(any())).thenReturn(fakeExcel);
+
+        InputStream result = ratingStatisticsService.exportStatisticsToExcel();
+        assertNotNull(result);
+
+        ArgumentCaptor<TableRowsDto> captor = ArgumentCaptor.forClass(TableRowsDto.class);
+        verify(exportToFileService).exportTableDataToExcel(captor.capture());
+
+        TableRowsDto table = captor.getValue();
+
+        assertEquals("rating_statistics", table.tableName());
+        assertFalse(table.tableData().isEmpty());
+
+        Map<String, String> row = table.tableData().get(0);
+
+        assertEquals("1", row.get("ID"));
+        assertEquals("EV", row.get("Event Name"));
+        assertEquals("44", row.get("User ID"));
+        assertEquals("u@test.com", row.get("User Email"));
+        assertEquals("3.0", row.get("Points Changed"));
+        assertEquals("20.0", row.get("Current Rating"));
     }
 
     @Test
-    void getFilteredRatingStatisticsForExcel() {
-        RatingStatisticsViewDto ratingStatisticsViewDto = RatingStatisticsViewDto.builder()
-            .id("").eventName("").userId("").userEmail("").startDate("").endDate("")
-            .pointsChanged("1").currentRating("").build();
+    void exportFilteredStatisticsToExcel() {
+        RatingStatisticsViewDto dto = RatingStatisticsViewDto.builder()
+            .eventName("AA")
+            .build();
 
-        when(ratingStatisticsRepo.findAll(any(RatingStatisticsSpecification.class))).thenReturn(ratingStatisticsList);
-        when(modelMapper.map(ratingStatistics, RatingStatisticsDto.class)).thenReturn(ratingStatisticsDto);
+        RatingPoints rp = RatingPoints.builder().name("POINT").build();
+        User user = new User();
+        user.setId(77L);
+        user.setEmail("xx@test.com");
 
-        List<RatingStatisticsDto> expected = ratingStatisticsService
-            .getFilteredRatingStatisticsForExcel(ratingStatisticsViewDto);
+        RatingStatistics rs = RatingStatistics.builder()
+            .id(5L)
+            .ratingPoints(rp)
+            .user(user)
+            .createDate(LocalDate.of(2023, 12, 1).atStartOfDay(ZoneId.systemDefault()))
+            .pointsChanged(11)
+            .rating(99)
+            .build();
 
-        assertEquals(expected, ratingStatisticsDtoList);
+        when(ratingStatisticsRepo.findAll(any(Specification.class))).thenReturn(List.of(rs));
+
+        InputStream fakeExcel = new ByteArrayInputStream("xls".getBytes());
+        when(exportToFileService.exportTableDataToExcel(any())).thenReturn(fakeExcel);
+
+        InputStream result = ratingStatisticsService.exportFilteredStatisticsToExcel(dto);
+        assertNotNull(result);
+
+        ArgumentCaptor<TableRowsDto> captor = ArgumentCaptor.forClass(TableRowsDto.class);
+        verify(exportToFileService).exportTableDataToExcel(captor.capture());
+
+        TableRowsDto table = captor.getValue();
+
+        assertEquals("filtered_rating_statistics", table.tableName());
+        assertFalse(table.tableData().isEmpty());
+
+        Map<String, String> row = table.tableData().get(0);
+
+        assertEquals("5", row.get("ID"));
+        assertEquals("POINT", row.get("Event Name"));
+        assertEquals("77", row.get("User ID"));
+        assertEquals("xx@test.com", row.get("User Email"));
+        assertEquals("11.0", row.get("Points Changed"));
+        assertEquals("99.0", row.get("Current Rating"));
     }
 
     @Test
