@@ -7,22 +7,34 @@ import greencity.entity.RatingStatistics_;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStream;
+import java.util.*;
 import java.util.stream.Collectors;
+import jakarta.persistence.criteria.JoinType;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.softserve.ldm.dto.TableRowsDto;
+import com.softserve.ldm.service.ExportToFileService;
 
 @AllArgsConstructor
 @Service
 public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     private RatingStatisticsRepo ratingStatisticsRepo;
     private final ModelMapper modelMapper;
+    private final ExportToFileService exportToFileService;
 
+    /**
+     * Maps Page of RatingStatistics entities to PageableAdvancedDto of
+     * RatingStatisticsDtoForTables.
+     *
+     * @param ratingStatistics Page of RatingStatistics entities
+     * @return PageableAdvancedDto containing mapped RatingStatisticsDtoForTables
+     */
     private PageableAdvancedDto<RatingStatisticsDtoForTables> ratingStatisticsDtoMapper(
         Page<RatingStatistics> ratingStatistics) {
         List<RatingStatisticsDto> ratingStatisticsDtos = ratingStatistics.get()
@@ -52,6 +64,12 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
             ratingStatistics.isLast());
     }
 
+    /**
+     * Saves a new RatingStatisticsVO entity to the database.
+     *
+     * @param ratingStatistics RatingStatisticsVO to save
+     * @return saved RatingStatisticsVO
+     */
     @Transactional
     @Override
     public RatingStatisticsVO save(RatingStatisticsVO ratingStatistics) {
@@ -59,12 +77,23 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
         return modelMapper.map(saved, RatingStatisticsVO.class);
     }
 
+    /**
+     * Retrieves paginated list of rating statistics for management purposes.
+     *
+     * @param pageable pageable configuration
+     * @return PageableAdvancedDto containing RatingStatisticsDtoForTables
+     */
     @Override
     public PageableAdvancedDto<RatingStatisticsDtoForTables> getRatingStatisticsForManagementByPage(Pageable pageable) {
         Page<RatingStatistics> ratingStatistics = ratingStatisticsRepo.findAll(pageable);
         return ratingStatisticsDtoMapper(ratingStatistics);
     }
 
+    /**
+     * Retrieves all rating statistics for export.
+     *
+     * @return list of RatingStatisticsExportDto
+     */
     @Override
     public List<RatingStatisticsExportDto> getAllRatingStatistics() {
         return ratingStatisticsRepo.findAllForExport()
@@ -81,14 +110,77 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
             .toList();
     }
 
+    /**
+     * Exports all rating statistics to an Excel file.
+     *
+     * @return InputStream representing the Excel file
+     */
+    @Transactional(readOnly = true)
     @Override
-    public List<RatingStatisticsDto> getFilteredRatingStatisticsForExcel(
-        RatingStatisticsViewDto ratingStatisticsViewDto) {
-        return ratingStatisticsRepo.findAll(getSpecification(ratingStatisticsViewDto)).stream()
-            .map(ratingStat -> modelMapper.map(ratingStat, RatingStatisticsDto.class))
-            .collect(Collectors.toList());
+    public InputStream exportStatisticsToExcel() {
+        List<RatingStatisticsExportDto> stats = getAllRatingStatistics()
+            .stream()
+            .sorted(Comparator.comparing(RatingStatisticsExportDto::getDate).reversed())
+            .toList();
+
+        List<Map<String, String>> rows = stats.stream()
+            .map(s -> {
+                Map<String, String> row = new LinkedHashMap<>();
+                row.put("ID", String.valueOf(s.getId()));
+                row.put("Event Name", s.getEvent());
+                row.put("User ID", String.valueOf(s.getUserId()));
+                row.put("User Email", s.getUserEmail());
+                row.put("Date", s.getDate().toString());
+                row.put("Points Changed", String.valueOf(s.getPointsChanged()));
+                row.put("Current Rating", String.valueOf(s.getCurrentRating()));
+                return row;
+            })
+            .toList();
+
+        TableRowsDto table = new TableRowsDto("rating_statistics", rows);
+        return exportToFileService.exportTableDataToExcel(table);
     }
 
+    /**
+     * Exports filtered rating statistics to an Excel file based on filter criteria.
+     *
+     * @param dto filter criteria DTO
+     * @return InputStream representing the Excel file
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public InputStream exportFilteredStatisticsToExcel(RatingStatisticsViewDto dto) {
+        List<RatingStatistics> list = ratingStatisticsRepo.findAll(
+            getSpecificationWithFetch(dto));
+        list = list.stream()
+            .sorted(Comparator.comparing(RatingStatistics::getCreateDate).reversed()) // ← добавлено
+            .toList();
+
+        List<Map<String, String>> rows = list.stream()
+            .map(r -> {
+                Map<String, String> row = new LinkedHashMap<>();
+                row.put("ID", String.valueOf(r.getId()));
+                row.put("Event Name", r.getRatingPoints().getName());
+                row.put("User ID", String.valueOf(r.getUser().getId()));
+                row.put("User Email", r.getUser().getEmail());
+                row.put("Date", r.getCreateDate().toString());
+                row.put("Points Changed", String.valueOf(r.getPointsChanged()));
+                row.put("Current Rating", String.valueOf(r.getRating()));
+                return row;
+            })
+            .toList();
+
+        return exportToFileService.exportTableDataToExcel(
+            new TableRowsDto("filtered_rating_statistics", rows));
+    }
+
+    /**
+     * Retrieves paginated and filtered rating statistics for management.
+     *
+     * @param pageable                pageable configuration
+     * @param ratingStatisticsViewDto filter DTO
+     * @return PageableAdvancedDto containing RatingStatisticsDtoForTables
+     */
     @Override
     public PageableAdvancedDto<RatingStatisticsDtoForTables> getFilteredDataForManagementByPage(
         Pageable pageable, RatingStatisticsViewDto ratingStatisticsViewDto) {
@@ -98,12 +190,10 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     /**
-     * * This method used for build {@link SearchCriteria} depends on
-     * {@link RatingStatisticsViewDto}.
+     * Builds a list of search criteria based on the provided filter DTO.
      *
-     * @param ratingStatisticsViewDto used for receive parameters for filters from
-     *                                UI.
-     * @return {@link SearchCriteria}.
+     * @param ratingStatisticsViewDto DTO with filter parameters
+     * @return list of SearchCriteria
      */
     public List<SearchCriteria> buildSearchCriteria(RatingStatisticsViewDto ratingStatisticsViewDto) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
@@ -168,12 +258,30 @@ public class RatingStatisticsServiceImpl implements RatingStatisticsService {
     }
 
     /**
-     * Returns {@link RatingStatisticsSpecification} for entered filter parameters.
+     * Builds RatingStatisticsSpecification from filter DTO.
      *
-     * @param ratingStatisticsViewDto contains data from filters
+     * @param ratingStatisticsViewDto DTO with filter parameters
+     * @return RatingStatisticsSpecification
      */
     private RatingStatisticsSpecification getSpecification(RatingStatisticsViewDto ratingStatisticsViewDto) {
         List<SearchCriteria> searchCriteria = buildSearchCriteria(ratingStatisticsViewDto);
         return new RatingStatisticsSpecification(searchCriteria);
+    }
+
+    /**
+     * Builds a JPA Specification with fetch joins for user and ratingPoints.
+     *
+     * @param dto filter DTO
+     * @return Specification for querying RatingStatistics with fetch
+     */
+    private Specification<RatingStatistics> getSpecificationWithFetch(RatingStatisticsViewDto dto) {
+        return (root, query, cb) -> {
+            root.fetch("user", JoinType.LEFT);
+            root.fetch("ratingPoints", JoinType.LEFT);
+            assert query != null;
+            query.distinct(true);
+
+            return getSpecification(dto).toPredicate(root, query, cb);
+        };
     }
 }

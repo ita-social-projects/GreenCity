@@ -20,27 +20,38 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
         for (SearchCriteria searchCriteria : searchCriteriaList) {
             if (searchCriteria.getType().equals("id")) {
                 allPredicates =
-                    criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
+                    criteriaBuilder
+                        .and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
             }
             if (searchCriteria.getType().equals("ratingPoints")) {
                 allPredicates =
-                    criteriaBuilder.and(allPredicates, getEventNamePredicate(root, criteriaBuilder, searchCriteria));
+                    criteriaBuilder
+                        .and(allPredicates, getEventNamePredicate(root, criteriaBuilder, searchCriteria));
             }
             if (searchCriteria.getType().equals("userId")) {
                 allPredicates =
-                    criteriaBuilder.and(allPredicates, getUserIdPredicate(root, criteriaBuilder, searchCriteria));
+                    criteriaBuilder
+                        .and(allPredicates, getUserIdPredicate(root, criteriaBuilder, searchCriteria));
+            }
+            if (searchCriteria.getType().equals("userMail")) {
+                allPredicates =
+                    criteriaBuilder
+                        .and(allPredicates, getUserEmailPredicate(root, criteriaBuilder, searchCriteria));
             }
             if (searchCriteria.getType().equals("dateRange")) {
                 allPredicates =
-                    criteriaBuilder.and(allPredicates, getDataRangePredicate(root, criteriaBuilder, searchCriteria));
+                    criteriaBuilder
+                        .and(allPredicates, getDataRangePredicate(root, criteriaBuilder, searchCriteria));
             }
             if (searchCriteria.getType().equals("pointsChanged")) {
                 allPredicates =
-                    criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
+                    criteriaBuilder
+                        .and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
             }
             if (searchCriteria.getType().equals("currentRating")) {
                 allPredicates =
-                    criteriaBuilder.and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
+                    criteriaBuilder
+                        .and(allPredicates, getNumericPredicate(root, criteriaBuilder, searchCriteria));
             }
         }
         return allPredicates;
@@ -63,5 +74,14 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
             return searchCriteria.getValue().toString().trim().isEmpty() ? criteriaBuilder.conjunction()
                 : criteriaBuilder.disjunction();
         }
+    }
+
+    private Predicate getUserEmailPredicate(Root<RatingStatistics> root,
+        CriteriaBuilder criteriaBuilder,
+        SearchCriteria searchCriteria) {
+        Join<RatingStatistics, User> userJoin = root.join(RatingStatistics_.user);
+        return criteriaBuilder.like(
+            criteriaBuilder.lower(userJoin.get(User_.email)),
+            "%" + searchCriteria.getValue().toString().toLowerCase() + "%");
     }
 }

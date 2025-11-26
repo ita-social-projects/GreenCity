@@ -14,14 +14,6 @@
     <version>1.0-SNAPSHOT</version>
     <name>core</name>
 
-    <repositories>
-        <repository>
-            <id>github</id>
-            <name>GitHub Repository</name>
-            <url>https://maven.pkg.github.com/ita-social-projects/LDM-spring-boot-starter</url>
-        </repository>
-    </repositories>
-
     <properties>
         <azure.spring.version>6.0.0</azure.spring.version>
     </properties>
