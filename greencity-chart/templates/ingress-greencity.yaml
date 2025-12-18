@@ -10,8 +10,9 @@ metadata:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:4200, https://www.greencity.cx.ua"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    allow-snippet-annotations: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      if ($request_uri ~* "^/actuator") {
+      if ($request_uri ~* "^/actuator/prometheus") {
         return 403;
       }
 spec:

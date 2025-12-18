@@ -140,8 +140,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/", "/management/", "/management/login").permitAll()
-                .requestMatchers("/management/**").hasAnyRole(ADMIN)
                 .requestMatchers("/actuator/prometheus").permitAll()
+                .requestMatchers("/management/**",
+                    "/actuator/**")
+                .hasAnyRole(ADMIN)
                 .requestMatchers("/v2/api-docs/**",
                     "/v3/api-docs/**",
                     "/swagger.json",
