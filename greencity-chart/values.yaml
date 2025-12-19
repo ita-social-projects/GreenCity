@@ -16,10 +16,6 @@ externalSecret:
 service:
   type: ClusterIP
 
-# enable configuration-snippet to allow endpoint /actuator/prometheus only in cluster
-controller:
-  allowSnippetAnnotations: true
-
 # You need Nginx ingress controller and cert manager already installed
 # https://kubernetes.github.io/ingress-nginx/deploy/
 # https://cert-manager.io/docs/installation/helm/#3-install-customresourcedefinitions
