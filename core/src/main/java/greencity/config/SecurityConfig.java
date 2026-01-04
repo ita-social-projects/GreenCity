@@ -142,7 +142,8 @@ public class SecurityConfig {
                 .requestMatchers("/", "/management/", "/management/login").permitAll()
                 .requestMatchers("/actuator/prometheus").permitAll()
                 .requestMatchers("/management/**",
-                    "/actuator/**")
+                    "/actuator/**",
+                    "/metrics")
                 .hasAnyRole(ADMIN)
                 .requestMatchers("/v2/api-docs/**",
                     "/v3/api-docs/**",
