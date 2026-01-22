@@ -34,4 +34,9 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="Andrii-1" author="Andrii Danylenko">
+        <addPrimaryKey tableName="notifications_users"
+                       columnNames="notification_id, user_id"
+                       constraintName="PK_notifications_users"/>
+    </changeSet>
 </databaseChangeLog>

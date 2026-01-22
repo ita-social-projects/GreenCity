@@ -52,4 +52,9 @@
                                  referencedColumnNames="id"
                                  referencedTableName="greencity_users"/>
     </changeSet>
+    <changeSet id="1747142053687-1" author="Andrii Danylenko">
+        <addPrimaryKey tableName="comments_users_likes"
+                       columnNames="user_id, comment_id"
+                       constraintName="PK_comments_users_likes"/>
+    </changeSet>
 </databaseChangeLog>
